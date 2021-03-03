@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-    <!-- Vue 专有的功能，把当前页面所在的路由放到 <div id="app"> 里面 -->
+  <div id="app" class="light-theme">
     <router-view></router-view>
   </div>
 </template>
@@ -21,13 +20,9 @@ body {
 }
 
 #app {
-  width: fit-content;
+  width: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-
-  // 自动居中
-  margin: 0 auto;
 }
 </style>

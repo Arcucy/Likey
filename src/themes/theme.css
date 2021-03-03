@@ -1,0 +1,31 @@
+.dark-theme {
+  --background: #141414;
+  --background-deep: #182831;
+  --primary: #cecece;
+  --primary-deep: #cecece;
+  --secondary: #253e49;
+  --secondary-deep: #253e49;
+  --light: #c9c9c9;
+  --dark: #cccccc;
+  --gray1: #d4d6da;
+  --gray2: #9ca3aa;
+  --gray3: #848a92;
+  --gray4: #616770;
+  --gray5: #3d4247;
+}
+
+.light-theme {
+  --background: #f4f4f4;
+  --background-deep: #336bac;
+  --primary: #253e49;
+  --primary-deep: #253e49;
+  --secondary: #c5cacc;
+  --secondary-deep: #c5cacc;
+  --light: #ffffff;
+  --dark: #353535;
+  --gray1: #d4d6da;
+  --gray2: #9ca3aa;
+  --gray3: #848a92;
+  --gray4: #616770;
+  --gray5: #3d4247;
+}
