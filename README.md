@@ -1,4 +1,5 @@
-# growth
+<h1 align="center">Growth</h1>
+<p align="center">An Arweave Project</p>
 
 ## Project setup
 ```
@@ -7,7 +8,7 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-yarn serve
+yarn dev
 ```
 
 ### Compiles and minifies for production
@@ -25,5 +26,7 @@ yarn test:unit
 yarn lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Svgo
+```
+yarn svgo
+```
