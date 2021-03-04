@@ -21,13 +21,17 @@
 export default {
   methods: {
     switchTheme () {
+      // 主题样式 Theme
+      const themes = ['light-theme', 'dark-theme', 'pink-theme']
       const current = document.getElementById('app').classList
-      if (current.contains('dark-theme')) {
-        current.remove('dark-theme')
-        current.add('light-theme')
-      } else if (current.contains('light-theme')) {
-        current.remove('light-theme')
-        current.add('dark-theme')
+      const currentTheme = [...current].filter(name => /^.*-theme$/i.test(name)).pop()
+      if (current.contains(currentTheme)) {
+        current.remove(currentTheme)
+        if (themes.indexOf(currentTheme) === (themes.length - 1)) {
+          current.add(themes[0])
+        } else {
+          current.add(themes[themes.indexOf(currentTheme) + 1])
+        }
       }
     }
   }
