@@ -104,10 +104,13 @@ footer {
       }
 
       .icons {
+        flex-grow: 1;
+
         &-links {
           display: flex;
           flex-direction: row;
           column-gap: 10px;
+          justify-content: flex-end;
 
           a {
             color: @light;
@@ -124,6 +127,7 @@ footer {
         &-desp {
           display: block;
           margin-top: 15px;
+          text-align: right;
         }
       }
     }

@@ -25,7 +25,7 @@ export default {
   width: 100%;
 
   .slot-shell {
-    min-height: calc(100vh - 320px);
+    min-height: calc(100vh - 300px);
   }
 }
 </style>
