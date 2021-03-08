@@ -46,7 +46,15 @@ module.exports = {
   pluginOptions: {
     'style-resources-loader': {
       preProcessor: 'less',
-      patterns: [path.resolve(__dirname, './src/themes/variables.less')]
+      patterns: [
+        '/Users/yuna/Git/Growth/src/themes/variables.less'
+      ]
+    },
+    i18n: {
+      locale: 'en',
+      fallbackLocale: 'en',
+      localeDir: 'locales',
+      enableInSFC: false
     }
   }
 }

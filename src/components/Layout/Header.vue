@@ -11,15 +11,36 @@
       <div class="header-option">
         <!-- <svg-icon icon-class="account" class="header-option-icon"/> -->
         <!-- <span class="icon"><i class="el-icon-picture-outline-round"></i></span> -->
-        <div @click="switchTheme"><mdicon class="theme-switch" name="brightness-6" /></div>
+        <div class="header-option-items" @click="switchTheme"><mdicon class="theme-switch" name="brightness-6" /></div>
+        <el-button class="header-option-items" @click="showKeyReader = true">Login</el-button>
       </div>
+      <KeyReader v-model="showKeyReader" @key-file="getKey" />
     </div>
   </header>
 </template>
 
 <script>
+import KeyReader from '@/components/Common/KeyReader'
+
 export default {
+  components: {
+    KeyReader
+  },
+  data () {
+    return {
+      showKeyReader: false,
+      keyFile: ''
+    }
+  },
+  watch: {
+    keyFile (val) {
+      console.log(val)
+    }
+  },
   methods: {
+    getKey (key) {
+      // 接下来需要 key 的函数，也可以是赋值
+    },
     switchTheme () {
       // 主题样式 Theme
       const themes = ['light-theme', 'dark-theme', 'pink-theme']
@@ -42,15 +63,15 @@ export default {
 header {
   .header {
     width: 100%;
-    height: 50px;
+    height: 60px;
     padding: 20px 20px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
     justify-content: center;
-    -webkit-box-shadow: 0px 8px 15px -5px @secondary;
-    -moz-box-shadow: 0px 8px 15px -5px @secondary;
-    box-shadow: 0px 8px 15px -5px @secondary;
+    -webkit-box-shadow: 0px 8px 15px -5px @gray1;
+    -moz-box-shadow: 0px 8px 15px -5px @gray1;
+    box-shadow: 0px 8px 15px -5px @gray1;
     color: @dark;
     background-color: @background;
 
@@ -69,11 +90,16 @@ header {
     }
 
     &-option {
-      display: flex;
       width: 100%;
+      display: flex;
+      align-items: center;
       justify-content: flex-end;
-      .theme-switch {
-        color: @primary;
+      column-gap: 10px;
+
+      &-items {
+        .theme-switch {
+          color: @primary;
+        }
       }
     }
   }

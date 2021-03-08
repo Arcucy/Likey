@@ -69,7 +69,7 @@ footer {
   padding: 25px 30px;
   box-sizing: border-box;
   color: @light;
-  background-color: @background-deep;
+  background-color: @background-dark;
   display: flex;
   flex-direction: column;
 

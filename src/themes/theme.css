@@ -1,11 +1,13 @@
 /* 主题样式 Theme */
 .dark-theme {
   --background: #141414;
-  --background-deep: #182831;
+  --background-dark: #182831;
   --primary: #cecece;
-  --primary-deep: #cecece;
+  --primary-light: #cecece;
+  --primary-dark: #cecece;
   --secondary: #253e49;
-  --secondary-deep: #253e49;
+  --secondary-light: #253e49;
+  --secondary-dark: #253e49;
   --light: #c9c9c9;
   --dark: #cccccc;
   --gray1: #d4d6da;
@@ -16,12 +18,14 @@
 }
 
 .light-theme {
-  --background: #f4f4f4;
-  --background-deep: #336bac;
+  --background: #ffffff;
+  --background-dark: #336bac;
   --primary: #253e49;
-  --primary-deep: #253e49;
+  --primary-light: #253e49;
+  --primary-dark: #253e49;
   --secondary: #c5cacc;
-  --secondary-deep: #c5cacc;
+  --secondary-light: #c5cacc;
+  --secondary-dark: #c5cacc;
   --light: #ffffff;
   --dark: #353535;
   --gray1: #d4d6da;
@@ -33,11 +37,13 @@
 
 .pink-theme {
   --background: #f4f4f4;
-  --background-deep: #f05993;
-  --primary: #E56D9B;
-  --primary-deep: #c95581;
+  --background-dark: #f05993;
+  --primary: #f05993;
+  --primary-light: #feeef4;
+  --primary-dark: #fcdee9;
   --secondary: #c5cacc;
-  --secondary-deep: #c5cacc;
+  --secondary-light: #c5cacc;
+  --secondary-dark: #c5cacc;
   --light: #ffffff;
   --dark: #353535;
   --gray1: #f8dcdc;
