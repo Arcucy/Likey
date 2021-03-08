@@ -20,6 +20,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
+import API from '@/api/api'
+import { FileUtil } from '@/util/file'
+
 import KeyReader from '@/components/Common/KeyReader'
 
 export default {
@@ -29,18 +34,67 @@ export default {
   data () {
     return {
       showKeyReader: false,
-      keyFile: ''
+      keyFileContent: '',
+      loginBtnLoading: false,
+      writeCookie: false,
+      file: null,
+      fileName: '',
+      fileContent: '',
+      fileRaw: ''
     }
   },
   watch: {
-    keyFile (val) {
-      console.log(val)
+    keyFileContent (val) {
     }
   },
   methods: {
+    ...mapActions(['setKey', 'setWallet', 'logout']),
     getKey (key) {
       // 接下来需要 key 的函数，也可以是赋值
+      // loginWithKey
     },
+    // 使用钱包密钥登录
+    loginWithKey () {
+      try {
+        this.keyFile = this.file
+        this.fileName = this.keyFile.name
+        const reader = new FileReader()
+        reader.readAsText(this.keyFile)
+        reader.onload = async (e) => {
+          try {
+            const fileContent = JSON.parse(e.target.result)
+
+            if (!await FileUtil.isValidKeyFile(fileContent)) { // 提前检查是否是Arweave的Key
+              this.showKeyReader = false
+              this.loginBtnLoading = false
+              // 错误处理
+              return
+            }
+
+            this.fileContent = fileContent
+            this.fileRaw = JSON.stringify(this.fileContent)
+            const data = {
+              file: this.file,
+              raw: this.fileRaw,
+              name: this.fileName,
+              content: this.fileContent
+            }
+            await this.setKey(data)
+            this.needUpload = false
+            this.showKeyReader = false
+            if (this.writeCookie) {
+              // clearCookie('arclight_userkey')
+              // setCookie('arclight_userkey', this.fileRaw, 7)
+            }
+          } catch (err) {
+            // 错误处理
+          }
+        }
+      } catch {
+        // this.loginBtnLoading = false
+      }
+    },
+    // 切换主题
     switchTheme () {
       // 主题样式 Theme
       const themes = ['light-theme', 'dark-theme', 'pink-theme']
@@ -55,6 +109,28 @@ export default {
         }
       }
     }
+  },
+  mounted () {
+    console.log(process.env.VUE_APP_TITLE)
+    // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
+    // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
+    addEventListener('arweaveWalletLoaded', async () => {
+      const addr = await API.Arweave.wallets.getAddress()
+      // 获得地址
+      console.log(addr)
+
+      // 设定地址
+    })
+
+    // 当用户切换钱包时获得新的钱包
+    // 你也可以监听钱包切换事件（当用户选择使用另一个钱包时）。
+    addEventListener('walletSwitch', (e) => {
+      const newAddr = e.detail.address
+      // 获得地址
+      console.log(newAddr)
+
+      // 设定地址
+    })
   }
 }
 </script>

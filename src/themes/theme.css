@@ -1,4 +1,6 @@
 /* 主题样式 Theme */
+
+/* dark-theme 暗色主题  */
 .dark-theme {
   --background: #141414;
   --background-dark: #182831;
@@ -17,6 +19,7 @@
   --gray5: #3d4247;
 }
 
+/* light-theme 亮色主题  */
 .light-theme {
   --background: #ffffff;
   --background-dark: #336bac;
@@ -35,6 +38,7 @@
   --gray5: #3d4247;
 }
 
+/* pink-theme 粉色主题  */
 .pink-theme {
   --background: #f4f4f4;
   --background-dark: #f05993;
