@@ -16,6 +16,8 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "element-ui": "^2.4.5",
+    "js-cookie": "^2.2.1",
+    "js-crypto-rsa": "^1.0.0",
     "mdi-vue": "^2.2.1",
     "svgo": "^1.3.2",
     "vue": "^2.6.11",
