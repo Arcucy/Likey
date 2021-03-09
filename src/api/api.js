@@ -1,7 +1,7 @@
 const arweave = require('./arweave').default
-const ArweaveNative = require('arweave').default
+const ArweaveUtil = require('arweave').default
 
-const Arweave = ArweaveNative.init({
+const ArweaveNative = ArweaveUtil.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
   protocol: 'https',
@@ -10,9 +10,9 @@ const Arweave = ArweaveNative.init({
 })
 
 const API = {
-  weave: arweave,
-  Arweave: Arweave,
-  ArweaveNative: ArweaveNative
+  arweave: arweave,
+  ArweaveNative: ArweaveNative,
+  ArweaveUtil: ArweaveUtil
 }
 
 export default API

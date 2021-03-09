@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+// import Axios from 'axios'
+import { mapActions, mapState } from 'vuex'
 
 import API from '@/api/api'
 import { FileUtil } from '@/util/file'
@@ -45,8 +46,17 @@ export default {
       isWalletLoaded: ''
     }
   },
+  computed: {
+    ...mapState(['username', 'userAvatar'])
+  },
   watch: {
     keyFileContent (val) {
+    },
+    username (val) {
+      console.log(val)
+    },
+    userAvatar (val) {
+      console.log(val)
     }
   },
   methods: {
@@ -123,21 +133,25 @@ export default {
         }
 
         const tx = { format: 2, data: verifyCode }
-        const signedResult = await window.arweaveWallet.sign(tx)
-        return { data: signedResult }
+        try {
+          const signedResult = await window.arweaveWallet.sign(tx)
+          return { data: signedResult }
+        } catch (e) {
+          console.error(e)
+        }
       }
     }
   },
   mounted () {
-    console.log(process.env.VUE_APP_TITLE)
     // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
     // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
     addEventListener('arweaveWalletLoaded', async () => {
-      const addr = await API.Arweave.wallets.getAddress()
+      const addr = await API.ArweaveNative.wallets.getAddress()
       // 获得地址
       console.log(addr)
 
       // 设定地址
+      this.setWallet({ data: addr })
     })
 
     // 当用户切换钱包时获得新的钱包
