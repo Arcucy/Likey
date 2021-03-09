@@ -26,6 +26,8 @@ import { mapActions, mapState } from 'vuex'
 
 import API from '@/api/api'
 import { FileUtil } from '@/util/file'
+import jwkUtil from '@/util/jwk'
+import { setCookie } from '@/util/cookie'
 
 import KeyReader from '@/components/Common/KeyReader'
 
@@ -61,9 +63,24 @@ export default {
   },
   methods: {
     ...mapActions(['setKey', 'setWallet', 'logout']),
-    getKey (key) {
-      // 接下来需要 key 的函数，也可以是赋值
-      // loginWithKey
+    async getKey (key) {
+      const data = JSON.stringify({
+        address: await API.arweave.getAddress(key),
+        timestamp: Date.now()
+      })
+      const sign = await jwkUtil.signMessage(key, data)
+      try {
+        const res = await this.$api.be.arJwkSignLogin(key.n, sign, data)
+        if (res.code) {
+          this.$message.error(res.message)
+          return
+        }
+        this.$message.success(this.$t('success.login'))
+
+        setCookie('session_token', res.data.jwt, 'localhost')
+      } catch (err) {
+        this.$message.error(this.$t('failure.login'))
+      }
     },
     // 使用钱包密钥登录
     loginWithKey () {
