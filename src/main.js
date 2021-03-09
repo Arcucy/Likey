@@ -9,11 +9,15 @@ import * as mdijs from '@mdi/js'
 import '@/icons'
 import i18n from './i18n'
 
+import API from '../src/api/api'
+
 Vue.use(mdiVue, {
   icons: mdijs
 })
 
 Vue.config.productionTip = false
+
+Vue.prototype.$api = API
 
 new Vue({
   router,
