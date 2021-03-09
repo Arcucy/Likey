@@ -1,36 +1,21 @@
-const crypto = require('crypto')
-const jwkToPem = require('jwk-to-pem')
+const crypto = require('js-crypto-rsa')
+
+// 字符串转换为 Uint8Array
+const encoder = new TextEncoder()
+const hashAlgorithm = 'SHA-256'
 
 /**
  * 用来签名的小工具
  */
 class JwkUtil {
   /**
-   * 将 jwk 转换为 PEM 格式的 RSA 密钥
-   * @param {Object} input jwk 对象
-   * @param {*} mode 输出模式：['private': 私钥, 'public': 公钥]
-   */
-  static async toPem (input, mode) {
-    let key = ''
-    if (mode === 'private') {
-      key = jwkToPem(input, { private: true })
-    } else if (mode === 'public') {
-      key = jwkToPem(input)
-    }
-    return key
-  }
-
-  /**
    * 对数据签名，输入私钥，客户端
-   * @param {String} pri - 私钥
+   * @param {String} key - jwk 格式私钥
    * @param {String} data - 需要签名的数据
    */
-  static async signMessage (pri, data) {
-    // 创建签名
-    const sign = crypto.createSign('sha384')
-    sign.update(data)
-    const signature = sign.sign(pri, 'hex')
-    return signature
+  static async signMessage (key, data) {
+    const sign = await crypto.sign(encoder.encode(data), key, hashAlgorithm)
+    return Buffer.from(sign).toString('hex')
   }
 
   /**
@@ -40,9 +25,8 @@ class JwkUtil {
    * @param {String} data - 之前签名的数据
    */
   static async verifyMessage (pub, signature, data) {
-    const verify = crypto.createVerify('sha384')
-    verify.update(data)
-    return verify.verify(pub, signature, 'hex')
+    const verify = await crypto.verify(data, signature, pub, 'SHA-256')
+    return verify
   }
 
   /**
