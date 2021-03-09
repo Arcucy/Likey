@@ -82,9 +82,9 @@ export default new Vuex.Store({
 
         try {
           let errorCaught = false
-          const res = await API.arweave.getAddress(data.content) // 已经检查过地址了无需再次catch
+          const res = await API.weave.getAddress(data.content) // 已经检查过地址了无需再次catch
           commit('setWallet', res)
-          const res2 = await API.arweave.getIdFromAddress(res).catch((err) => {
+          const res2 = await API.weave.getIdFromAddress(res).catch((err) => {
             if (err.message.startsWith('timeout')) {
               commit('setLoginConnectionTimeoutFailure', true)
               errorCaught = true
@@ -106,7 +106,7 @@ export default new Vuex.Store({
             commit('setUserType', res2.type)
             commit('setIsLoggedIn', true)
             if (res2.type !== 'guest') {
-              API.arweave.getAvatarFromAddress(res).then(data => {
+              API.weave.getAvatarFromAddress(res).then(data => {
                 if (data) {
                   commit('setUserAvatar', data)
                 }
@@ -129,7 +129,7 @@ export default new Vuex.Store({
           let errorCaught = false
           commit('setWallet', data.address)
           commit('setIsWalletLoaded', true)
-          const res2 = await API.arweave.getIdFromAddress(data.address).catch((err) => {
+          const res2 = await API.weave.getIdFromAddress(data.address).catch((err) => {
             if (err.message.startsWith('timeout')) {
               commit('setLoginConnectionTimeoutFailure', true)
               errorCaught = true
@@ -151,7 +151,7 @@ export default new Vuex.Store({
             commit('setUserType', res2.type)
             commit('setIsLoggedIn', true)
             if (res2.type !== 'guest') {
-              API.arweave.getAvatarFromAddress(data.address).then(data => {
+              API.weave.getAvatarFromAddress(data.address).then(data => {
                 if (data) {
                   commit('setUserAvatar', data)
                 }

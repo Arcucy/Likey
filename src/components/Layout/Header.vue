@@ -13,6 +13,7 @@
         <!-- <span class="icon"><i class="el-icon-picture-outline-round"></i></span> -->
         <div class="header-option-items" @click="switchTheme"><mdicon class="theme-switch" name="brightness-6" /></div>
         <el-button class="header-option-items" @click="showKeyReader = true">Login</el-button>
+        <el-button class="header-option-items" @click="signForLogin">Sign</el-button>
       </div>
       <KeyReader v-model="showKeyReader" @key-file="getKey" />
     </div>
@@ -40,7 +41,8 @@ export default {
       file: null,
       fileName: '',
       fileContent: '',
-      fileRaw: ''
+      fileRaw: '',
+      isWalletLoaded: ''
     }
   },
   watch: {
@@ -107,6 +109,22 @@ export default {
         } else {
           current.add(themes[themes.indexOf(currentTheme) + 1])
         }
+      }
+    },
+    // 登录时进行签名请求
+    async signForLogin (verifyCode) {
+      if (window.arweaveWallet) {
+        try {
+          const existingPermissions = await window.arweaveWallet.getPermissions()
+
+          if (!existingPermissions.includes('SIGN_TRANSACTION')) await window.arweaveWallet.connect(['SIGN_TRANSACTION'])
+        } catch {
+          // Permission is already granted
+        }
+
+        const tx = { format: 2, data: verifyCode }
+        const signedResult = await window.arweaveWallet.sign(tx)
+        return { data: signedResult }
       }
     }
   },

@@ -44,6 +44,18 @@ class JwkUtil {
     verify.update(data)
     return verify.verify(pub, signature, 'hex')
   }
+
+  /**
+   * 从 JWK n 字段构建 JWK
+   * @param {*} n  - JWK 公钥字段 n
+   */
+  static async buildPubJWK (n) {
+    return {
+      kty: 'RSA',
+      e: 'AQAB',
+      n: n
+    }
+  }
 }
 
 module.exports = JwkUtil
