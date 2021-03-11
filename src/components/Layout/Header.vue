@@ -15,19 +15,19 @@
         <el-button class="header-option-items" @click="showKeyReader = true">Login</el-button>
         <el-button class="header-option-items" @click="signForLogin">Sign</el-button>
       </div>
-      <KeyReader v-model="showKeyReader" @key-file="getKey" />
+      <KeyReader v-model="showKeyReader" @key-file="getJwk" />
     </div>
   </header>
 </template>
 
 <script>
 // import Axios from 'axios'
-import { mapActions, mapState } from 'vuex'
+import { mapActions } from 'vuex'
 
 import API from '@/api/api'
 import { FileUtil } from '@/util/file'
-import jwkUtil from '@/util/jwk'
-import { setCookie } from '@/util/cookie'
+// import jwkUtil from '@/util/jwk'
+import { getCookie, setCookie, removeCookie } from '@/util/cookie'
 
 import KeyReader from '@/components/Common/KeyReader'
 
@@ -49,81 +49,97 @@ export default {
     }
   },
   computed: {
-    ...mapState(['username', 'userAvatar'])
   },
   watch: {
     keyFileContent (val) {
-    },
-    username (val) {
-      console.log(val)
-    },
-    userAvatar (val) {
-      console.log(val)
     }
   },
+  mounted () {
+    this.initJwkLogin()
+    this.initWalletPlugin()
+  },
   methods: {
-    ...mapActions(['setKey', 'setWallet', 'logout']),
-    async getKey (key) {
-      const data = JSON.stringify({
-        address: await API.arweave.getAddress(key),
-        timestamp: Date.now()
-      })
-      const sign = await jwkUtil.signMessage(key, data)
+    ...mapActions(['setMyJwk', 'setMyAddress', 'setMyUsername', 'setMyAvatar', 'logout']),
+    /** 初始化 JWK 登录 */
+    async initJwkLogin () {
+      const jwk = getCookie('arclight_userkey')
+      if (jwk) {
+        this.loginBtnLoading = true
+        await this.loginByJwk(JSON.parse(jwk))
+        this.loginBtnLoading = false
+      }
+    },
+    /** 获取 JWK */
+    async getJwk (key) {
+      this.loginBtnLoading = true
       try {
-        const res = await this.$api.be.arJwkSignLogin(key.n, sign, data)
-        if (res.code) {
-          this.$message.error(res.message)
+        // 检查是否是Arweave的Key
+        if (!await FileUtil.isValidKeyFile(key)) {
+          this.showKeyReader = false
+          this.loginBtnLoading = false
+          this.$message.error(this.$t('failure.fileFormatError'))
           return
         }
-        this.$message.success(this.$t('success.login'))
-
-        setCookie('session_token', res.data.jwt, 'localhost')
+        // 登录
+        const res = await this.loginByJwk(key)
+        // 如果用户选择了记住登录状态，则将 JWK 保存到 cookie 中
+        if (res && this.writeCookie) {
+          removeCookie('arclight_userkey')
+          setCookie('arclight_userkey', JSON.stringify(key), 7)
+        }
       } catch (err) {
         this.$message.error(this.$t('failure.login'))
+        console.error(err)
       }
+      this.loginBtnLoading = false
     },
-    // 使用钱包密钥登录
-    loginWithKey () {
+    /** 通过 Jwk 登录 */
+    async loginByJwk (key) {
       try {
-        this.keyFile = this.file
-        this.fileName = this.keyFile.name
-        const reader = new FileReader()
-        reader.readAsText(this.keyFile)
-        reader.onload = async (e) => {
-          try {
-            const fileContent = JSON.parse(e.target.result)
-
-            if (!await FileUtil.isValidKeyFile(fileContent)) { // 提前检查是否是Arweave的Key
-              this.showKeyReader = false
-              this.loginBtnLoading = false
-              // 错误处理
-              return
-            }
-
-            this.fileContent = fileContent
-            this.fileRaw = JSON.stringify(this.fileContent)
-            const data = {
-              file: this.file,
-              raw: this.fileRaw,
-              name: this.fileName,
-              content: this.fileContent
-            }
-            await this.setKey(data)
-            this.needUpload = false
-            this.showKeyReader = false
-            if (this.writeCookie) {
-              // clearCookie('arclight_userkey')
-              // setCookie('arclight_userkey', this.fileRaw, 7)
-            }
-          } catch (err) {
-            // 错误处理
+        this.setMyJwk(JSON.stringify(key))
+        // 获取钱包地址
+        const address = await API.arweave.getAddress(key)
+        this.setMyAddress(address)
+        // 通过钱包地址获取用户名
+        try {
+          const res = await API.arweave.getIdFromAddress(address)
+          this.setMyUsername(res ? res.data : 'guest')
+        } catch (err) {
+          // 错误处理
+          if (err.message.startsWith('timeout')) {
+            // 获取用户名超时
+            this.$message.error(this.$t('login.connectionTimeout'))
+            this.logout()
+            return false
+          } else {
+            // 其他错误
+            console.warn('uncaught error: ' + err)
+            this.setMyUsername('guest')
           }
         }
-      } catch {
-        // this.loginBtnLoading = false
+        // 异步获取用户头像
+        this.setMyAvatarByAddress(address)
+        return true
+      } catch (err) {
+        this.$message.error(this.$t('failure.login'))
+        console.warn('uncaught error: ' + err)
+        this.logout()
+        return false
       }
     },
-    // 切换主题
+    /** 通过地址设置我的头像 */
+    async setMyAvatarByAddress (address) {
+      try {
+        const data = await API.arweave.getAvatarFromAddress(address)
+        this.setMyAvatar(data)
+      } catch (err) {
+        if (err.message.startsWith('timeout')) {
+          this.$message.error(this.$t('failure.gettingAvatarTimeout'))
+        }
+        console.warn('uncaught error: ' + err)
+      }
+    },
+    /** 切换主题 */
     switchTheme () {
       // 主题样式 Theme
       const themes = ['light-theme', 'dark-theme', 'pink-theme']
@@ -138,7 +154,27 @@ export default {
         }
       }
     },
-    // 登录时进行签名请求
+    /** 初始化钱包插件 */
+    initWalletPlugin () {
+      // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
+      // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
+      addEventListener('arweaveWalletLoaded', async () => {
+        const addr = await API.ArweaveNative.wallets.getAddress()
+        // 获得地址
+        console.log(addr)
+        // 设定地址
+        this.setMyAddress(addr)
+      })
+      // 当用户切换钱包时获得新的钱包
+      // 你也可以监听钱包切换事件（当用户选择使用另一个钱包时）。
+      addEventListener('walletSwitch', (e) => {
+        const newAddr = e.detail.address
+        // 获得地址
+        console.log(newAddr)
+      // 设定地址
+      })
+    },
+    /** 使用插件登录时进行签名请求 */
     async signForLogin (verifyCode) {
       if (window.arweaveWallet) {
         try {
@@ -158,28 +194,6 @@ export default {
         }
       }
     }
-  },
-  mounted () {
-    // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
-    // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
-    addEventListener('arweaveWalletLoaded', async () => {
-      const addr = await API.ArweaveNative.wallets.getAddress()
-      // 获得地址
-      console.log(addr)
-
-      // 设定地址
-      this.setWallet({ data: addr })
-    })
-
-    // 当用户切换钱包时获得新的钱包
-    // 你也可以监听钱包切换事件（当用户选择使用另一个钱包时）。
-    addEventListener('walletSwitch', (e) => {
-      const newAddr = e.detail.address
-      // 获得地址
-      console.log(newAddr)
-
-      // 设定地址
-    })
   }
 }
 </script>
