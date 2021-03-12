@@ -96,41 +96,48 @@ export default {
     /** 通过 Jwk 登录 */
     async loginByJwk (key) {
       try {
-        this.setMyJwk(JSON.stringify(key))
+        const info = {
+          address: '',
+          username: ''
+        }
         // 获取钱包地址
-        const address = await API.arweave.getAddress(key)
-        this.setMyAddress(address)
+        info.address = await this.$api.gql.getAddress(key)
+        if (!info.address) {
+          this.$message.error(this.$t('failure.getAddress'))
+          return
+        }
         // 通过钱包地址获取用户名
         try {
-          const res = await API.arweave.getIdFromAddress(address)
-          this.setMyUsername(res ? res.data : 'guest')
+          const res = await this.$api.gql.getIdByAddress(info.address)
+          info.username = res.data
         } catch (err) {
           // 错误处理
           if (err.message.startsWith('timeout')) {
             // 获取用户名超时
             this.$message.error(this.$t('login.connectionTimeout'))
-            this.logout()
             return false
           } else {
             // 其他错误
             console.warn('uncaught error: ' + err)
-            this.setMyUsername('guest')
           }
         }
+        // 登录成功，提交数据
+        this.setMyJwk(JSON.stringify(key))
+        this.setMyInfo(info)
+        this.$message.success(this.$t('success.login'))
         // 异步获取用户头像
-        this.setMyAvatarByAddress(address)
+        this.setMyAvatarByAddress(info.address)
         return true
       } catch (err) {
         this.$message.error(this.$t('failure.login'))
         console.warn('uncaught error: ' + err)
-        this.logout()
         return false
       }
     },
     /** 通过地址设置我的头像 */
     async setMyAvatarByAddress (address) {
       try {
-        const data = await API.arweave.getAvatarFromAddress(address)
+        const data = await this.$api.gql.getAvatarByAddress(address)
         this.setMyAvatar(data)
       } catch (err) {
         if (err.message.startsWith('timeout')) {
@@ -159,7 +166,7 @@ export default {
       // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
       // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
       addEventListener('arweaveWalletLoaded', async () => {
-        const addr = await API.ArweaveNative.wallets.getAddress()
+        const addr = await API.arql.wallets.getAddress()
         // 获得地址
         console.log(addr)
         // 设定地址

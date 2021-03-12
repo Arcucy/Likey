@@ -18,8 +18,7 @@ const ar = Arweave.init({
 
 const APP_NAME = 'arclight-app'
 
-const arweave = {
-  breakOnCall: false,
+const arql = {
   timerInterval: undefined,
 
   /**
@@ -151,16 +150,6 @@ const arweave = {
         // Get transaction detial
         // 获取交易明细
         this.getTransactionDetail(id).then(transaction => {
-          // Go through for each id to find the tag
-          // 遍历每个id来找到标签
-          transaction.get('tags').forEach(tag => {
-            const key = tag.get('name', { decode: true, string: true })
-            const value = tag.get('value', { decode: true, string: true })
-            if (key === 'Type') {
-              res.type = value
-            }
-          })
-
           // Get the encoded data from transaction
           // 从交易中获取编码数据
           this.getTransactionDataDecodedString(id).then(data => {
@@ -203,7 +192,7 @@ const arweave = {
         }
       }).then(async ids => {
         if (ids.length === 0) {
-          resolve(false)
+          resolve(null)
           return
         }
 
@@ -822,4 +811,4 @@ const arweave = {
   }
 }
 
-export default arweave
+export default arql
