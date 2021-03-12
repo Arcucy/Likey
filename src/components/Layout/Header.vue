@@ -12,17 +12,23 @@
         <!-- <svg-icon icon-class="account" class="header-option-icon"/> -->
         <!-- <span class="icon"><i class="el-icon-picture-outline-round"></i></span> -->
         <div class="header-option-items" @click="switchTheme"><mdicon class="theme-switch" name="brightness-6" /></div>
-        <el-button class="header-option-items" @click="showKeyReader = true">Login</el-button>
-        <el-button class="header-option-items" @click="signForLogin">Sign</el-button>
+        <MyMenu v-if="isLoggedIn" />
+        <el-button v-else class="header-option-items" @click="showKeyReader = true">Login</el-button>
+        <!-- <el-button class="header-option-items" @click="signForLogin">Sign</el-button> -->
       </div>
-      <KeyReader v-model="showKeyReader" @key-file="getJwk" />
+      <KeyReader
+        v-model="showKeyReader"
+        :loading="loginBtnLoading"
+        @key-file="getJwk"
+        @keep-logged-in="val => keepLoggedIn = val"
+      />
     </div>
   </header>
 </template>
 
 <script>
 // import Axios from 'axios'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import API from '@/api/api'
 import { FileUtil } from '@/util/file'
@@ -30,17 +36,19 @@ import { FileUtil } from '@/util/file'
 import { getCookie, setCookie, removeCookie } from '@/util/cookie'
 
 import KeyReader from '@/components/Common/KeyReader'
+import MyMenu from '@/components/Layout/MyMenu'
 
 export default {
   components: {
-    KeyReader
+    KeyReader,
+    MyMenu
   },
   data () {
     return {
       showKeyReader: false,
       keyFileContent: '',
       loginBtnLoading: false,
-      writeCookie: false,
+      keepLoggedIn: false,
       file: null,
       fileName: '',
       fileContent: '',
@@ -49,6 +57,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isLoggedIn'])
   },
   watch: {
     keyFileContent (val) {
@@ -59,7 +68,7 @@ export default {
     this.initWalletPlugin()
   },
   methods: {
-    ...mapActions(['setMyJwk', 'setMyAddress', 'setMyUsername', 'setMyAvatar', 'logout']),
+    ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout']),
     /** 初始化 JWK 登录 */
     async initJwkLogin () {
       const jwk = getCookie('arclight_userkey')
@@ -82,8 +91,9 @@ export default {
         }
         // 登录
         const res = await this.loginByJwk(key)
+        this.showKeyReader = false
         // 如果用户选择了记住登录状态，则将 JWK 保存到 cookie 中
-        if (res && this.writeCookie) {
+        if (res && this.keepLoggedIn) {
           removeCookie('arclight_userkey')
           setCookie('arclight_userkey', JSON.stringify(key), 7)
         }
@@ -210,7 +220,7 @@ header {
   .header {
     width: 100%;
     height: 60px;
-    padding: 20px 20px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     box-sizing: border-box;

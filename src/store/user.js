@@ -1,4 +1,4 @@
-/* eslint-disable no-async-promise-executor */
+import { removeCookie } from '@/util/cookie'
 
 export default {
   /** 是否开启命名空间 */
@@ -22,7 +22,7 @@ export default {
     },
     /** 已登录 */
     isLoggedIn (state) {
-      return state.myInfo && state.myInfo.id
+      return Boolean(state.myInfo && state.myInfo.address && state.myInfo.username)
     }
   },
   mutations: {
@@ -59,7 +59,7 @@ export default {
       //     let errorCaught = false
       //     commit('setWallet', data.address)
       //     commit('setIsWalletLoaded', true)
-      //     const res2 = await API.arweave.getIdFromAddress(data.address).catch((err) => {
+      //     const res2 = await API.arql.getIdFromAddress(data.address).catch((err) => {
       //       if (err.message.startsWith('timeout')) {
       //         commit('setLoginConnectionTimeoutFailure', true)
       //         errorCaught = true
@@ -77,7 +77,7 @@ export default {
       //     if (res2) {
       //       commit('setUsername', res2.data)
       //       if (res2.type !== 'guest') {
-      //         API.arweave.getAvatarFromAddress(data.address).then(data => {
+      //         API.arql.getAvatarFromAddress(data.address).then(data => {
       //           if (data) {
       //             commit('setUserAvatar', data)
       //           }
@@ -97,6 +97,7 @@ export default {
     logout ({ commit }) {
       commit('mSetMyInfo', {})
       commit('mSetMyJwk', '')
+      removeCookie('arclight_userkey')
     }
   }
 }

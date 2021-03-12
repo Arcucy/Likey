@@ -1,23 +1,25 @@
 <template>
   <div>
     <el-dialog
-      width="30%"
-      :title="$t('insertYourKey')"
+      :title="$t('login.insertYourKey')"
       :visible.sync="dialogVisible"
       :before-close="handleClose"
+      width="380px"
+      custom-class="login-dialog"
     >
       <div>
         <div class="keyreader">
           <div class="file-input-area" id="file-input-area">
-            <span v-if="!file" ><svgIcon icon-class="mdi-plus" /></span>
-            <span v-else >{{ fileName }}</span>
+            <span v-if="!file" class="filename" ><svg-icon icon-class="mdi-plus" /></span>
+            <span v-else class="filename" >{{ fileName }}</span>
             <input class="file-input" id="file-input" type="file" accept="application/json">
           </div>
           <p class="keyreader-content">
-            {{ $t('pleaseInsertYourWalletKey') }}
+            {{ $t('login.pleaseInsertYourWalletKey') }}
           </p>
-          <el-button class="wallet-upload-button" type="primary" :disabled="disallowStep2" block @click="step2">
-            Upload key
+          <el-checkbox class="keyreader-keepbtn" v-model="keepLoggedIn">{{ $t('login.saveYourKeyInCookie') }}</el-checkbox>
+          <el-button v-loading="loading" class="wallet-upload-button" type="primary" :disabled="disallowStep2" block @click="step2">
+            {{ $t('login.login') }}
           </el-button>
         </div>
       </div>
@@ -26,16 +28,15 @@
 </template>
 
 <script>
-import svgIcon from '@/components/SvgIcon'
-
 export default {
-  components: {
-    svgIcon
-  },
   props: {
     value: {
       type: Boolean,
       required: true
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -43,7 +44,8 @@ export default {
       file: '',
       fileName: '',
       dialogVisible: this.value,
-      disallowStep2: true
+      disallowStep2: true,
+      keepLoggedIn: false
     }
   },
   computed: {
@@ -51,6 +53,9 @@ export default {
   watch: {
     value (val) {
       this.dialogVisible = val
+    },
+    keepLoggedIn (val) {
+      this.$emit('keep-logged-in', val)
     },
     dialogVisible (val) {
       this.setShowStatus(val)
@@ -118,12 +123,13 @@ export default {
         this.removeClass(droparea, 'is-active')
       }
 
+      this.file = null
+
       this.dialogVisible = false
       done()
     },
     step2 () {
       this.$emit('key-file', this.keyFileContent)
-      this.dialogVisible = false
     },
     setShowStatus (val) {
       this.$emit('input', val)
@@ -139,10 +145,15 @@ export default {
   justify-content: center;
 
   &-content {
-    margin-top: 24px;
-    margin-bottom: 24px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     text-align: left;
     word-break: break-word;
+  }
+
+  &-keepbtn {
+    margin: 0 0 20px;
+    text-align: center;
   }
 }
 
@@ -155,6 +166,17 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  .filename {
+    font-size: 14px;
+    margin: 20px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-all;
+  }
+
   &.is-active {
     background-color: @gray1;
   }
@@ -168,6 +190,15 @@ export default {
     &:focus {
       outline: none;
     }
+  }
+}
+
+/deep/ .login-dialog {
+  border-radius: 6px;
+}
+@media screen and (max-width: 420px) {
+  /deep/ .login-dialog {
+    width: 90% !important;
   }
 }
 
