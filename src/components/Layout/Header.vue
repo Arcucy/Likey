@@ -11,9 +11,10 @@
       <div class="header-option">
         <!-- <svg-icon icon-class="account" class="header-option-icon"/> -->
         <!-- <span class="icon"><i class="el-icon-picture-outline-round"></i></span> -->
+        <LanguageSwitch />
         <div class="header-option-items" @click="switchTheme"><mdicon class="theme-switch" name="brightness-6" /></div>
         <MyMenu v-if="isLoggedIn" />
-        <el-button v-else class="header-option-items" @click="showKeyReader = true">Login</el-button>
+        <el-button v-else class="header-option-items" @click="showKeyReader = true">{{ $t('login.login') }}</el-button>
         <!-- <el-button class="header-option-items" @click="signForLogin">Sign</el-button> -->
       </div>
       <KeyReader
@@ -37,11 +38,13 @@ import { getCookie, setCookie, removeCookie } from '@/util/cookie'
 
 import KeyReader from '@/components/Common/KeyReader'
 import MyMenu from '@/components/Layout/MyMenu'
+import LanguageSwitch from '@/components/Common/LanguageSwitch'
 
 export default {
   components: {
     KeyReader,
-    MyMenu
+    MyMenu,
+    LanguageSwitch
   },
   data () {
     return {
