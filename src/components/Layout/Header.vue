@@ -1,12 +1,13 @@
 <template>
   <header>
     <div class="header">
+      <div class="header-logo">
+        <img src="@/assets/img/logo-80px.png">
+        <span>Growth</span>
+      </div>
       <div class="header-links">
         <span>Title1</span>
         <span>Title2</span>
-      </div>
-      <div class="header-logo">
-        <span>Growth</span>
       </div>
       <div class="header-option">
         <!-- <svg-icon icon-class="account" class="header-option-icon"/> -->
@@ -220,32 +221,45 @@ export default {
 
 <style lang="less" scoped>
 header {
+  box-shadow: 0px 8px 15px -5px @gray1;
+  color: @dark;
+  background-color: @background;
+  display: flex;
+  justify-content: center;
+
   .header {
     width: 100%;
+    max-width: 1200px;
     height: 60px;
-    padding: 0 20px;
+    margin: 0 10px;
     display: flex;
     align-items: center;
     box-sizing: border-box;
     justify-content: center;
-    -webkit-box-shadow: 0px 8px 15px -5px @gray1;
-    -moz-box-shadow: 0px 8px 15px -5px @gray1;
-    box-shadow: 0px 8px 15px -5px @gray1;
-    color: @dark;
-    background-color: @background;
 
     &-links {
       display: flex;
       column-gap: 10px;
+      align-items: center;
       justify-content: flex-start;
       width: 100%;
     }
 
     &-logo {
-      flex: 1;
-      flex-grow: 1;
-      font-size: 20px;
-      font-weight: 500;
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+      img {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+      }
+      span {
+        margin: 0 0 0 5px;
+        font-size: 20px;
+        font-weight: 500;
+      }
     }
 
     &-option {
