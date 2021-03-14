@@ -3,35 +3,26 @@
     <div class="footer">
       <div class="footer-container">
         <div class="info">
-          <span class="info-title">General</span>
-          <div class="info-content">
-            <a href="/">About Us</a>
-            <a href="/">Contact</a>
-            <a href="/">Support</a>
-            <a href="/">Become a Parner</a>
-          </div>
-        </div>
-        <div class="info">
           <span class="info-title">Arcucy Products</span>
           <div class="info-content">
-            <a href="/">ArcLight</a>
-            <a href="/">Pioneer</a>
-            <a href="/">ArweaveAvatar</a>
+            <a href="https://github.com/AyakaLab">Ayaka Lab</a>
+            <a href="https://arclight.arcucy.io">ArcLight</a>
+            <a href="https://arweave.net/633O1T1mQfbSCla-GzV5mqZ7hfqpU9LHAwgRvSM5r8c">ArweaveAvatar</a>
           </div>
         </div>
         <div class="icons">
           <div class="icons-links">
-            <a href="/">
+            <a href="https://twitter.com/arcucyio">
               <mdicon name="twitter" />
             </a>
-            <a href="/">
+            <a href="https://github.com/Arcucy">
               <mdicon name="github" />
             </a>
-            <a href="/">
+            <a href="https://discord.gg/3zUXrnXyFv">
               <mdicon name="discord" />
             </a>
-            <a href="/">
-              <mdicon name="youtube" />
+            <a href="mailto:contact@arcucy.io">
+              <mdicon name="mail" />
             </a>
           </div>
           <span class="icons-desp">Follow us on above website to get the newest updates!</span>
@@ -47,7 +38,6 @@
 
 <script>
 export default {
-
 }
 </script>
 
