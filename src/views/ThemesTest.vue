@@ -84,7 +84,6 @@ export default {
   methods: {
     // 拷贝
     copyCode (code) {
-      console.log(code)
       this.$copyText(code).then(
         () => {
           this.$message({

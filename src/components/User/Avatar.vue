@@ -33,12 +33,12 @@ export default {
 
 <style lang="less" scoped>
 .avatar {
-  border: 1px solid #dcdcdc;
+  border: 1px solid @gray2;
   display: inline-block;
   border-radius: 50%;
   box-sizing: border-box;
   overflow: hidden;
-  background-color: #efebeb;
+  background-color: @gray1;
   user-select: none;
   img {
     width: 100%;
