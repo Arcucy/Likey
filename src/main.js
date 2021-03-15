@@ -4,9 +4,6 @@ import router from './router'
 import store from './store'
 import './plugins/element.js'
 
-import mdiVue from 'mdi-vue'
-import * as mdijs from '@mdi/js'
-import '@/icons'
 import VueClipboards from 'vue-clipboard2'
 import i18n from './i18n'
 
@@ -50,10 +47,6 @@ const loadTheme = async (themeName) => {
 }
 
 loadTheme(themeName)
-
-Vue.use(mdiVue, {
-  icons: mdijs
-})
 
 Vue.use(VueClipboards)
 

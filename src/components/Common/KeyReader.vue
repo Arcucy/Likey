@@ -10,7 +10,7 @@
       <div>
         <div class="keyreader">
           <div class="file-input-area" id="file-input-area">
-            <span v-if="!file" class="filename"><svg-icon icon-class="mdi-plus" /></span>
+            <span v-if="!file" class="filename"><span class="mdi mdi-plus" /></span>
             <span v-else class="filename">{{ fileName }}</span>
             <input
               class="file-input"
@@ -190,6 +190,12 @@ export default {
     -webkit-line-clamp: 2;
     overflow: hidden;
     word-break: break-all;
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
   }
 
   &.is-active {

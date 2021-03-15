@@ -1,7 +1,7 @@
 <template>
   <el-dropdown @command="handleCommand">
-    <span class="el-dropdown-link">
-      <div class="header-option-items"><mdicon class="language-switch" name="earth" /></div>
+    <span class="el-dropdown-link language-switch">
+      <div class="header-option-items"><span class="mdi mdi-earth" /></div>
     </span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item command="en-US">
@@ -115,6 +115,12 @@ export default {
 
 <style lang="less" scoped>
 .language-switch {
-  color: @primary;;
+  span {
+    color: @primary;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

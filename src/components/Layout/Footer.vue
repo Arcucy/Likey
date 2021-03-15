@@ -13,16 +13,16 @@
         <div class="icons">
           <div class="icons-links">
             <a href="https://twitter.com/arcucyio" target="_blank">
-              <mdicon name="twitter" />
+              <span class="mdi mdi-twitter" />
             </a>
             <a href="https://github.com/Arcucy" target="_blank">
-              <mdicon name="github" />
+              <span class="mdi mdi-github" />
             </a>
             <a href="https://discord.gg/3zUXrnXyFv" target="_blank">
-              <mdicon name="discord" />
+              <span class="mdi mdi-discord" />
             </a>
             <a href="mailto:contact@arcucy.io" target="_blank">
-              <mdicon name="email-edit" />
+              <span class="mdi mdi-email" />
             </a>
           </div>
           <span class="icons-desp">{{ $t('footer.followUsStatement') }}</span>
@@ -112,17 +112,20 @@ footer {
           justify-content: flex-end;
 
           a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
+            font-size: 20px;
             padding: 10px 10px;
             box-sizing: border-box;
             border-radius: 50%;
             border: 1px solid @gray2;
-
             &:hover {
               color: @light;
               border-color: @light;
+            }
+            span {
+              display: flex;
+              align-items: center;
+              justify-content: center;
             }
           }
         }
