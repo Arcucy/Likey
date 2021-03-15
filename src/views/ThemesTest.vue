@@ -1,26 +1,20 @@
 <template>
-  <Layout>
-    <div class="themes-test">
-      <h1>Themes Test</h1>
-      <div class="themes-test-list">
-        <div class="themes themes-test-item" v-for="(color, index) of colors" :key="index">
-          <div class="themes-color-cube" :class="'themes-' + color.label" @click="copyCode('@' + color.label)"/>
-          <h4>@{{ color.label }}</h4>
-          <p>{{ color.desp }}</p>
-        </div>
+  <div class="themes-test">
+    <h1>Themes Test</h1>
+    <div class="themes-test-list">
+      <div class="themes themes-test-item" v-for="(color, index) of colors" :key="index">
+        <div class="themes-color-cube" :class="'themes-' + color.label" @click="copyCode('@' + color.label)" />
+        <h4>@{{ color.label }}</h4>
+        <p>{{ color.desp }}</p>
       </div>
     </div>
-  </Layout>
+  </div>
 </template>
 
 <script>
-import Layout from '@/components/Layout'
 
 export default {
   name: 'ThemesTest',
-  components: {
-    Layout
-  },
   data () {
     return {
       colors: [

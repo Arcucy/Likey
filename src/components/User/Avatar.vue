@@ -39,6 +39,7 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
   background-color: #efebeb;
+  user-select: none;
   img {
     width: 100%;
     height: 100%;

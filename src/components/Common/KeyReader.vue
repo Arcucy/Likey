@@ -143,6 +143,7 @@ export default {
       done()
     },
     step2 () {
+      if (this.loading) return
       this.$emit('key-file', this.keyFileContent)
     },
     setShowStatus (val) {

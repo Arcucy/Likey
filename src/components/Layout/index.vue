@@ -23,9 +23,16 @@ export default {
 <style lang="less" scoped>
 .layout {
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: @gray1;
 
   .slot-shell {
-    min-height: calc(100vh - 310px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 }
 </style>

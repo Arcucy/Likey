@@ -20,6 +20,13 @@ export default {
     pleaseInsertYourWalletKey: 'Please drag your wallet application into this box to complete the action.'
   },
   pageTitle: {
-    myProfile: 'My Profile'
-  }
+    myProfile: 'My Profile',
+    home: 'Home',
+    themesTest: 'Themes Test'
+  },
+  footer: {
+    arcucyProducts: 'Arcucy Products',
+    followUsStatement: 'Follow us on above wesite to get the newest updates!'
+  },
+  becomeACreatorBtn: 'Start Creating'
 }
