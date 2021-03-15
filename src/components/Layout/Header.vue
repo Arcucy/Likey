@@ -18,7 +18,7 @@
       <div class="header-option">
         <LanguageSwitch />
         <div class="header-option-items" @click="switchTheme">
-          <mdicon class="theme-switch" name="brightness-6" />
+          <span class="mdi mdi-brightness-6 theme-switch" />
         </div>
         <!-- 成为创作者按钮 -->
         <el-button
@@ -347,7 +347,11 @@ header {
         user-select: none;
         cursor: pointer;
         .theme-switch {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           color: @primary;
+          font-size: 25px;
         }
       }
 
