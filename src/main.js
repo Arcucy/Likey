@@ -44,7 +44,7 @@ const loadTheme = async (themeName) => {
       loadCSS('./element/theme/pink.css')
       break
     case 'dark':
-      loadCSS('./element/theme/pink.css')
+      loadCSS('./element/theme/dark.css')
       break
   }
 }
