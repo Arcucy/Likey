@@ -1,15 +1,13 @@
 <template>
-  <Layout class="home" />
+  <h1>
+    Hi, Likey
+  </h1>
 </template>
 
 <script>
-import Layout from '@/components/Layout'
 
 export default {
-  name: 'Home',
-  components: {
-    Layout
-  }
+  name: 'Home'
 }
 </script>
 

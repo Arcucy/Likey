@@ -2,22 +2,43 @@
   <header>
     <div class="header">
       <div class="header-logo">
-        <img src="@/assets/img/logo-80px.png">
-        <span>Growth</span>
+        <router-link :to="{ name: 'Home' }">
+          <img src="@/assets/img/logo-80px.png">
+          <span>Likey</span>
+        </router-link>
       </div>
       <div class="header-links">
-        <span>Title1</span>
-        <span>Title2</span>
+        <router-link :to="{ name: 'Home' }">
+          {{ $t('pageTitle.home') }}
+        </router-link>
+        <router-link :to="{ name: 'ThemesTest' }">
+          {{ $t('pageTitle.themesTest') }}
+        </router-link>
       </div>
       <div class="header-option">
-        <!-- <svg-icon icon-class="account" class="header-option-icon"/> -->
-        <!-- <span class="icon"><i class="el-icon-picture-outline-round"></i></span> -->
         <LanguageSwitch />
         <div class="header-option-items" @click="switchTheme">
           <mdicon class="theme-switch" name="brightness-6" />
         </div>
+        <!-- 成为创作者按钮 -->
+        <el-button
+          v-if="isLoggedIn"
+          class="header-option-btn btn-mobile-hide"
+          type="primary"
+        >
+          {{ $t('becomeACreatorBtn') }}
+        </el-button>
+        <!-- 我的菜单 -->
         <MyMenu v-if="isLoggedIn" />
-        <el-button v-else class="header-option-items" @click="showKeyReader = true">
+        <!-- 登录按钮 -->
+        <el-button
+          v-else
+          class="header-option-btn"
+          :disabled="loginBtnLoading"
+          type="primary"
+          @click="showKeyReader = true"
+        >
+          <i v-if="loginBtnLoading" class="el-icon-loading" />
           {{ $t('login.login') }}
         </el-button>
         <!-- <el-button class="header-option-items" @click="signForLogin">Sign</el-button> -->
@@ -51,7 +72,6 @@ export default {
     MyMenu,
     LanguageSwitch
   },
-  inject: ['backPage', 'routerRefresh'],
   data () {
     return {
       showKeyReader: false,
@@ -68,21 +88,16 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn'])
   },
-  watch: {
-    $route (val) { this.routerRefresh() },
-    keyFileContent (val) {
-    }
-  },
   mounted () {
     this.initJwkLogin()
     this.initWalletPlugin()
     this.initTheme()
-    console.log('刷新了!')
   },
   methods: {
     ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout']),
     /** 初始化 JWK 登录 */
     async initJwkLogin () {
+      if (this.isLoggedIn) return
       const jwk = getCookie('arclight_userkey')
       if (jwk) {
         this.loginBtnLoading = true
@@ -217,7 +232,7 @@ export default {
       // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
       // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
       addEventListener('arweaveWalletLoaded', async () => {
-        const addr = await API.arql.wallets.getAddress()
+        const addr = await API.ArweaveNative.wallets.getAddress()
         // 获得地址
         console.log(addr)
         // 设定地址
@@ -275,17 +290,40 @@ header {
     justify-content: center;
 
     &-links {
+      flex: 1;
       display: flex;
-      column-gap: 10px;
+      column-gap: 20px;
       align-items: center;
       justify-content: flex-start;
-      width: 100%;
+      user-select: none;
+
+      a {
+        color: @dark;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        &:hover {
+          color: @primary;
+        }
+      }
     }
 
     &-logo {
       display: flex;
       align-items: center;
-      margin-right: 20px;
+      margin-right: 40px;
+      user-select: none;
+      a {
+        display: flex;
+        align-items: center;
+        color: @dark;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        &:hover {
+          color: @primary;
+        }
+      }
       img {
         width: 40px;
         height: 40px;
@@ -300,16 +338,22 @@ header {
     }
 
     &-option {
-      width: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      column-gap: 10px;
+      column-gap: 20px;
 
       &-items {
+        user-select: none;
+        cursor: pointer;
         .theme-switch {
           color: @primary;
         }
+      }
+
+      &-btn {
+        padding: 12px 20px;
+        min-width: 130px;
       }
     }
   }
@@ -317,5 +361,64 @@ header {
 
 .icon {
   color: @primary
+}
+
+@media screen and (max-width: 640px) {
+  header {
+    .header {
+      &-logo {
+        margin-right: 20px;
+      }
+      &-links {
+        column-gap: 10px;
+
+        a {
+          font-size: 15px;
+        }
+      }
+      &-option {
+        column-gap: 10px;
+        &-btn {
+          padding: 10px 5px;
+          min-width: 50px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  header {
+    .header {
+      &-logo {
+        margin-right: 10px;
+        img {
+          width: 30px;
+          height: 30px;
+          min-width: 30px;
+          min-height: 30px;
+        }
+        span {
+          display: none;
+        }
+      }
+      &-links {
+        column-gap: 10px;
+
+        a {
+          font-size: 15px;
+        }
+      }
+      &-option {
+        column-gap: 10px;
+        &-btn {
+          &.btn-mobile-hide {
+            display: none;
+          }
+        }
+      }
+    }
+  }
 }
 </style>

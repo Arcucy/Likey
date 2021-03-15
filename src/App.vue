@@ -1,14 +1,18 @@
 <template>
   <div id="app" v-if="routerAlive" class="light-theme">
-    <router-view />
+    <Layout>
+      <router-view />
+    </Layout>
   </div>
 </template>
 
 <script>
+import Layout from '@/components/Layout'
 
 export default {
   name: 'App',
   components: {
+    Layout
   },
   provide () {
     return {

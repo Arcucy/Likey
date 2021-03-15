@@ -5,24 +5,24 @@
         <div class="info">
           <span class="info-title">Arcucy Products</span>
           <div class="info-content">
-            <a href="https://github.com/AyakaLab">Ayaka Lab</a>
-            <a href="https://arclight.arcucy.io">ArcLight</a>
-            <a href="https://arweave.net/633O1T1mQfbSCla-GzV5mqZ7hfqpU9LHAwgRvSM5r8c">ArweaveAvatar</a>
+            <a href="https://github.com/AyakaLab" target="_blank">Ayaka Lab</a>
+            <a href="https://arclight.arcucy.io" target="_blank">ArcLight</a>
+            <a href="https://arweave.net/633O1T1mQfbSCla-GzV5mqZ7hfqpU9LHAwgRvSM5r8c" target="_blank">ArweaveAvatar</a>
           </div>
         </div>
         <div class="icons">
           <div class="icons-links">
-            <a href="https://twitter.com/arcucyio">
+            <a href="https://twitter.com/arcucyio" target="_blank">
               <mdicon name="twitter" />
             </a>
-            <a href="https://github.com/Arcucy">
+            <a href="https://github.com/Arcucy" target="_blank">
               <mdicon name="github" />
             </a>
-            <a href="https://discord.gg/3zUXrnXyFv">
+            <a href="https://discord.gg/3zUXrnXyFv" target="_blank">
               <mdicon name="discord" />
             </a>
-            <a href="mailto:contact@arcucy.io">
-              <mdicon name="mail" />
+            <a href="mailto:contact@arcucy.io" target="_blank">
+              <mdicon name="email-edit" />
             </a>
           </div>
           <span class="icons-desp">Follow us on above website to get the newest updates!</span>
@@ -46,23 +46,21 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@gray2: #dcdcdc;
+
 a {
-  color: @gray1;
+  color: @gray2;
   text-decoration: none;
   width: fit-content;
   transition: all 0.2s ease-in-out;
-
-  &:hover {
-    color: @light;
-  }
 }
 
 footer {
   width: 100%;
   height: 250px;
-  padding: 25px 30px;
+  padding: 25px 10px;
   box-sizing: border-box;
-  color: @light;
+  color: @gray2;
   background-color: @background-dark;
   display: flex;
   flex-direction: column;
@@ -86,6 +84,7 @@ footer {
         &-title {
           font-size: 16px;
           font-weight: 500;
+          user-select: none;
         }
 
         &-content {
@@ -94,6 +93,12 @@ footer {
           display: flex;
           flex-direction: column;
           row-gap: 10px;
+
+          a {
+            &:hover {
+              color: @light;
+            }
+          }
         }
       }
 
@@ -107,14 +112,18 @@ footer {
           justify-content: flex-end;
 
           a {
-            color: @light;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 10px 10px;
             box-sizing: border-box;
             border-radius: 50%;
-            border: 1px solid @light;
+            border: 1px solid @gray2;
+
+            &:hover {
+              color: @light;
+              border-color: @light;
+            }
           }
         }
 
@@ -137,6 +146,34 @@ footer {
       .logo {
         font-size: 28px;
         margin-right: 20px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 640px) {
+  footer {
+    height: fit-content;
+    .footer {
+      &-container {
+        flex-direction: column-reverse;
+        .icons {
+          &-links {
+            justify-content: flex-start;
+          }
+          &-desp {
+            text-align: left;
+            margin-top: 5px;
+          }
+        }
+        .info {
+          margin-top: 10px;
+          max-width: fit-content;
+          &-content {
+            flex-direction: row;
+            column-gap: 10px;
+            margin-top: 5px;
+          }
+        }
       }
     }
   }

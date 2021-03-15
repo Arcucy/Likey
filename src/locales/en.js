@@ -20,6 +20,9 @@ export default {
     pleaseInsertYourWalletKey: 'Please drag your wallet application into this box to complete the action.'
   },
   pageTitle: {
-    myProfile: 'My Profile'
-  }
+    myProfile: 'My Profile',
+    home: 'Home',
+    themesTest: 'Themes Test'
+  },
+  becomeACreatorBtn: 'Start Creating'
 }

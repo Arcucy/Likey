@@ -20,6 +20,9 @@ export default {
     pleaseInsertYourWalletKey: '请将您的钱包拖到此框中或是点击选中钱包以完成当前操作'
   },
   pageTitle: {
-    myProfile: '我的资料'
-  }
+    myProfile: '我的资料',
+    home: '主页',
+    themesTest: '主题测试'
+  },
+  becomeACreatorBtn: '成为创作者'
 }
