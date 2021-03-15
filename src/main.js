@@ -12,25 +12,45 @@ import i18n from './i18n'
 
 import API from '../src/api/api'
 
-const light = () => import('../src/themes/element/theme/light.css')
-const pink = () => import('../src/themes/element/theme/pink.css')
+// const light = () => import('../src/themes/element/theme/light.css')
+// const pink = () => import('../src/themes/element/theme/pink.css')
+
+const loadCSS = (path) => {
+  const head = document.getElementsByTagName('head')[0]
+
+  const allLinks = document.getElementsByTagName('link')
+  for (const l of allLinks) {
+    if (l.className === 'theme') {
+      l.parentNode.removeChild(l)
+    }
+  }
+
+  const link = document.createElement('link')
+  link.href = path
+  link.rel = 'stylesheet'
+  link.className = 'theme'
+  link.setAttribute('type', 'text/css')
+  head.appendChild(link)
+}
 
 const ls = localStorage || window.localStorage
 const themeName = ls.getItem('theme')
 if (!themeName) {
-  light()
+  loadCSS('./element/theme/light.css')
 }
-
 const loadTheme = async (themeName) => {
+  // const head = document.getElementsByTagName('head')[0]
   switch (themeName) {
     case 'light':
-      light()
+      loadCSS('./element/theme/light.css')
       break
     case 'pink':
-      pink()
+      loadCSS('./element/theme/pink.css')
+      // pink()
       break
     case 'dark':
-      pink()
+      loadCSS('./element/theme/pink.css')
+      // pink()
       break
   }
 }

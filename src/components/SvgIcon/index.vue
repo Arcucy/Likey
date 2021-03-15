@@ -14,7 +14,7 @@ export default {
     },
     className: {
       type: String,
-      required: true
+      default: ''
     }
   },
   computed: {

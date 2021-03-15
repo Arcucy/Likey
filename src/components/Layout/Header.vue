@@ -51,6 +51,7 @@ export default {
     MyMenu,
     LanguageSwitch
   },
+  inject: ['backPage', 'routerRefresh'],
   data () {
     return {
       showKeyReader: false,
@@ -68,12 +69,15 @@ export default {
     ...mapGetters(['isLoggedIn'])
   },
   watch: {
+    $route (val) { this.routerRefresh() },
     keyFileContent (val) {
     }
   },
   mounted () {
     this.initJwkLogin()
     this.initWalletPlugin()
+    this.initTheme()
+    console.log('刷新了!')
   },
   methods: {
     ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout']),
@@ -164,18 +168,47 @@ export default {
         console.warn('uncaught error: ' + err)
       }
     },
+    /** 初始化主题 */
+    initTheme () {
+      const ls = localStorage || window.localStorage
+      const current = document.getElementById('app').classList
+      const currentTheme = [...current].filter(name => /^.*-theme$/i.test(name)).pop()
+
+      const lsThemeName = ls.getItem('theme')
+      if (lsThemeName) {
+        if (current.contains(currentTheme)) {
+          current.remove(currentTheme)
+        }
+        current.add(lsThemeName + '-theme')
+        this.$switchElementTheme(lsThemeName)
+      }
+    },
     /** 切换主题 */
     switchTheme () {
+      const ls = localStorage || window.localStorage
+
       // 主题样式 Theme
       const themes = ['light-theme', 'dark-theme', 'pink-theme']
       const current = document.getElementById('app').classList
       const currentTheme = [...current].filter(name => /^.*-theme$/i.test(name)).pop()
+
       if (current.contains(currentTheme)) {
         current.remove(currentTheme)
+
         if (themes.indexOf(currentTheme) === (themes.length - 1)) {
           current.add(themes[0])
+          const themeName = themes[0].split('-')[0]
+          ls.removeItem('theme')
+          ls.setItem('theme', themeName)
+          console.log('get theme: ', ls.getItem('theme'))
+          this.$switchElementTheme(themeName)
         } else {
           current.add(themes[themes.indexOf(currentTheme) + 1])
+          const themeName = themes[themes.indexOf(currentTheme) + 1].split('-')[0]
+          ls.removeItem('theme')
+          ls.setItem('theme', themeName)
+          console.log('get theme: ', ls.getItem('theme'))
+          this.$switchElementTheme(themeName)
         }
       }
     },
