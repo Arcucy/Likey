@@ -1,13 +1,15 @@
 export default {
   success: {
-    login: 'Login successful'
+    login: 'Login successful',
+    copy: 'Copy successfully'
   },
   failure: {
     login: 'Login failed',
     fileFormatError: 'File format error',
     gettingAvatarTimeout: 'Error getting avatar',
     getUsername: 'Failed to get username',
-    getAddress: 'Failed to get address'
+    getAddress: 'Failed to get address',
+    copy: 'Copy failed'
   },
   login: {
     login: 'Login',

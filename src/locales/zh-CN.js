@@ -1,13 +1,15 @@
 export default {
   success: {
-    login: '登录成功'
+    login: '登录成功',
+    copy: '复制成功'
   },
   failure: {
     login: '登录失败',
     fileFormatError: '文件类型错误',
     gettingAvatarTimeout: '获取头像失败',
     getUsername: '获取用户名失败',
-    getAddress: '无法获取钱包地址'
+    getAddress: '无法获取钱包地址',
+    copy: '复制失败'
   },
   login: {
     login: '登录',
