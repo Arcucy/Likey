@@ -11,13 +11,38 @@ import i18n from './i18n'
 
 import API from '../src/api/api'
 
+const light = () => import('../src/themes/element/theme/light.css')
+const pink = () => import('../src/themes/element/theme/pink.css')
+
+const ls = localStorage || window.localStorage
+const themeName = ls.getItem('theme')
+if (!themeName) {
+  light()
+}
+
+const loadTheme = async (themeName) => {
+  switch (themeName) {
+    case 'light':
+      light()
+      break
+    case 'pink':
+      pink()
+      break
+    case 'dark':
+      pink()
+      break
+  }
+}
+
+loadTheme(themeName)
+
 Vue.use(mdiVue, {
   icons: mdijs
 })
 
 Vue.config.productionTip = false
-
 Vue.prototype.$api = API
+Vue.prototype.$switchElementTheme = loadTheme
 
 new Vue({
   router,
