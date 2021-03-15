@@ -24,5 +24,9 @@ export default {
     home: '主页',
     themesTest: '主题测试'
   },
+  footer: {
+    arcucyProducts: 'Arcucy 相关产品',
+    followUsStatement: '在上述网站上关注我们以获取最新动态！'
+  },
   becomeACreatorBtn: '成为创作者'
 }

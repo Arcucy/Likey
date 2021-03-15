@@ -3,7 +3,7 @@
     <div class="footer">
       <div class="footer-container">
         <div class="info">
-          <span class="info-title">Arcucy Products</span>
+          <span class="info-title">{{ $t('footer.arcucyProducts') }}</span>
           <div class="info-content">
             <a href="https://github.com/AyakaLab" target="_blank">Ayaka Lab</a>
             <a href="https://arclight.arcucy.io" target="_blank">ArcLight</a>
@@ -25,7 +25,7 @@
               <mdicon name="email-edit" />
             </a>
           </div>
-          <span class="icons-desp">Follow us on above website to get the newest updates!</span>
+          <span class="icons-desp">{{ $t('footer.followUsStatement') }}</span>
         </div>
       </div>
       <div class="footer-brand">

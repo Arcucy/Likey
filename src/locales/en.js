@@ -24,5 +24,9 @@ export default {
     home: 'Home',
     themesTest: 'Themes Test'
   },
+  footer: {
+    arcucyProducts: 'Arcucy Products',
+    followUsStatement: 'Follow us on above wesite to get the newest updates!'
+  },
   becomeACreatorBtn: 'Start Creating'
 }
