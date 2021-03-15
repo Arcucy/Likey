@@ -7,6 +7,7 @@ import './plugins/element.js'
 import mdiVue from 'mdi-vue'
 import * as mdijs from '@mdi/js'
 import '@/icons'
+import VueClipboards from 'vue-clipboard2'
 import i18n from './i18n'
 
 import API from '../src/api/api'
@@ -14,6 +15,8 @@ import API from '../src/api/api'
 Vue.use(mdiVue, {
   icons: mdijs
 })
+
+Vue.use(VueClipboards)
 
 Vue.config.productionTip = false
 
