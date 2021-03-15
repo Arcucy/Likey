@@ -12,9 +12,6 @@ import i18n from './i18n'
 
 import API from '../src/api/api'
 
-// const light = () => import('../src/themes/element/theme/light.css')
-// const pink = () => import('../src/themes/element/theme/pink.css')
-
 const loadCSS = (path) => {
   const head = document.getElementsByTagName('head')[0]
 
@@ -39,18 +36,15 @@ if (!themeName) {
   loadCSS('./element/theme/light.css')
 }
 const loadTheme = async (themeName) => {
-  // const head = document.getElementsByTagName('head')[0]
   switch (themeName) {
     case 'light':
       loadCSS('./element/theme/light.css')
       break
     case 'pink':
       loadCSS('./element/theme/pink.css')
-      // pink()
       break
     case 'dark':
       loadCSS('./element/theme/pink.css')
-      // pink()
       break
   }
 }

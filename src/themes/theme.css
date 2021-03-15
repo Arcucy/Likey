@@ -22,13 +22,13 @@
 /* light-theme 亮色主题  */
 .light-theme {
   --background: #ffffff;
-  --background-dark: #336bac;
-  --primary: #253e49;
-  --primary-light: #253e49;
-  --primary-dark: #253e49;
-  --secondary: #c5cacc;
-  --secondary-light: #c5cacc;
-  --secondary-dark: #c5cacc;
+  --background-dark: #4e8cd3;
+  --primary: #336bac;
+  --primary-light: #ebf0f7;
+  --primary-dark: #d6e1ee;
+  --secondary: #3388ac;
+  --secondary-light: #ebf3f7;
+  --secondary-dark: #d6e7ee;
   --light: #ffffff;
   --dark: #303133;
   --gray1: #f2f6fc;
@@ -45,14 +45,14 @@
   --primary: #f05993;
   --primary-light: #feeef4;
   --primary-dark: #fcdee9;
-  --secondary: #c5cacc;
-  --secondary-light: #c5cacc;
-  --secondary-dark: #c5cacc;
+  --secondary: #F77086;
+  --secondary-light: #fef1f3;
+  --secondary-dark: #fde2e7;
   --light: #ffffff;
   --dark: #353535;
-  --gray1: #f8dcdc;
-  --gray2: #c9b6b6;
-  --gray3: #948686;
-  --gray4: #666060;
-  --gray5: #333030;
+  --gray1: #f2f6fc;
+  --gray2: #c0c4cc;
+  --gray3: #909399;
+  --gray4: #606266;
+  --gray5: #303133;
 }
