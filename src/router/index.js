@@ -3,6 +3,9 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import ThemesTest from '../views/ThemesTest'
 
+import User from '../views/User/_id'
+import UserIndex from '../views/User/index'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -23,6 +26,18 @@ const routes = [
     path: '/themes-test',
     name: 'ThemesTest',
     component: ThemesTest
+  },
+  {
+    path: '/user/:id',
+    component: User,
+    children: [
+      {
+        path: '',
+        name: 'User',
+        component: UserIndex,
+        props: true
+      }
+    ]
   }
 ]
 

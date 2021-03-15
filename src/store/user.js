@@ -16,9 +16,9 @@ export default {
   },
   getters: {
     /** 传入 id，检查是不是当前登录的用户 */
-    isMe: (state) => (id) => {
+    isMe: (state) => (address) => {
       if (!state.myInfo) return false
-      return state.myInfo.id === id
+      return state.myInfo.address === address
     },
     /** 已登录 */
     isLoggedIn (state) {
