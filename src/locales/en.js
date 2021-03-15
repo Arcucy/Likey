@@ -9,7 +9,9 @@ export default {
     gettingAvatarTimeout: 'Error getting avatar',
     getUsername: 'Failed to get username',
     getAddress: 'Failed to get address',
-    copy: 'Copy failed'
+    copy: 'Copy failed',
+    connectionTimedOut: 'Connection timed out, please check your connection and try again.',
+    unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure'
   },
   login: {
     login: 'Login',
@@ -28,5 +30,12 @@ export default {
     arcucyProducts: 'Arcucy Products',
     followUsStatement: 'Follow us on above wesite to get the newest updates!'
   },
-  becomeACreatorBtn: 'Start Creating'
+  becomeACreatorBtn: 'Start Creating',
+  userProfile: {
+    noIntroductionYet: 'No Introduction Yet',
+    flow: 'Flow',
+    Sponsorship: 'Sponsorship',
+    notYetACreator: 'Not yet a creator',
+    editUsernameAndAvatar: 'Edit username and avatar'
+  }
 }
