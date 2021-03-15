@@ -4,8 +4,12 @@
       <div class="header-option-items"><mdicon class="language-switch" name="earth" /></div>
     </span>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="en-US">English</el-dropdown-item>
-      <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
+      <el-dropdown-item command="en-US">
+        English
+      </el-dropdown-item>
+      <el-dropdown-item command="zh-CN">
+        简体中文
+      </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
 </template>
@@ -20,6 +24,11 @@ export default {
     return {
     }
   },
+  computed: {
+    ...mapState({
+      appLang: state => state.app.appLang
+    })
+  },
   watch: {
     // 监听 Vuex 变化
     appLang (val) {
@@ -27,10 +36,27 @@ export default {
       this.setLang(val)
     }
   },
-  computed: {
-    ...mapState({
-      appLang: state => state.app.appLang
-    })
+  mounted () {
+    // App 初始化并设定语言
+    let lang = this.getStoredLangCode()
+    if (!lang) {
+      this.setLangCodeFromBrowser()
+      lang = this.getStoredLangCode()
+    }
+    switch (lang) {
+      case 'zh-CN':
+        this.$i18n.locale = 'zh-CN'
+        break
+      case 'zh-TW':
+        this.$i18n.locale = 'zh-TW'
+        break
+      case 'en-US':
+        this.$i18n.locale = 'en'
+        break
+      case 'ja-JP':
+        this.$i18n.locale = 'ja-JP'
+        break
+    }
   },
   methods: {
     ...mapMutations(['setAppLang']),
@@ -82,28 +108,6 @@ export default {
           this.$i18n.locale = 'ja-JP'
           break
       }
-    }
-  },
-  mounted () {
-    // App 初始化并设定语言
-    let lang = this.getStoredLangCode()
-    if (!lang) {
-      this.setLangCodeFromBrowser()
-      lang = this.getStoredLangCode()
-    }
-    switch (lang) {
-      case 'zh-CN':
-        this.$i18n.locale = 'zh-CN'
-        break
-      case 'zh-TW':
-        this.$i18n.locale = 'zh-TW'
-        break
-      case 'en-US':
-        this.$i18n.locale = 'en'
-        break
-      case 'ja-JP':
-        this.$i18n.locale = 'ja-JP'
-        break
     }
   }
 }

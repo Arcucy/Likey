@@ -1,6 +1,5 @@
 <template>
-  <Layout class="home">
-  </Layout>
+  <Layout class="home" />
 </template>
 
 <script>

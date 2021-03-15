@@ -10,15 +10,29 @@
       <div>
         <div class="keyreader">
           <div class="file-input-area" id="file-input-area">
-            <span v-if="!file" class="filename" ><svg-icon icon-class="mdi-plus" /></span>
-            <span v-else class="filename" >{{ fileName }}</span>
-            <input class="file-input" id="file-input" type="file" accept="application/json">
+            <span v-if="!file" class="filename"><svg-icon icon-class="mdi-plus" /></span>
+            <span v-else class="filename">{{ fileName }}</span>
+            <input
+              class="file-input"
+              id="file-input"
+              type="file"
+              accept="application/json"
+            >
           </div>
           <p class="keyreader-content">
             {{ $t('login.pleaseInsertYourWalletKey') }}
           </p>
-          <el-checkbox class="keyreader-keepbtn" v-model="keepLoggedIn">{{ $t('login.saveYourKeyInCookie') }}</el-checkbox>
-          <el-button v-loading="loading" class="wallet-upload-button" type="primary" :disabled="disallowStep2" block @click="step2">
+          <el-checkbox class="keyreader-keepbtn" v-model="keepLoggedIn">
+            {{ $t('login.saveYourKeyInCookie') }}
+          </el-checkbox>
+          <el-button
+            v-loading="loading"
+            class="wallet-upload-button"
+            type="primary"
+            :disabled="disallowStep2"
+            block
+            @click="step2"
+          >
             {{ $t('login.login') }}
           </el-button>
         </div>

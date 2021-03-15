@@ -2,7 +2,7 @@
   <div class="layout">
     <Header />
     <div class="slot-shell">
-      <slot/>
+      <slot />
     </div>
     <Footer />
   </div>

@@ -29,8 +29,12 @@
         </div>
       </div>
       <div class="footer-brand">
-        <div class="logo">Growth</div>
-        <div class="copyright">Arcucy Team ©️ 2021</div>
+        <div class="logo">
+          Growth
+        </div>
+        <div class="copyright">
+          Arcucy Team ©️ 2021
+        </div>
       </div>
     </div>
   </footer>
