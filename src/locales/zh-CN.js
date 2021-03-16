@@ -11,7 +11,8 @@ export default {
     getAddress: '无法获取钱包地址',
     copy: '复制失败',
     connectionTimedOut: '连接超时，请检查您的网络连接并重试',
-    unknownErrorCausedLoadingFailure: '未知错误导致加载失败'
+    unknownErrorCausedLoadingFailure: '未知错误导致加载失败',
+    noPermissionToAccessPage: '你没有权限访问这个页面'
   },
   login: {
     login: '登录',
@@ -34,8 +35,53 @@ export default {
   userProfile: {
     noIntroductionYet: '暂无简介',
     flow: '动态',
-    Sponsorship: '赞助',
+    sponsorship: '赞助',
     notYetACreator: '还没有成为创作者',
     editUsernameAndAvatar: '编辑用户名和头像'
+  },
+  setting: {
+    creatorSetting: '创作设置',
+    tokenSettings: '代币设置',
+    avatar: '头像',
+    avatarSettingDesp: '我们的头像服务来自独立的 Dapp，如需修改请前往',
+    username: '用户名',
+    usernameSettingDesp: '我们的用户名服务来自独立的 Dapp，如需修改请前往',
+    profileAddress: '主页地址',
+    canNotBeModified: '设定之后不能修改哦',
+    profileAddressPlaceholder: '填入自定义的数字字母组合，5个字符以上',
+    introduction: '简介',
+    introductionPlaceholder: '一句话介绍你的创作',
+    creationCategory: '创作分类',
+    creationCategoryPlaceholder: '选择一个分类',
+    creationScale: '创作规模',
+    creationScalePlaceholder: '选择一个规模',
+    nextStep: '下一步',
+    personal: '个人',
+    team: '团队'
+  },
+  creationCategoryOptions: {
+    painting: '绘画',
+    video: '视频',
+    writing: '写作',
+    game: '游戏',
+    music: '音乐',
+    podcast: '播客',
+    photography: '摄影',
+    technology: '技术',
+    vtuber: 'Vtuber',
+    dance: '舞蹈',
+    physicalEducation: '体育',
+    tourism: '旅游',
+    food: '美食',
+    fashion: '时尚',
+    digital: '数码',
+    animation: '动画',
+    translation: '翻译',
+    astrology: '星座',
+    comics: '漫画',
+    art: '艺术',
+    popularScience: '科普',
+    education: '教育',
+    other: '其他'
   }
 }

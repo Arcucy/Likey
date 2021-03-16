@@ -21,13 +21,15 @@
           <span class="mdi mdi-brightness-6 theme-switch" />
         </div>
         <!-- 成为创作者按钮 -->
-        <el-button
-          v-if="isLoggedIn"
-          class="header-option-btn btn-mobile-hide"
-          type="primary"
-        >
-          {{ $t('becomeACreatorBtn') }}
-        </el-button>
+        <router-link :to="{ name: 'Setting-Creator' }">
+          <el-button
+            v-if="isLoggedIn"
+            class="header-option-btn btn-mobile-hide"
+            type="primary"
+          >
+            {{ $t('becomeACreatorBtn') }}
+          </el-button>
+        </router-link>
         <!-- 我的菜单 -->
         <MyMenu v-if="isLoggedIn" />
         <!-- 登录按钮 -->

@@ -11,7 +11,8 @@ export default {
     getAddress: 'Failed to get address',
     copy: 'Copy failed',
     connectionTimedOut: 'Connection timed out, please check your connection and try again.',
-    unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure'
+    unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure',
+    noPermissionToAccessPage: 'You do not have permission to access this page'
   },
   login: {
     login: 'Login',
@@ -34,8 +35,53 @@ export default {
   userProfile: {
     noIntroductionYet: 'No Introduction Yet',
     flow: 'Flow',
-    Sponsorship: 'Sponsorship',
+    sponsorship: 'Sponsorship',
     notYetACreator: 'Not yet a creator',
     editUsernameAndAvatar: 'Edit username and avatar'
+  },
+  setting: {
+    creatorSetting: 'Creator Settings',
+    tokenSettings: 'Token Settings',
+    avatar: 'Avatar',
+    avatarSettingDesp: 'Our avatar service comes from another Dapp, if you need to modify it, please go to',
+    username: 'Username',
+    usernameSettingDesp: 'Our username service comes from another Dapp, if you need to modify it, please go to',
+    profileAddress: 'Profile Address',
+    canNotBeModified: 'Cannot be modified after submission',
+    profileAddressPlaceholder: 'Fill in a custom combination of numbers and letters, more than 5 characters',
+    introduction: 'Introduction',
+    introductionPlaceholder: 'Introduce your creation in one sentence',
+    creationCategory: 'Creation Category',
+    creationCategoryPlaceholder: 'Choose a category',
+    creationScale: 'Creation Scale',
+    creationScalePlaceholder: 'Choose a scale',
+    nextStep: 'Next Step',
+    personal: 'Personal',
+    team: 'Team'
+  },
+  creationCategoryOptions: {
+    painting: 'Painting',
+    video: 'Video',
+    writing: 'Writing',
+    game: 'Game',
+    music: 'Music',
+    podcast: 'Podcast',
+    photography: 'Photography',
+    technology: 'Technology',
+    vtuber: 'Vtuber',
+    dance: 'Dance',
+    physicalEducation: 'Physical Education',
+    tourism: 'Tourism',
+    food: 'Food',
+    fashion: 'Fashion',
+    digital: 'Digital',
+    animation: 'Animation',
+    translation: 'Translation',
+    astrology: 'Astrology',
+    comics: 'Comics',
+    art: 'Art',
+    popularScience: 'Popular Science',
+    education: 'Education',
+    other: 'Other'
   }
 }

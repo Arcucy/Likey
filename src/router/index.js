@@ -6,6 +6,8 @@ import ThemesTest from '../views/ThemesTest'
 import User from '../views/User/_id'
 import UserIndex from '../views/User/index'
 
+import SettingCreator from '../views/Setting/Creator'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -38,6 +40,11 @@ const routes = [
         props: true
       }
     ]
+  },
+  {
+    path: '/setting/creator',
+    name: 'Setting-Creator',
+    component: SettingCreator
   }
 ]
 

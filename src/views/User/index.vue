@@ -8,15 +8,17 @@
       </div>
       <div class="col-3">
         <div class="col-header">
-          <h3>{{ $t('userProfile.Sponsorship') }}</h3>
+          <h3>{{ $t('userProfile.sponsorship') }}</h3>
         </div>
       </div>
     </div>
     <div v-else class="no-creator">
       <p>{{ $t('userProfile.notYetACreator') }}</p>
-      <el-button v-if="isMyself" class="no-creator-btn" type="primary">
-        {{ $t('becomeACreatorBtn') }}
-      </el-button>
+      <router-link :to="{ name: 'Setting-Creator' }">
+        <el-button v-if="isMyself" class="no-creator-btn" type="primary">
+          {{ $t('becomeACreatorBtn') }}
+        </el-button>
+      </router-link>
       <div v-if="isMyself" class="no-creator-edit">
         <p>{{ $t('userProfile.editUsernameAndAvatar') }}</p>
         <a href="https://arweave.net/fGUdNmXFmflBMGI2f9vD7KzsrAc1s1USQgQLgAVT0W0" target="_blank">
