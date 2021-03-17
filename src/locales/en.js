@@ -12,7 +12,8 @@ export default {
     copy: 'Copy failed',
     connectionTimedOut: 'Connection timed out, please check your connection and try again.',
     unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure',
-    noPermissionToAccessPage: 'You do not have permission to access this page'
+    noPermissionToAccessPage: 'You do not have permission to access this page',
+    failedToObtainContractStatus: 'Failed to obtain contract status'
   },
   login: {
     login: 'Login',
