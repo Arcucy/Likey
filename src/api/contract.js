@@ -1,9 +1,9 @@
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 
-const LIKEY_CONTRACT = 'ztM2Ewn6gaptOskYbW35OyQD-MoZ86NckQWjkGxtXhA'
+const LIKEY_CONTRACT = 'izuE0eTEBrBjb0do7NwAHWceJ-Bxibz1W5liWLAloOA'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = false
+const TEST_MODE = true
 
 const ar = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -21,6 +21,7 @@ export default {
    */
   async readLikeyContract () {
     const state = await SmartWeave.readContract(ar, LIKEY_CONTRACT)
+    // console.log('likey contract state:', state)
     return state
   },
 
