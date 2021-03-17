@@ -12,7 +12,8 @@ export default {
     copy: '复制失败',
     connectionTimedOut: '连接超时，请检查您的网络连接并重试',
     unknownErrorCausedLoadingFailure: '未知错误导致加载失败',
-    noPermissionToAccessPage: '你没有权限访问这个页面'
+    noPermissionToAccessPage: '你没有权限访问这个页面',
+    failedToObtainContractStatus: '无法获取合约状态'
   },
   login: {
     login: '登录',
