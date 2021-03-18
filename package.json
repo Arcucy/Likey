@@ -11,6 +11,7 @@
     "svgo": "svgo -f src/icons/filter --config=src/icons/svgo.yml"
   },
   "dependencies": {
+    "@mdi/font": "^5.9.55",
     "@mdi/js": "^5.9.55",
     "arweave": "^1.10.11",
     "axios": "^0.21.1",

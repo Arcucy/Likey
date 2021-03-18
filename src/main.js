@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/element.js'
+import '@mdi/font/css/materialdesignicons.css'
 
 import VueClipboards from 'vue-clipboard2'
 import i18n from './i18n'
