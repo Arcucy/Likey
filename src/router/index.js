@@ -7,6 +7,7 @@ import User from '../views/User/_id'
 import UserIndex from '../views/User/index'
 
 import SettingCreator from '../views/Setting/Creator'
+import SettingToken from '../views/Setting/Token'
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,11 @@ const routes = [
     path: '/setting/creator',
     name: 'Setting-Creator',
     component: SettingCreator
+  },
+  {
+    path: '/setting/token',
+    name: 'Setting-Token',
+    component: SettingToken
   }
 ]
 

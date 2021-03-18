@@ -1,10 +1,6 @@
 <template>
   <div class="setting" v-loading="initLoading">
-    <div class="setting-header">
-      <h3>
-        {{ $t('setting.creatorSetting') }}
-      </h3>
-    </div>
+    <SettingNav />
     <div class="setting-creator">
       <!-- 头像 -->
       <div class="setting-creator-item">
@@ -118,13 +114,17 @@
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex'
 import { getCookie } from '@/util/cookie'
+
 import Avatar from '@/components/User/Avatar'
+import SettingNav from '@/components/SettingNav'
+
 import CreationCategoryOptions from '@/data/CreationCategoryOptions'
 
 export default {
   name: 'Home',
   components: {
-    Avatar
+    Avatar,
+    SettingNav
   },
   data () {
     return {
@@ -261,14 +261,6 @@ export default {
   max-width: 820px;
   box-sizing: border-box;
   padding: 0 10px;
-
-  &-header {
-    h3 {
-      color: @dark;
-      margin: 0 0 20px;
-      font-size: 18px;
-    }
-  }
 
   &-creator {
     background: @background;

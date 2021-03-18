@@ -67,7 +67,22 @@ export default {
     pleaseSelectACreationCategory: 'Please select a creation category',
     pleaseSelectACreationScale: 'Please select a creation scale',
     pleaseFillInTheIntroduction: 'Please fill in the introduction',
-    introductionIsTooLong: 'Introduction is too long'
+    introductionIsTooLong: 'Introduction is too long',
+    inputName: 'Name',
+    inputNamePlaceholder: 'Fill in the custom token name',
+    ticker: 'Ticker',
+    tickerPlaceholder: 'Fill in the custom token abbreviation',
+    unlockPlan: 'Unlock Solution',
+    ownBalance: 'Own',
+    unlock: 'Unlock',
+    endEdit: 'Edit Completed',
+    addSolution: 'Add Solution',
+    solutionName: 'Solution name',
+    solutionIntroduction: 'Solution introduction',
+    warning: 'Warning',
+    areYouSureYouWantToDelete: 'Are you sure you want to delete?',
+    ok: 'OK',
+    cancel: 'Cancel'
   },
   creationCategoryOptions: {
     painting: 'Painting',

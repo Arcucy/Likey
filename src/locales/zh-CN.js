@@ -67,7 +67,22 @@ export default {
     pleaseSelectACreationCategory: '请选择一个创作分类',
     pleaseSelectACreationScale: '请选择一个创作规模',
     pleaseFillInTheIntroduction: '请填写简介',
-    introductionIsTooLong: '简介过长'
+    introductionIsTooLong: '简介过长',
+    inputName: '名称',
+    inputNamePlaceholder: '填写自定义的代币名称',
+    ticker: '缩写（Ticker）',
+    tickerPlaceholder: '填写自定义的代币英文缩写',
+    unlockPlan: '解锁方案',
+    ownBalance: '持有',
+    unlock: '解锁',
+    endEdit: '编辑完成',
+    addSolution: '增加方案',
+    solutionName: '方案名称',
+    solutionIntroduction: '方案介绍',
+    warning: '提示',
+    areYouSureYouWantToDelete: '确定要删除么？',
+    ok: '确定',
+    cancel: '取消'
   },
   creationCategoryOptions: {
     painting: '绘画',
