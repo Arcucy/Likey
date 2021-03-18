@@ -17,7 +17,7 @@ export default {
   },
   landing: {
     title: 'Build Your Community For Your Creation',
-    description: 'Growth provides powerful tools from blockchain technologies to help integrate your creation together and gain more attractions from your fans and interested people while giving the income management back to you',
+    description: 'Likey provides powerful tools from blockchain technologies to help integrate your creation together and gain more attractions from your fans and interested people while giving the income management back to you',
     startbtn: 'Start'
   },
   login: {
