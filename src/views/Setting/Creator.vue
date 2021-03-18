@@ -43,7 +43,7 @@
         </h4>
         <div class="setting-creator-item-input">
           https://likey.arcucy.io/@
-          <el-input v-model="profileAddress" :placeholder="$t('setting.profileAddressPlaceholder')" />
+          <el-input v-model="profileAddress" :placeholder="$t('setting.profileAddressPlaceholder')" :disabled="!newAuthor" />
         </div>
         <p class="setting-creator-item-desp">
           {{ $t('setting.canNotBeModified') }}
@@ -92,8 +92,23 @@
       </div>
       <!-- 提交按钮 -->
       <div class="setting-creator-submit">
-        <el-button type="primary" :disabled="initLoading">
+        <!-- 下一步 -->
+        <el-button
+          v-if="newAuthor"
+          type="primary"
+          :disabled="initLoading"
+          @click="nextStep"
+        >
           {{ $t('setting.nextStep') }}
+        </el-button>
+        <!-- 保存 -->
+        <el-button
+          v-else
+          type="primary"
+          :disabled="initLoading"
+          @click="save"
+        >
+          {{ $t('setting.save') }}
         </el-button>
       </div>
     </div>
@@ -101,7 +116,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 import { getCookie } from '@/util/cookie'
 import Avatar from '@/components/User/Avatar'
 import CreationCategoryOptions from '@/data/CreationCategoryOptions'
@@ -117,11 +132,13 @@ export default {
       introduction: '',
       creationCategory: '',
       creationScale: '',
+      newAuthor: true,
+      authorInfoLoading: true,
       creationScaleOptions: [{
-        value: 'personal',
+        value: 'Personal',
         label: 'setting.personal'
       }, {
-        value: 'team',
+        value: 'Team',
         label: 'setting.team'
       }],
       creationCategoryOptions: CreationCategoryOptions
@@ -133,7 +150,7 @@ export default {
       myInfo: state => state.user.myInfo
     }),
     initLoading () {
-      return !this.isLoggedIn
+      return !this.isLoggedIn || this.authorInfoLoading
     }
   },
   watch: {
@@ -156,9 +173,82 @@ export default {
   mounted () {
   },
   methods: {
+    ...mapActions(['getCreatorInfo']),
     /** 初始化表单数据 */
-    initFormData () {
+    async initFormData () {
       console.log('myInfo:', this.myInfo)
+      const res = await this.getCreatorInfo(this.myInfo.address)
+      console.log('res1:', res)
+      this.authorInfoLoading = false
+      if (!res) {
+        this.newAuthor = true
+        return
+      }
+      this.profileAddress = res.shortname
+      this.introduction = res.intro
+      this.creationCategory = res.category
+      this.creationScale = res.scale
+      this.newAuthor = false
+    },
+    save () {
+      if (this.validationForm()) return
+      console.log('成功')
+    },
+    nextStep () {
+      if (this.validationForm()) return
+      console.log('成功')
+    },
+    validationForm () {
+      // 没有登录
+      if (!this.myInfo.address) {
+        this.$message.warning(this.$t('login.pleaseLogInFirst'))
+        return 1
+      }
+
+      // 没有头像
+      if (!this.myInfo.avatar) {
+        this.$message.warning(this.$t('setting.missingAvatar'))
+        return 2
+      }
+
+      // 没有填写主页地址
+      if (!this.profileAddress.trim()) {
+        this.$message.warning(this.$t('setting.pleaseFillInTheProfileAddress'))
+        return 3
+      }
+
+      // 主页地址格式错误
+      const profileAddressRegular = /^[a-zA-Z][a-zA-Z0-9]{4,41}$/
+      if (!profileAddressRegular.test(this.profileAddress)) {
+        this.$message.warning(this.$t('setting.profileAddressFormatError'))
+        return 4
+      }
+
+      // 没有填写简介
+      if (!this.introduction) {
+        this.$message.warning(this.$t('setting.pleaseFillInTheIntroduction'))
+        return 5
+      }
+
+      // 简介过长
+      if (this.introduction.length > 100) {
+        this.$message.warning(this.$t('setting.introductionIsTooLong'))
+        return 6
+      }
+
+      /** 创作类别错误 */
+      if (!this.creationCategoryOptions.find(item => item.value === this.creationCategory)) {
+        this.$message.warning(this.$t('setting.pleaseSelectACreationCategory'))
+        return 7
+      }
+
+      /** 创作规模错误 */
+      if (!this.creationScaleOptions.find(item => item.value === this.creationScale)) {
+        this.$message.warning(this.$t('setting.pleaseSelectACreationScale'))
+        return 8
+      }
+
+      return 0
     }
   }
 }

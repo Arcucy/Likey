@@ -21,7 +21,8 @@ export default {
     connectionTimeout: '登录时连接超时，请检查您的网络连接并重试',
     saveYourKeyInCookie: '7 天内使用保存的私钥自动登录',
     insertYourKey: '选择您的钱包密钥文件',
-    pleaseInsertYourWalletKey: '请将您的钱包拖到此框中或是点击选中钱包以完成当前操作'
+    pleaseInsertYourWalletKey: '请将您的钱包拖到此框中或是点击选中钱包以完成当前操作',
+    pleaseLogInFirst: '请先登录'
   },
   pageTitle: {
     myProfile: '我的资料',
@@ -57,8 +58,16 @@ export default {
     creationScale: '创作规模',
     creationScalePlaceholder: '选择一个规模',
     nextStep: '下一步',
+    save: '保存',
     personal: '个人',
-    team: '团队'
+    team: '团队',
+    missingAvatar: '缺少头像',
+    pleaseFillInTheProfileAddress: '请填写主页地址',
+    profileAddressFormatError: '主页地址格式错误',
+    pleaseSelectACreationCategory: '请选择一个创作分类',
+    pleaseSelectACreationScale: '请选择一个创作规模',
+    pleaseFillInTheIntroduction: '请填写简介',
+    introductionIsTooLong: '简介过长'
   },
   creationCategoryOptions: {
     painting: '绘画',

@@ -5,7 +5,7 @@ const LIKEY_CONTRACT = 'izuE0eTEBrBjb0do7NwAHWceJ-Bxibz1W5liWLAloOA'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
 
-const ar = Arweave.init({
+const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
   protocol: 'https',
@@ -20,7 +20,7 @@ export default {
    * 读取 Likey 主合约
    */
   async readLikeyContract () {
-    const state = await SmartWeave.readContract(ar, LIKEY_CONTRACT)
+    const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
     // console.log('likey contract state:', state)
     return state
   },
@@ -34,14 +34,14 @@ export default {
    * @param {*} winstonQty ？
    */
   async interactWrite (jwk, input, tags, target, winstonQty) {
-    const resDryRun = await SmartWeave.interactWriteDryRun(ar, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
     if (resDryRun.type !== 'ok' || TEST_MODE) {
       return {
         ...resDryRun,
         isTestMode: TEST_MODE
       }
     }
-    const res = await SmartWeave.interactWrite(ar, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
+    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
     return {
       ...res,
       isTestMode: TEST_MODE

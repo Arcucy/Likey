@@ -21,7 +21,8 @@ export default {
     connectionTimeout: 'Connection time out while logging in, please check your connection and try again.',
     saveYourKeyInCookie: 'Save Key for this Session for 7 days',
     insertYourKey: 'Insert your wallet key',
-    pleaseInsertYourWalletKey: 'Please drag your wallet application into this box to complete the action.'
+    pleaseInsertYourWalletKey: 'Please drag your wallet application into this box to complete the action.',
+    pleaseLogInFirst: 'Please log in first'
   },
   pageTitle: {
     myProfile: 'My Profile',
@@ -57,8 +58,16 @@ export default {
     creationScale: 'Creation Scale',
     creationScalePlaceholder: 'Choose a scale',
     nextStep: 'Next Step',
+    save: 'Save',
     personal: 'Personal',
-    team: 'Team'
+    team: 'Team',
+    missingAvatar: 'Missing avatar',
+    pleaseFillInTheProfileAddress: 'Please fill in the profile address',
+    profileAddressFormatError: 'Profile address format error',
+    pleaseSelectACreationCategory: 'Please select a creation category',
+    pleaseSelectACreationScale: 'Please select a creation scale',
+    pleaseFillInTheIntroduction: 'Please fill in the introduction',
+    introductionIsTooLong: 'Introduction is too long'
   },
   creationCategoryOptions: {
     painting: 'Painting',
