@@ -4,12 +4,14 @@ import Vuex from 'vuex'
 
 import app from './app'
 import user from './user'
+import contract from './contract'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
     app,
-    user
+    user,
+    contract
   }
 })

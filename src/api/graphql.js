@@ -3,7 +3,7 @@ import Arweave from 'arweave'
 
 import decode from '../util/decode'
 
-const ar = Arweave.init({
+const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
   protocol: 'https',
@@ -21,7 +21,7 @@ export default {
    */
   getAddress (key) {
     return new Promise((resolve, reject) => {
-      ar.wallets.jwkToAddress(key).then((address) => {
+      arweave.wallets.jwkToAddress(key).then((address) => {
         resolve(address)
       }).catch(err => {
         reject(err)
@@ -31,10 +31,10 @@ export default {
 
   /**
    * 转换 AR 为 Winston
-   * @param {} ar   - AR 币值
+   * @param {} arweave   - AR 币值
    */
   getWinstonFromAr (arprice) {
-    return ar.ar.arToWinston(arprice)
+    return arweave.ar.arToWinston(arprice)
   },
 
   /**
@@ -42,7 +42,7 @@ export default {
    * @param {*} winston
    */
   getArFromWinston (winston) {
-    return ar.ar.winstonToAr(winston)
+    return arweave.ar.winstonToAr(winston)
   },
 
   /**
@@ -52,7 +52,7 @@ export default {
    */
   getTransactionDetail (txid) {
     return new Promise((resolve, reject) => {
-      ar.transactions.get(txid).then(detail => {
+      arweave.transactions.get(txid).then(detail => {
         resolve(detail)
       }).catch(err => {
         reject(err)

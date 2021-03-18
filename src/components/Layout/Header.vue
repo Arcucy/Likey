@@ -21,13 +21,15 @@
           <span class="mdi mdi-brightness-6 theme-switch" />
         </div>
         <!-- 成为创作者按钮 -->
-        <el-button
-          v-if="isLoggedIn"
-          class="header-option-btn btn-mobile-hide"
-          type="primary"
-        >
-          {{ $t('becomeACreatorBtn') }}
-        </el-button>
+        <router-link :to="{ name: 'Setting-Creator' }">
+          <el-button
+            v-if="isLoggedIn"
+            class="header-option-btn btn-mobile-hide"
+            type="primary"
+          >
+            {{ $t('becomeACreatorBtn') }}
+          </el-button>
+        </router-link>
         <!-- 我的菜单 -->
         <MyMenu v-if="isLoggedIn" />
         <!-- 登录按钮 -->
@@ -92,9 +94,10 @@ export default {
     this.initJwkLogin()
     this.initWalletPlugin()
     this.initTheme()
+    this._initLikeyContract()
   },
   methods: {
-    ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout']),
+    ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout', 'initLikeyContract']),
     /** 初始化 JWK 登录 */
     async initJwkLogin () {
       if (this.isLoggedIn) return
@@ -181,6 +184,16 @@ export default {
           this.$message.error(this.$t('failure.gettingAvatarTimeout'))
         }
         console.warn('uncaught error: ' + err)
+      }
+    },
+    /** 初始化获取合约状态 */
+    async _initLikeyContract () {
+      try {
+        const res = await this.initLikeyContract()
+        console.log('Likey contract version:', res.version)
+      } catch (err) {
+        console.log('Failed to obtain contract status, error:', err)
+        this.$message.error(this.$t('failure.failedToObtainContractStatus'))
       }
     },
     /** 初始化主题 */
