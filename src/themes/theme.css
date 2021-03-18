@@ -22,10 +22,10 @@
 /* light-theme 亮色主题  */
 .light-theme {
   --background: #ffffff;
-  --background-dark: #4e8cd3;
-  --primary: #336bac;
-  --primary-light: #ebf0f7;
-  --primary-dark: #d6e1ee;
+  --background-dark: #292F36;
+  --primary: #23A1D7;
+  --primary-light: #e9f6fb;
+  --primary-dark: #d3ecf7;
   --secondary: #3388ac;
   --secondary-light: #ebf3f7;
   --secondary-dark: #d6e7ee;
@@ -41,7 +41,7 @@
 /* pink-theme 粉色主题  */
 .pink-theme {
   --background: #f4f4f4;
-  --background-dark: #f05993;
+  --background-dark: #292F36;
   --primary: #f05993;
   --primary-light: #feeef4;
   --primary-dark: #fcdee9;

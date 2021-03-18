@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="697px" height="494px" viewBox="0 0 697 494" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Growth Landing</title>
+    <defs>
+        <linearGradient x1="14.811%" y1="-22.362%" x2="75.996%" y2="119.406%" id="linearGradient-1">
+            <stop stop-color="#F05993" offset="0%"></stop>
+            <stop stop-color="#FFC2CC" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#54DAEE" offset="0%"></stop>
+            <stop stop-color="#A149FF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="28.973%" y1="4.4408921e-14%" x2="90.2%" y2="111.244%" id="linearGradient-3">
+            <stop stop-color="#F05993" offset="0%"></stop>
+            <stop stop-color="#FFE452" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="14.811%" y1="-22.362%" x2="75.996%" y2="119.406%" id="linearGradient-4">
+            <stop stop-color="#F05993" offset="0%"></stop>
+            <stop stop-color="#FFC2CC" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="28.973%" y1="4.4408921e-14%" x2="90.2%" y2="111.244%" id="linearGradient-5">
+            <stop stop-color="#F05993" offset="0%"></stop>
+            <stop stop-color="#FEFF52" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-6">
+            <stop stop-color="#54DAEE" offset="0%"></stop>
+            <stop stop-color="#A149FF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="28.973%" y1="4.99600361e-14%" x2="90.2%" y2="111.244%" id="linearGradient-7">
+            <stop stop-color="#F05993" offset="0%"></stop>
+            <stop stop-color="#FEFF52" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-8">
+            <stop stop-color="#F05993" offset="0%"></stop>
+            <stop stop-color="#FEFF52" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="illustration-mockups" fill-rule="nonzero">
+            <g id="Group">
+                <g id="b-link" fill="#000000">
+                    <rect id="b" x="0" y="0" width="657.638" height="410.833" rx="13.701"></rect>
+                </g>
+                <g id="b-link" fill="#FFFFFF">
+                    <rect id="b" x="0" y="0" width="657.638" height="410.833" rx="13.701"></rect>
+                </g>
+                <g id="d-link" fill="#000000">
+                    <path d="M13.7,0 L643.937,0 C651.504,0 657.637,6.134 657.637,13.7 L657.637,43.822 L0,43.822 L0,13.701 C0,6.134 6.134,0 13.7,0 Z" id="d"></path>
+                </g>
+                <g id="d-link" fill="#23A1D7">
+                    <path d="M13.7,0 L643.937,0 C651.504,0 657.637,6.134 657.637,13.7 L657.637,43.822 L0,43.822 L0,13.701 C0,6.134 6.134,0 13.7,0 Z" id="d"></path>
+                </g>
+                <rect id="Rectangle" fill="#F0F3F6" x="49.323" y="13.694" width="137.008" height="16.433" rx="3.425"></rect>
+                <g transform="translate(591.874000, 15.064000)" fill="#F0F3F6" id="Rectangle">
+                    <rect x="0" y="0" width="21.921" height="2.739" rx="1.369"></rect>
+                    <rect x="0" y="5.478" width="21.921" height="2.739" rx="1.369"></rect>
+                    <rect x="0" y="10.956" width="21.921" height="2.739" rx="1.369"></rect>
+                </g>
+                <g transform="translate(49.323000, 94.492000)">
+                    <ellipse id="Oval" fill="url(#linearGradient-1)" cx="32.882" cy="32.867" rx="32.882" ry="32.867"></ellipse>
+                    <g transform="translate(104.126000, 8.217000)" fill="#E1E8EE" id="Rectangle">
+                        <rect x="0" y="0" width="78.78" height="10.956" rx="2.055"></rect>
+                        <rect x="0" y="21.911" width="274.016" height="5.478" rx="2.055"></rect>
+                        <rect x="0" y="32.867" width="251.181" height="5.478" rx="2.055"></rect>
+                        <rect x="0" y="43.822" width="228.346" height="5.478" rx="2.055"></rect>
+                    </g>
+                    <g transform="translate(411.024000, 24.650000)" fill="#A7B9C8" id="Oval">
+                        <ellipse cx="8.22" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="52.063" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="30.142" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="73.984" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="95.906" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                    </g>
+                </g>
+                <g transform="translate(49.323000, 187.614000)">
+                    <ellipse id="Oval" fill="url(#linearGradient-2)" cx="30.827" cy="30.813" rx="30.827" ry="30.813"></ellipse>
+                    <g transform="translate(102.070000, 6.162000)" fill="#E1E8EE" id="Rectangle">
+                        <rect x="0" y="0" width="78.78" height="10.956" rx="2.055"></rect>
+                        <rect x="0" y="21.911" width="274.016" height="5.478" rx="2.055"></rect>
+                        <rect x="0" y="32.867" width="251.181" height="5.478" rx="2.055"></rect>
+                        <rect x="0" y="43.822" width="228.346" height="5.478" rx="2.055"></rect>
+                    </g>
+                    <g transform="translate(408.969000, 22.596000)" fill="#A7B9C8" id="Oval">
+                        <ellipse cx="8.22" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="52.063" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="30.142" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                    </g>
+                </g>
+                <g transform="translate(49.323000, 285.530000)">
+                    <ellipse id="Oval" fill="url(#linearGradient-3)" cx="30.827" cy="30.813" rx="30.827" ry="30.813"></ellipse>
+                    <g transform="translate(102.070000, 6.162000)" fill="#E1E8EE" id="Rectangle">
+                        <rect x="0" y="0" width="78.78" height="10.956" rx="2.055"></rect>
+                        <rect x="0" y="21.911" width="274.016" height="5.478" rx="2.055"></rect>
+                        <rect x="0" y="32.867" width="251.181" height="5.478" rx="2.055"></rect>
+                        <rect x="0" y="43.822" width="228.346" height="5.478" rx="2.055"></rect>
+                    </g>
+                    <g transform="translate(408.969000, 22.596000)" fill="#A7B9C8" id="Oval">
+                        <ellipse cx="8.22" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="52.063" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="30.142" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                        <ellipse cx="73.984" cy="8.217" rx="8.22" ry="8.217"></ellipse>
+                    </g>
+                </g>
+            </g>
+            <g id="Group" transform="translate(476.787000, 142.422000)">
+                <g id="i-link" fill="#000000">
+                    <path d="M11.691,0 L207.521,0 C213.978,0 219.213,5.234 219.213,11.691 L219.213,338.886 C219.213,345.343 213.978,350.578 207.521,350.578 L11.691,350.578 C5.234,350.578 0,345.343 0,338.886 L0,11.691 C0,5.234 5.234,0 11.691,0 Z" id="i"></path>
+                </g>
+                <g id="i-link" fill="#FFFFFF">
+                    <path d="M11.691,0 L207.521,0 C213.978,0 219.213,5.234 219.213,11.691 L219.213,338.886 C219.213,345.343 213.978,350.578 207.521,350.578 L11.691,350.578 C5.234,350.578 0,345.343 0,338.886 L0,11.691 C0,5.234 5.234,0 11.691,0 Z" id="i"></path>
+                </g>
+            </g>
+            <g id="Group" transform="translate(476.787000, 142.422000)">
+                <g id="k-link" fill="#000000">
+                    <path d="M11.691,0 L207.521,0 C213.978,0 219.213,5.234 219.213,11.691 L219.213,37.395 L0,37.395 L0,11.691 C0,5.234 5.234,0 11.691,0 Z" id="k"></path>
+                </g>
+                <g id="k-link" fill="#23A1D7">
+                    <path d="M11.691,0 L207.521,0 C213.978,0 219.213,5.234 219.213,11.691 L219.213,37.395 L0,37.395 L0,11.691 C0,5.234 5.234,0 11.691,0 Z" id="k"></path>
+                </g>
+            </g>
+            <g id="Group" transform="translate(498.800000, 155.277000)" fill="#F0F3F6">
+                <rect id="Rectangle" x="0" y="0" width="71.244" height="14.023" rx="2.923"></rect>
+                <g transform="translate(155.111000, 1.169000)" id="Rectangle">
+                    <rect x="0" y="0" width="18.706" height="2.337" rx="1.1685"></rect>
+                    <rect x="0" y="4.674" width="18.706" height="2.337" rx="1.1685"></rect>
+                    <rect x="0" y="9.349" width="18.706" height="2.337" rx="1.1685"></rect>
+                </g>
+            </g>
+            <g id="Group" transform="translate(48.709000, 216.372000)">
+                <ellipse id="Oval" fill="url(#linearGradient-4)" cx="460.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+                <ellipse id="Oval" fill="url(#linearGradient-5)" cx="31.441" cy="99.971" rx="30.827" ry="30.813"></ellipse>
+                <g transform="translate(481.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+            </g>
+            <g id="Group" transform="translate(498.709000, 310.864000)">
+                <ellipse id="Oval" fill="url(#linearGradient-4)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+            </g>
+            <g id="Group" transform="translate(498.709000, 247.870000)">
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+                <ellipse id="Oval" fill="url(#linearGradient-6)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+            </g>
+            <g id="Group" transform="translate(498.709000, 342.361000)">
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+                <ellipse id="Oval" fill="url(#linearGradient-6)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+            </g>
+            <g id="Group" transform="translate(498.709000, 279.367000)">
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+                <ellipse id="Oval" fill="url(#linearGradient-7)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+            </g>
+            <g id="Group" transform="translate(498.709000, 373.858000)">
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+                <ellipse id="Oval" fill="url(#linearGradient-7)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+            </g>
+            <g id="Group" transform="translate(498.709000, 405.356000)">
+                <ellipse id="Oval" fill="url(#linearGradient-4)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+            </g>
+            <g id="Group" transform="translate(498.709000, 436.853000)">
+                <g transform="translate(31.512000, 2.054000)" fill="#E1E8EE" id="Rectangle">
+                    <rect x="0" y="0" width="39.39" height="3.652" rx="0.63"></rect>
+                    <rect x="0" y="7.304" width="137.008" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="10.956" width="125.591" height="1.826" rx="0.63"></rect>
+                    <rect x="0" y="14.607" width="114.173" height="1.826" rx="0.63"></rect>
+                </g>
+                <ellipse id="Oval" fill="url(#linearGradient-8)" cx="10.276" cy="10.271" rx="10.276" ry="10.271"></ellipse>
+            </g>
+        </g>
+        <g id="pantone-paint-svgrepo-com" transform="translate(74.000000, 262.000000)" fill-rule="nonzero">
+            <path d="M207.467108,141 L43.5328915,141 C41.5817926,141 40,142.591867 40,144.555393 L40,201.444607 C40,203.408133 41.5817926,205 43.5328915,205 L207.467108,205 C209.418207,205 211,203.408133 211,201.444607 L211,144.555393 C211,142.591867 209.418207,141 207.467108,141 Z" id="Path" fill="#4ACFD9"></path>
+            <path d="M97.450544,141 L42.549456,141 C40.5892091,141 39,142.591867 39,144.555393 L39,201.444607 C39,203.408133 40.5892091,205 42.549456,205 L97.450544,205 C99.4107909,205 101,203.408133 101,201.444607 L101,144.555393 C101,142.591867 99.4107909,141 97.450544,141 Z" id="Path" fill="#365558"></path>
+            <path d="M152.450544,141 L97.549456,141 C95.5892091,141 94,142.591867 94,144.555393 L94,201.444607 C94,203.408133 95.5892091,205 97.549456,205 L152.450544,205 C154.410791,205 156,203.408133 156,201.444607 L156,144.555393 C156,142.591867 154.411208,141 152.450544,141 Z" id="Path" fill="#0295AA"></path>
+            <path d="M179.965251,71.2695651 L139.982363,31.0415111 C139.319924,30.3745932 138.420901,30 137.483692,30 C136.546483,30 135.647459,30.3745932 134.985021,31.0415111 L19.03506,147.70245 C17.65498,149.090992 17.65498,151.34231 19.03506,152.730435 L59.0175331,192.958489 C59.7073655,193.652551 60.6121999,194 61.5162042,194 C62.4206235,194 63.3250428,193.652969 64.0148753,192.958489 L179.964836,76.2975499 C180.627689,75.6310496 181,74.7265134 181,73.7835575 C181,72.8406016 180.628519,71.9360654 179.965251,71.2695651 Z" id="Path" fill="#CDD4D5"></path>
+            <path d="M102.961425,148.161257 L62.8387478,108.038676 C61.4538427,106.653775 59.2084223,106.653775 57.8235172,108.038676 L19.0386788,146.823837 C17.6537737,148.208739 17.6537737,150.454154 19.0386788,151.838639 L59.1609398,191.96122 C59.8531841,192.653462 60.761182,193 61.6683468,193 C62.5759282,193 63.4835096,192.653879 64.1757539,191.96122 L102.960592,153.176475 C104.34633,151.79199 104.34633,149.546158 102.961425,148.161257 Z" id="Path" fill="#687F82"></path>
+            <path d="M141.961215,109.16151 L101.83844,69.0387842 C101.173684,68.3736124 100.271515,68 99.3310268,68 C98.3905386,68 97.4883697,68.3736124 96.8236137,69.0387842 L58.0386813,107.82367 C56.6537729,109.208576 56.6537729,111.453999 58.0386813,112.838906 L98.161456,152.961216 C98.8537019,153.653877 99.761702,154 100.668869,154 C101.576453,154 102.484036,153.653877 103.176282,152.961216 L141.961215,114.17633 C142.626387,113.511575 143,112.609407 143,111.66892 C143,110.728433 142.625971,109.826682 141.961215,109.16151 Z" id="Path" fill="#9BAAAB"></path>
+            <path d="M66.4446068,0 L9.55539316,0 C7.59186736,0 6,1.58179264 6,3.53289153 L6,167.467108 C6,169.418207 7.59186736,171 9.55539316,171 L66.4446068,171 C68.4081326,171 70,169.418207 70,167.467108 L70,3.53289153 C70,1.58179264 68.4081326,0 66.4446068,0 Z" id="Path" fill="#FF8C29"></path>
+            <path d="M66.4446068,109 L9.55539316,109 C7.59186736,109 6,110.589209 6,112.549456 L6,167.450544 C6,169.410791 7.59186736,171 9.55539316,171 L66.4446068,171 C68.4081326,171 70,169.410791 70,167.450544 L70,112.549456 C70,110.589209 68.4081326,109 66.4446068,109 Z" id="Path" fill="#F0353D"></path>
+            <path d="M66.4446068,55 L9.55539316,55 C7.59186736,55 6,56.5892091 6,58.549456 L6,113.450544 C6,115.410791 7.59186736,117 9.55539316,117 L66.4446068,117 C68.4081326,117 70,115.410791 70,113.450544 L70,58.549456 C70,56.5892091 68.4081326,55 66.4446068,55 Z" id="Path" fill="#FD6A33"></path>
+            <path d="M39.5,134 C17.7198715,134 0,151.719455 0,173.5 C0,195.280545 17.7198715,213 39.5,213 C61.2801285,213 79,195.280545 79,173.5 C79,151.719455 61.2805452,134 39.5,134 Z" id="Path" fill="#FFD1A9"></path>
+            <path d="M0,173.5 C0,195.280545 17.4953425,213 39,213 L39,134 C17.4953425,134 0,151.719872 0,173.5 Z" id="Path" fill="#FF8C29"></path>
+            <path d="M40,149 C26.7664626,149 16,159.990764 16,173.5 C16,187.009236 26.7664626,198 40,198 C53.2335374,198 64,187.009236 64,173.5 C64,159.990764 53.2335374,149 40,149 Z" id="Path" fill="#687F82"></path>
+            <path d="M40,149 C26.2150652,149 15,159.990764 15,173.5 C15,187.009236 26.2150652,198 40,198 L40,149 Z" id="Path" fill="#365558"></path>
+            <path d="M50.3510618,177 C48.3361108,177 46.7025521,175.366402 46.7025521,173.351403 C46.7025521,169.461967 43.5378535,166.297193 39.6485097,166.297193 C37.6335587,166.297193 36,164.663595 36,162.648597 C36,160.633598 37.6335587,159 39.6485097,159 C47.561756,159 54,165.438397 54,173.351832 C53.9995715,175.365974 52.3660128,177 50.3510618,177 Z" id="Path" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

@@ -15,6 +15,11 @@ export default {
     noPermissionToAccessPage: '你没有权限访问这个页面',
     failedToObtainContractStatus: '无法获取合约状态'
   },
+  landing: {
+    title: '为你的创作建立社区',
+    description: 'Growth 提供了来自区块链技术的强大工具，帮助您将您的创作整合在一起，从您的粉丝和感兴趣的人那里获得更多的吸引力，同时将收益管理权还给您。',
+    startbtn: '开始浏览'
+  },
   login: {
     login: '登录',
     signOut: '登出',

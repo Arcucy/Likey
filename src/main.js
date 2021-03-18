@@ -7,6 +7,7 @@ import './plugins/element.js'
 import VueClipboards from 'vue-clipboard2'
 import i18n from './i18n'
 
+import '@/icons'
 import API from '../src/api/api'
 
 const loadCSS = (path) => {
