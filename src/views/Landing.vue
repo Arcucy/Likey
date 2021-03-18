@@ -9,7 +9,7 @@
           <svg-icon class="components" icon-class="components" />
         </div>
         <div class="canvas-container-text">
-          <h1>Growth</h1>
+          <h1>Likey</h1>
           <h2>{{ $t("landing.title") }}</h2>
           <span>{{ $t("landing.description") }}</span>
         </div>
@@ -19,7 +19,7 @@
           type="primary"
           class="start-btn"
           round
-          @click="$router.push({ path: '/home' })"
+          @click="$router.push({ name: 'Home' })"
         >
           {{ $t('landing.startbtn') }}
         </el-button>
@@ -90,6 +90,12 @@ export default {
   &-background {
     height: calc(100vh - 60px);
     width: 100%;
+
+    img {
+      height: 100vh;
+      width: 100%;
+      object-fit: cover;
+    }
   }
 }
 

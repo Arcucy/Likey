@@ -2,7 +2,7 @@
   <header>
     <div class="header">
       <div class="header-logo">
-        <router-link :to="{ name: 'Home' }">
+        <router-link :to="{ name: 'Landing' }">
           <img src="@/assets/img/logo-80px.png">
           <span>Likey</span>
         </router-link>
