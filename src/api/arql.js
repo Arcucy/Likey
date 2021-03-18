@@ -6,7 +6,7 @@ import decode from '../util/decode'
 
 const arweaveHost = 'https://' + process.env.VUE_APP_ARWEAVE_NODE + '/'
 
-const ar = Arweave.init({
+const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
   protocol: 'https',
@@ -28,7 +28,7 @@ const arql = {
    */
   getAddress (key) {
     return new Promise((resolve, reject) => {
-      ar.wallets.jwkToAddress(key).then((address) => {
+      arweave.wallets.jwkToAddress(key).then((address) => {
         resolve(address)
       }).catch(err => {
         reject(err)
@@ -38,10 +38,10 @@ const arql = {
 
   /**
    * 转换 AR 为 Winston
-   * @param {} ar   - AR 币值
+   * @param {} arweave   - AR 币值
    */
   getWinstonFromAr (arprice) {
-    return ar.ar.arToWinston(arprice)
+    return arweave.ar.arToWinston(arprice)
   },
 
   /**
@@ -49,7 +49,7 @@ const arql = {
    * @param {*} winston
    */
   getArFromWinston (winston) {
-    return ar.ar.winstonToAr(winston)
+    return arweave.ar.winstonToAr(winston)
   },
 
   /**
@@ -59,7 +59,7 @@ const arql = {
    */
   getTransactionDetail (txid) {
     return new Promise((resolve, reject) => {
-      ar.transactions.get(txid).then(detail => {
+      arweave.transactions.get(txid).then(detail => {
         resolve(detail)
       }).catch(err => {
         reject(err)
@@ -74,7 +74,7 @@ const arql = {
    */
   getTransactionDataDecodedString (txid) {
     return new Promise((resolve, reject) => {
-      ar.transactions.getData(txid, { decode: true, string: true }).then(data => {
+      arweave.transactions.getData(txid, { decode: true, string: true }).then(data => {
         resolve(data)
       }).catch(err => {
         reject(err)
@@ -108,7 +108,7 @@ const arql = {
        * Use ArQL language to search the user's Arweave ID database
        * 使用 ArQL 语言搜索用户的 Arweave ID 数据库
        */
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -170,7 +170,7 @@ const arql = {
    */
   getAvatarFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -196,7 +196,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -220,7 +220,7 @@ const arql = {
    */
   getLocationFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -246,7 +246,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -259,7 +259,7 @@ const arql = {
    */
   getWebsiteFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -285,7 +285,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -298,7 +298,7 @@ const arql = {
    */
   getIntroFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -324,7 +324,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -337,7 +337,7 @@ const arql = {
    */
   getNeteaseIdFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -363,7 +363,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -376,7 +376,7 @@ const arql = {
    */
   getSoundCloudIdFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -402,7 +402,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -415,7 +415,7 @@ const arql = {
    */
   getTheMostSimilarUsers (genre1) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -445,7 +445,7 @@ const arql = {
    */
   GetTheSimilarUsers (genre1, genre2) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -499,7 +499,7 @@ const arql = {
    */
   getSomewhatSimilarUsers (excluded, genre1, genre2, genre3) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -593,7 +593,7 @@ const arql = {
    */
   getBandCampFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -619,7 +619,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -633,7 +633,7 @@ const arql = {
    */
   getPostInfosByAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -706,7 +706,7 @@ const arql = {
    */
   getPostFromAddress (address) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'and',
         expr1: {
           op: 'equals',
@@ -757,7 +757,7 @@ const arql = {
    */
   getSearchObject (data) {
     return new Promise((resolve, reject) => {
-      ar.arql({
+      arweave.arql({
         op: 'equals',
         expr1: {
           op: 'equals',
@@ -770,7 +770,7 @@ const arql = {
           return
         }
 
-        ar.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
+        arweave.transactions.getData(ids[0], { decode: true, string: true }).then(data => {
           resolve(data)
         })
       })
@@ -795,14 +795,14 @@ const arql = {
   },
 
   winstonToAr (winston) {
-    return ar.ar.winstonToAr(winston)
+    return arweave.ar.winstonToAr(winston)
   },
 
   getBalance (key) {
     return new Promise((resolve, reject) => {
-      ar.wallets.jwkToAddress(key).then(address => {
-        ar.wallets.getBalance(address).then((balance) => {
-          resolve(ar.ar.winstonToAr(balance))
+      arweave.wallets.jwkToAddress(key).then(address => {
+        arweave.wallets.getBalance(address).then((balance) => {
+          resolve(arweave.ar.winstonToAr(balance))
         }).catch(err => {
           reject(err)
         })
