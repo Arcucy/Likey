@@ -3,6 +3,7 @@ import gql from './graphql'
 import ArweaveUtil from 'arweave'
 import backend from './backend'
 import contract from './contract'
+import tx from './tx'
 
 const ArweaveNative = ArweaveUtil.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -24,7 +25,9 @@ const API = {
   /** Growth 后端 API 集合 */
   be: backend,
   /** 合约调用 API 集合 */
-  contract: contract
+  contract: contract,
+  /** 交易创建相关 API 集合 */
+  tx: tx
 }
 
 export default API

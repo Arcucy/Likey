@@ -2491,6 +2491,11 @@ bluebird@^3.1.1, bluebird@^3.5.0, bluebird@^3.5.5:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
 
+blueimp-canvas-to-blob@^3.28.0:
+  version "3.28.0"
+  resolved "https://registry.yarnpkg.com/blueimp-canvas-to-blob/-/blueimp-canvas-to-blob-3.28.0.tgz#c8ab4dc6bb08774a7f273798cdf94b0776adf6c8"
+  integrity sha512-5q+YHzgGsuHQ01iouGgJaPJXod2AzTxJXmVv90PpGrRxU7G7IqgPqWXz+PBmt3520jKKi6irWbNV87DicEa7wg==
+
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.9:
   version "4.11.9"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.9.tgz#26d556829458f9d1e81fc48952493d0ba3507828"
@@ -3290,6 +3295,14 @@ compression@^1.7.4:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
+compressorjs@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/compressorjs/-/compressorjs-1.0.7.tgz#67cd0b3b9ac97540515b22b334dc32eb92b730b1"
+  integrity sha512-ca+H8CGrn0LG103//VQmXBbNdvzvHiW26LGdWncp4RmLNbNQjaaFWIUxMN9++hbhGobLtofkHoxzzXGisNyD3w==
+  dependencies:
+    blueimp-canvas-to-blob "^3.28.0"
+    is-blob "^2.1.0"
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -3488,6 +3501,11 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     ripemd160 "^2.0.0"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+cropperjs@^1.5.11:
+  version "1.5.11"
+  resolved "https://registry.yarnpkg.com/cropperjs/-/cropperjs-1.5.11.tgz#502ae6d8ca098b124de6813601cca70015879fc0"
+  integrity sha512-SJUeBBhtNBnnn+UrLKluhFRIXLJn7XFPv8QN1j49X5t+BIMwkgvDev541f96bmu8Xe0TgCx3gON22KmY/VddaA==
 
 cross-fetch@^3.0.6:
   version "3.0.6"
@@ -5979,6 +5997,11 @@ is-binary-path@~2.1.0:
   integrity sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==
   dependencies:
     binary-extensions "^2.0.0"
+
+is-blob@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-blob/-/is-blob-2.1.0.tgz#e36cd82c90653f1e1b930f11baf9c64216a05385"
+  integrity sha512-SZ/fTft5eUhQM6oF/ZaASFDEdbFVe89Imltn9uZr03wdKMcWNVYSMjQPFtg05QuNkt5l5c135ElvXEQG0rk4tw==
 
 is-buffer@^1.1.5, is-buffer@~1.1.6:
   version "1.1.6"
@@ -11334,6 +11357,11 @@ vue-template-es2015-compiler@^1.6.0, vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
+
+vue-upload-component@^2.8.22:
+  version "2.8.22"
+  resolved "https://registry.yarnpkg.com/vue-upload-component/-/vue-upload-component-2.8.22.tgz#7a1573149a4afa5ca6e8c7e0bc70533925fe26b7"
+  integrity sha512-AJpETqiZrgqs8bwJQpWTFrRg3i6s7cUodRRZVnb1f94Jvpd0YYfzGY4zluBqPmssNSkUaYu7EteXaK8aW17Osw==
 
 vue@^2.6.11:
   version "2.6.12"
