@@ -5,6 +5,11 @@
       <AudioUploader @audio-list="getAudioFiles" />
       <FileUploader @file-input="getFiles" />
     </div>
+    <el-button
+      @click="verifyUploads"
+    >
+      上传
+    </el-button>
   </div>
 </template>
 
@@ -12,18 +17,26 @@
 import AudioUploader from '@/components/Uploader/Audio'
 import FileUploader from '@/components/Uploader/File'
 
+// import { getCookie } from '@/util/cookie'
+
 export default {
   components: {
     AudioUploader,
     FileUploader
   },
   data () {
-    return {}
+    return {
+      audios: undefined,
+      files: undefined
+    }
   },
   mounted () {
-    this.$api.tx.createNewStatus(undefined, undefined, (e) => {
-      console.log(e)
-    })
+    // const jwk = getCookie('arclight_userkey')
+    // this.$api.contract.announceCreator(JSON.parse(jwk),
+    //   { scale: 'Personal', category: 'writing', shortname: 'ayakaneko', intro: 'Hi' },
+    //   { name: 'Ayaka Neko Coin', ticker: 'ANC', contract: 'mGjKEbZnNXkxIXIJNkzMZi_jBADXC9QGlovd2fGmQas' },
+    //   []
+    // )
   },
   methods: {
     // 获得音乐文件
@@ -33,6 +46,9 @@ export default {
     // 获得文件
     getFiles (files) {
       console.log(files)
+    },
+    verifyUploads () {
+
     }
   }
 }
