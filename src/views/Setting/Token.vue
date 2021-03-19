@@ -1,6 +1,15 @@
 <template>
-  <div class="setting" v-loading="initLoading">
-    <SettingNav />
+  <div
+    class="setting"
+    v-loading="initLoading || submitting"
+    :element-loading-text="submitTips"
+  >
+    <div v-if="newAuthor" class="setting-header">
+      <h3>
+        2. {{ $t('setting.tokenSettings') }}
+      </h3>
+    </div>
+    <SettingNav v-else />
     <div class="setting-creator">
       <!-- 名称 -->
       <div class="setting-creator-item">
@@ -20,7 +29,7 @@
           {{ $t('setting.ticker') }}
         </h4>
         <div class="setting-creator-item-input">
-          <el-input v-model="ticker" :placeholder="$t('setting.tickerPlaceholder')" />
+          <el-input v-model="tickerInput" :placeholder="$t('setting.tickerPlaceholder')" />
         </div>
         <p class="setting-creator-item-desp">
           {{ $t('setting.canNotBeModified') }}
@@ -114,6 +123,13 @@
       </div>
       <!-- 提交按钮 -->
       <div class="setting-creator-submit">
+        <!-- 上一步 -->
+        <el-button
+          :disabled="initLoading"
+          @click="previous"
+        >
+          {{ $t('setting.previous') }}
+        </el-button>
         <!-- 保存 -->
         <el-button
           type="primary"
@@ -145,22 +161,6 @@ export default {
       name: '',
       ticker: '',
       solutionMaximum: 20,
-      // solutions: [
-      //   {
-      //     id: 1,
-      //     title: '一个鱼罐头',
-      //     value: '10',
-      //     description: '给猫咪投喂一天的伙食，解锁养猫攻略和我的有声读物系列',
-      //     editing: false
-      //   },
-      //   {
-      //     id: 2,
-      //     title: '一箱鱼罐头',
-      //     value: '10000',
-      //     description: '给猫咪投喂一月的伙食，解锁养猫攻略和我的有声读物系列',
-      //     editing: false
-      //   }
-      // ]
       solutions: [
         {
           id: undefined,
@@ -169,16 +169,32 @@ export default {
           description: '',
           editing: true
         }
-      ]
+      ],
+      submitting: false
     }
   },
   computed: {
     ...mapGetters(['isLoggedIn']),
     ...mapState({
-      myInfo: state => state.user.myInfo
+      myInfo: state => state.user.myInfo,
+      myJwk: state => state.user.myJwk,
+      creatorFormBackup: state => state.user.creatorFormBackup,
+      tokenFormBackup: state => state.user.tokenFormBackup
     }),
     initLoading () {
       return !this.isLoggedIn || this.authorInfoLoading
+    },
+    tickerInput: {
+      /** 输入过滤 */
+      set (val) {
+        this.ticker = val.replace(/[^a-zA-Z]/g, '').toUpperCase()
+      },
+      get () {
+        return this.ticker
+      }
+    },
+    submitTips () {
+      return this.submitting ? this.$t('setting.submittingPleaseDoNotCloseThePage') : ''
     }
   },
   watch: {
@@ -201,26 +217,115 @@ export default {
   mounted () {
   },
   methods: {
-    ...mapActions(['getCreatorInfo']),
+    ...mapActions(['getCreatorInfo', 'setTokenFormBackup']),
     /** 初始化表单数据 */
     async initFormData () {
-      console.log('myInfo:', this.myInfo)
       const res = await this.getCreatorInfo(this.myInfo.address)
       console.log('res1:', res)
       this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
+        if (this.tokenFormBackup) {
+          this.name = this.tokenFormBackup.name
+          this.ticker = this.tokenFormBackup.ticker
+          this.solutions = this.tokenFormBackup.items
+        }
         return
+      }
+      this.name = res.ticker.name
+      this.ticker = res.ticker.ticker
+      if (res.ticker.items && res.ticker.items.length > 0) {
+        this.solutions = res.ticker.items.map(item => {
+          return {
+            ...item,
+            editing: false
+          }
+        })
       }
       this.newAuthor = false
     },
+    /** 保存表单 */
     save () {
+      if (!this.isLoggedIn) return
       if (this.validationForm()) return
-      console.log('成功')
+      // 新来的调用创建创作者方法，已经是创作者的调用编辑方法
+      this.submitting = true
+      if (this.newAuthor) this.cceateCreator()
+      else this.editCreator()
     },
+    /** 编辑创作者 */
+    editCreator () {
+      console.log('编辑')
+      this.submitting = false
+    },
+    /** 创建创作者 */
+    async cceateCreator () {
+      console.log('创建')
+      if (!this.creatorFormBackup) {
+        this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
+        return false
+      }
+      const jwk = JSON.parse(this.myJwk)
+      const pstAddress = 'A4LCIVue3lxOR1ua_P2zMs_0B9Evsaypk3iNjsft8m0'
+      // 上传表单。依次为：创作者表单，代币名称和简写，解锁方案列表
+      try {
+        const res = await this.$api.contract.announceCreator(jwk, {
+          ...this.creatorFormBackup
+        }, {
+          name: this.name,
+          ticker: this.ticker,
+          contract: pstAddress
+        }, this.solutions.filter(item => !item.editor).map(item => {
+          return {
+            title: item.title,
+            value: String(item.value),
+            description: item.description
+          }
+        }))
+        this.submitting = false
+        console.log('创建创作者完成：', res)
+        if (res.type !== 'ok') {
+          console.error('Save failed, res:', res)
+          this.$message.warning(this.$t('failure.saveFailed'))
+        } else {
+          this.$alert(this.$t('setting.createSuccessfulAlertContent'), this.$t('success.created'), {
+            confirmButtonText: this.$t('setting.ok'),
+            callback: () => {
+              this.$router.push({ name: 'User', params: { id: this.myInfo.address } })
+            }
+          })
+        }
+      } catch (err) {
+        console.error('Save failed, error:', err)
+        this.submitting = false
+        this.$message.warning(this.$t('failure.saveFailed'))
+      }
+    },
+    /** 表单校验 */
     validationForm () {
+      if (!this.name) {
+        this.$message.warning(this.$t('setting.nameShouldNotBeEmpty'))
+        return 1
+      }
+      if (!this.name.length >= 100) {
+        this.$message.warning(this.$t('setting.theLengthOfThisNameIsTooLong'))
+        return 2
+      }
+      if (!this.ticker) {
+        this.$message.warning(this.$t('setting.tickerShouldNotBeEmpty'))
+        return 3
+      }
+      if (!this.ticker.length >= 20) {
+        this.$message.warning(this.$t('setting.tickerShouldNotBeEmpty'))
+        return 4
+      }
+      if (this.solutions.find(item => item.editing && !this.isCmptySolution(item))) {
+        this.$message.warning(this.$t('setting.solutionEditingHasNotCompletedYet'))
+        return 5
+      }
       return 0
     },
+    /** 添加一个解锁方案 */
     addSolution () {
       if (this.solutions.length >= this.solutionMaximum) return
       this.solutions.push({
@@ -231,6 +336,7 @@ export default {
         editing: true
       })
     },
+    /** 移除一个解锁方案 */
     removeSolution (index) {
       if (this.isCmptySolution(this.solutions[index] || {})) {
         this.solutions.splice(index, 1)
@@ -245,6 +351,7 @@ export default {
         this.solutions.splice(index, 1)
       })
     },
+    /** 解锁方案子表单校验 */
     editCompletedCanClick (item) {
       // 没有标题
       if (!item.title.trim()) {
@@ -268,12 +375,23 @@ export default {
       }
       return 0
     },
+    /** 编辑完成 */
     editCompleted (item) {
       if (this.editCompletedCanClick(item)) return
       item.editing = false
     },
+    /** 是空的解锁方案表单 */
     isCmptySolution (item) {
       return !(item.id || item.title.trim() || item.value !== 1 || item.description.trim())
+    },
+    /** 返回上一步 */
+    previous () {
+      this.setTokenFormBackup({
+        name: this.name,
+        ticker: this.ticker,
+        items: this.solutions
+      })
+      this.$router.push({ name: 'Setting-Creator' })
     }
   }
 }
@@ -286,6 +404,14 @@ export default {
   max-width: 820px;
   box-sizing: border-box;
   padding: 0 10px;
+
+  &-header {
+    h3 {
+      color: @dark;
+      margin: 0 0 20px;
+      font-size: 18px;
+    }
+  }
 
   &-creator {
     background: @background;
@@ -351,6 +477,7 @@ export default {
       display: flex;
       justify-content: center;
       margin: 0 0 20px;
+      column-gap: 20px;
       button {
         min-width: 130px;
       }

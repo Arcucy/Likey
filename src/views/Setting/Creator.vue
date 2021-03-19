@@ -1,6 +1,11 @@
 <template>
   <div class="setting" v-loading="initLoading">
-    <SettingNav />
+    <div v-if="newAuthor" class="setting-header">
+      <h3>
+        1. {{ $t('setting.creatorSetting') }}
+      </h3>
+    </div>
+    <SettingNav v-else />
     <div class="setting-creator">
       <!-- 头像 -->
       <div class="setting-creator-item">
@@ -147,7 +152,8 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn']),
     ...mapState({
-      myInfo: state => state.user.myInfo
+      myInfo: state => state.user.myInfo,
+      creatorFormBackup: state => state.user.creatorFormBackup
     }),
     initLoading () {
       return !this.isLoggedIn || this.authorInfoLoading
@@ -173,22 +179,25 @@ export default {
   mounted () {
   },
   methods: {
-    ...mapActions(['getCreatorInfo']),
+    ...mapActions(['getCreatorInfo', 'setCreatorFormBackup']),
     /** 初始化表单数据 */
     async initFormData () {
-      console.log('myInfo:', this.myInfo)
       const res = await this.getCreatorInfo(this.myInfo.address)
       console.log('res1:', res)
       this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
+        if (this.creatorFormBackup) this.setFormDate(this.creatorFormBackup)
         return
       }
-      this.profileAddress = res.shortname
-      this.introduction = res.intro
-      this.creationCategory = res.category
-      this.creationScale = res.scale
+      this.setFormDate(res)
       this.newAuthor = false
+    },
+    setFormDate (data) {
+      this.profileAddress = data.shortname
+      this.introduction = data.intro
+      this.creationCategory = data.category
+      this.creationScale = data.scale
     },
     save () {
       if (this.validationForm()) return
@@ -197,6 +206,13 @@ export default {
     nextStep () {
       if (this.validationForm()) return
       console.log('成功')
+      this.setCreatorFormBackup({
+        shortname: this.profileAddress,
+        intro: this.introduction,
+        category: this.creationCategory,
+        scale: this.creationScale
+      })
+      this.$router.push({ name: 'Setting-Token' })
     },
     validationForm () {
       // 没有登录
@@ -261,6 +277,14 @@ export default {
   max-width: 820px;
   box-sizing: border-box;
   padding: 0 10px;
+
+  &-header {
+    h3 {
+      color: @dark;
+      margin: 0 0 20px;
+      font-size: 18px;
+    }
+  }
 
   &-creator {
     background: @background;
