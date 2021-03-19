@@ -12,7 +12,11 @@ export default {
     },
     myJwk: '',
     isWalletLoaded: false,
-    wallet: ''
+    wallet: '',
+    /** 创作者表单的备份，切换页面后保留数据 */
+    creatorFormBackup: null,
+    /** 代币表单的备份，切换页面后保留数据 */
+    tokenFormBackup: null
   },
   getters: {
     /** 传入 id，检查是不是当前登录的用户 */
@@ -39,6 +43,12 @@ export default {
     },
     mSetIsWalletLoaded (state, status) {
       state.isWalletLoaded = status
+    },
+    mSetCreatorFormBackup (state, data) {
+      state.creatorFormBackup = data
+    },
+    mSetTokenFormBackup (state, data) {
+      state.tokenFormBackup = data
     }
   },
   actions: {
@@ -98,6 +108,12 @@ export default {
       commit('mSetMyInfo', {})
       commit('mSetMyJwk', '')
       removeCookie('arclight_userkey')
+    },
+    setCreatorFormBackup ({ commit }, data) {
+      commit('mSetCreatorFormBackup', data)
+    },
+    setTokenFormBackup ({ commit }, data) {
+      commit('mSetTokenFormBackup', data)
     }
   }
 }

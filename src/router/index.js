@@ -10,6 +10,7 @@ import UserIndex from '@/views/User'
 import Flow from '@/views/Flow'
 
 import SettingCreator from '../views/Setting/Creator'
+import SettingToken from '../views/Setting/Token'
 
 Vue.use(VueRouter)
 
@@ -55,6 +56,11 @@ const routes = [
     component: SettingCreator
   },
   {
+    path: '/setting/token',
+    name: 'Setting-Token',
+    component: SettingToken
+  },
+  {
     path: '/flow',
     name: 'Flow',
     component: Flow
@@ -63,6 +69,10 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+router.afterEach((to, from, next) => {
+  window.scrollTo(0, 0)
 })
 
 export default router
