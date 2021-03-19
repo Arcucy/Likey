@@ -15,14 +15,11 @@
         </div>
       </div>
       <div class="start-btn-container">
-        <el-button
-          type="primary"
-          class="start-btn"
-          round
+        <button
           @click="$router.push({ name: 'Home' })"
         >
           {{ $t('landing.startbtn') }}
-        </el-button>
+        </button>
       </div>
     </div>
   </div>
@@ -68,8 +65,8 @@ export default {
 
         .components {
           display: block;
-          height: 50vh;
-          width: 50vw;
+          height: 40vh;
+          width: 40vw;
         }
       }
 
@@ -84,6 +81,25 @@ export default {
       margin-bottom: 30px;
       display: flex;
       justify-content: center;
+
+      button {
+        width: 150px;
+        height: 50px;
+        border-radius: 6px;
+        font-size: 16px;
+        color: white;
+        background-color: @primary;
+        border: none;
+        outline: none;
+
+        &:hover {
+          background-color: #3bb7ec;
+        }
+
+        &:active {
+          background-color: rgb(47, 102, 139);
+        }
+      }
     }
   }
 
