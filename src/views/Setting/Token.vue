@@ -17,7 +17,7 @@
           {{ $t('setting.inputName') }}
         </h4>
         <div class="setting-creator-item-input">
-          <el-input v-model="name" :placeholder="$t('setting.inputNamePlaceholder')" />
+          <el-input v-model="name" :placeholder="$t('setting.inputNamePlaceholder')" :disabled="!newAuthor" />
         </div>
         <p class="setting-creator-item-desp">
           {{ $t('setting.canNotBeModified') }}
@@ -29,7 +29,7 @@
           {{ $t('setting.ticker') }}
         </h4>
         <div class="setting-creator-item-input">
-          <el-input v-model="tickerInput" :placeholder="$t('setting.tickerPlaceholder')" />
+          <el-input v-model="tickerInput" :placeholder="$t('setting.tickerPlaceholder')" :disabled="!newAuthor" />
         </div>
         <p class="setting-creator-item-desp">
           {{ $t('setting.canNotBeModified') }}
@@ -76,6 +76,7 @@
                   v-model="item.value"
                   controls-position="right"
                   size="small"
+                  :precision="0"
                   :min="1"
                   :max="9007199254740991"
                 />
@@ -234,8 +235,8 @@ export default {
       }
       this.name = res.ticker.name
       this.ticker = res.ticker.ticker
-      if (res.ticker.items && res.ticker.items.length > 0) {
-        this.solutions = res.ticker.items.map(item => {
+      if (res.items && res.items.length > 0) {
+        this.solutions = res.items.map(item => {
           return {
             ...item,
             editing: false
@@ -502,7 +503,7 @@ export default {
         align-items: flex-start;
         white-space:nowrap;
         &-value {
-          color: @dark;
+          color: @primary;
           padding: 0;
           margin: 0 5px 0 5px;
           white-space: normal;
