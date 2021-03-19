@@ -1,9 +1,11 @@
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
+import { Message } from 'element-ui'
 
 const LIKEY_CONTRACT = 'izuE0eTEBrBjb0do7NwAHWceJ-Bxibz1W5liWLAloOA'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
+console.log('Is it test mode? :', TEST_MODE)
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -205,6 +207,7 @@ export default {
    */
   async interactWrite (jwk, input, tags, target, winstonQty) {
     const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
+    if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
       return {
         ...resDryRun,
@@ -213,18 +216,18 @@ export default {
     }
     const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
     return {
-      ...res,
+      ...resDryRun,
+      data: res,
       isTestMode: TEST_MODE
     }
   },
 
   /** 创建创作者 */
-  async announceCreator (jwk) {
-    const obj = LikeyContract.announceCreator()
+  async announceCreator (jwk, creator, ticker, items) {
+    const obj = LikeyContract.announceCreator(creator, ticker, items)
     console.log(obj)
 
     const res = await this.interactWrite(jwk, obj)
-    console.log('创建创作者结果：', res)
     return res
   }
 }

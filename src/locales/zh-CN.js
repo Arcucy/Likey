@@ -1,7 +1,8 @@
 export default {
   success: {
     login: '登录成功',
-    copy: '复制成功'
+    copy: '复制成功',
+    created: '创建成功'
   },
   failure: {
     login: '登录失败',
@@ -13,7 +14,8 @@ export default {
     connectionTimedOut: '连接超时，请检查您的网络连接并重试',
     unknownErrorCausedLoadingFailure: '未知错误导致加载失败',
     noPermissionToAccessPage: '你没有权限访问这个页面',
-    failedToObtainContractStatus: '无法获取合约状态'
+    failedToObtainContractStatus: '无法获取合约状态',
+    saveFailed: '保存失败'
   },
   landing: {
     title: '为你的创作建立社区',
@@ -63,6 +65,7 @@ export default {
     creationScale: '创作规模',
     creationScalePlaceholder: '选择一个规模',
     nextStep: '下一步',
+    previous: '上一步',
     save: '保存',
     personal: '个人',
     team: '团队',
@@ -72,7 +75,30 @@ export default {
     pleaseSelectACreationCategory: '请选择一个创作分类',
     pleaseSelectACreationScale: '请选择一个创作规模',
     pleaseFillInTheIntroduction: '请填写简介',
-    introductionIsTooLong: '简介过长'
+    introductionIsTooLong: '简介过长',
+    inputName: '名称',
+    inputNamePlaceholder: '填写自定义的代币名称',
+    ticker: '缩写（Ticker）',
+    tickerPlaceholder: '填写自定义的代币英文缩写',
+    unlockPlan: '解锁方案',
+    ownBalance: '持有',
+    unlock: '解锁',
+    endEdit: '编辑完成',
+    addSolution: '增加方案',
+    solutionName: '方案名称',
+    solutionIntroduction: '方案介绍',
+    warning: '提示',
+    areYouSureYouWantToDelete: '确定要删除么？',
+    ok: '确定',
+    cancel: '取消',
+    nameShouldNotBeEmpty: '代币名称不能为空',
+    tickerShouldNotBeEmpty: '代币缩写不能为空',
+    theLengthOfThisNameIsTooLong: '代币名称过长',
+    theLengthOfThisTickerSymbolIsTooLong: '代币缩写过长',
+    solutionEditingHasNotCompletedYet: '解锁方案尚未完成编辑',
+    pleaseReturnToThePreviousStepToFillInTheCreatorForm: '请返回上一步以填写创作者表格',
+    createSuccessfulAlertContent: '恭喜你成为创作者，你的信息将在下个区块合并时生效，这大概需要几分钟的时间。',
+    submittingPleaseDoNotCloseThePage: '正在提交中，请不要关闭页面'
   },
   creationCategoryOptions: {
     painting: '绘画',

@@ -1,7 +1,8 @@
 export default {
   success: {
     login: 'Login successful',
-    copy: 'Copy successfully'
+    copy: 'Copy successfully',
+    created: 'Created successfully'
   },
   failure: {
     login: 'Login failed',
@@ -13,7 +14,8 @@ export default {
     connectionTimedOut: 'Connection timed out, please check your connection and try again.',
     unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure',
     noPermissionToAccessPage: 'You do not have permission to access this page',
-    failedToObtainContractStatus: 'Failed to obtain contract status'
+    failedToObtainContractStatus: 'Failed to obtain contract status',
+    saveFailed: 'Save failed'
   },
   landing: {
     title: 'Build Your Community For Your Creation',
@@ -63,6 +65,7 @@ export default {
     creationScale: 'Creation Scale',
     creationScalePlaceholder: 'Choose a scale',
     nextStep: 'Next Step',
+    previous: 'Previous Step',
     save: 'Save',
     personal: 'Personal',
     team: 'Team',
@@ -72,7 +75,30 @@ export default {
     pleaseSelectACreationCategory: 'Please select a creation category',
     pleaseSelectACreationScale: 'Please select a creation scale',
     pleaseFillInTheIntroduction: 'Please fill in the introduction',
-    introductionIsTooLong: 'Introduction is too long'
+    introductionIsTooLong: 'Introduction is too long',
+    inputName: 'Name',
+    inputNamePlaceholder: 'Fill in the custom token name',
+    ticker: 'Ticker Symbol',
+    tickerPlaceholder: 'Fill in the custom ticker symbol',
+    unlockPlan: 'Unlock Solution',
+    ownBalance: 'Own',
+    unlock: 'Unlock',
+    endEdit: 'Edit Completed',
+    addSolution: 'Add Solution',
+    solutionName: 'Solution name',
+    solutionIntroduction: 'Solution introduction',
+    warning: 'Warning',
+    areYouSureYouWantToDelete: 'Are you sure you want to delete?',
+    ok: 'OK',
+    cancel: 'Cancel',
+    nameShouldNotBeEmpty: 'Name shouldn\'t be empty',
+    tickerShouldNotBeEmpty: 'Ticker shouldn\'t be empty',
+    theLengthOfThisNameIsTooLong: 'Name exceeds the length limit',
+    theLengthOfThisTickerSymbolIsTooLong: 'Ticker symbol exceeds the length limit',
+    solutionEditingHasNotCompletedYet: 'solution editing hasn\'t completed yet',
+    pleaseReturnToThePreviousStepToFillInTheCreatorForm: 'Please return to the previous step to fill in the creator form',
+    createSuccessfulAlertContent: 'Congratulations! You just became a creator! Your information will be available after the block been mined, this usually takes minutes to complete.',
+    submittingPleaseDoNotCloseThePage: 'Submitting, please do not close the page'
   },
   creationCategoryOptions: {
     painting: 'Painting',

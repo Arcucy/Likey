@@ -21,7 +21,7 @@
           <span class="mdi mdi-brightness-6 theme-switch" />
         </div>
         <!-- 成为创作者按钮 -->
-        <router-link :to="{ name: 'Setting-Creator' }">
+        <router-link v-if="!hideStartCreatingButton" :to="{ name: 'Setting-Creator' }">
           <el-button
             v-if="isLoggedIn"
             class="header-option-btn btn-mobile-hide"
@@ -88,7 +88,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isLoggedIn'])
+    ...mapGetters(['isLoggedIn', 'isMe']),
+    /** 特定情况下隐藏成为创作者按钮 */
+    hideStartCreatingButton () {
+      const onSettingPage = this.$route.name === 'Setting-Creator' || this.$route.name === 'Setting-Token'
+      const onMyProfilePage = this.$route.name === 'User' && this.isMe(this.$route.params.id)
+      return onSettingPage || onMyProfilePage
+    }
   },
   mounted () {
     this.initJwkLogin()
