@@ -126,7 +126,8 @@
       <div class="setting-creator-submit">
         <!-- 上一步 -->
         <el-button
-          :disabled="initLoading"
+          v-if="newAuthor"
+          :disabled="initLoading || submitting"
           @click="previous"
         >
           {{ $t('setting.previous') }}
@@ -134,7 +135,7 @@
         <!-- 保存 -->
         <el-button
           type="primary"
-          :disabled="initLoading"
+          :disabled="initLoading || submitting"
           @click="save"
         >
           {{ $t('setting.save') }}
