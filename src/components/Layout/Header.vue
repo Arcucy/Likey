@@ -57,7 +57,7 @@
 
 <script>
 // import Axios from 'axios'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import API from '@/api/api'
 import { FileUtil } from '@/util/file'
@@ -84,16 +84,32 @@ export default {
       fileName: '',
       fileContent: '',
       fileRaw: '',
-      isWalletLoaded: ''
+      isWalletLoaded: '',
+      isCreator: false
     }
   },
   computed: {
+    ...mapState({
+      myInfo: state => state.user.myInfo
+    }),
     ...mapGetters(['isLoggedIn', 'isMe']),
     /** 特定情况下隐藏成为创作者按钮 */
     hideStartCreatingButton () {
       const onSettingPage = this.$route.name === 'Setting-Creator' || this.$route.name === 'Setting-Token'
       const onMyProfilePage = this.$route.name === 'User' && this.isMe(this.$route.params.id)
-      return onSettingPage || onMyProfilePage
+      return onSettingPage || onMyProfilePage || this.isCreator
+    }
+  },
+  watch: {
+    isLoggedIn: {
+      async handler (val) {
+        if (val) {
+          const res = await this.getCreatorInfo(this.myInfo.address)
+          console.log('创作者信息:', res)
+          this.isCreator = Boolean(res)
+        } else this.isCreator = false
+      },
+      immediate: true
     }
   },
   mounted () {
@@ -103,7 +119,7 @@ export default {
     this._initLikeyContract()
   },
   methods: {
-    ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout', 'initLikeyContract']),
+    ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout', 'initLikeyContract', 'getCreatorInfo']),
     /** 初始化 JWK 登录 */
     async initJwkLogin () {
       if (this.isLoggedIn) return

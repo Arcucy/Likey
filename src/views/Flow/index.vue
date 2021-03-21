@@ -2,7 +2,7 @@
   <div class="flow">
     <h3>{{ $t("flow.flow") }}</h3>
     <div class="flow-container">
-      <AudioUploader @audio-list="getAudioFiles" />
+      <AudioUploader @audio-input="getAudioFiles" />
       <FileUploader @file-input="getFiles" />
     </div>
   </div>
