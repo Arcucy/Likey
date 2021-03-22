@@ -49,6 +49,7 @@ export default {
     editUsernameAndAvatar: 'Edit username and avatar'
   },
   setting: {
+    settings: 'Settings',
     creatorSetting: 'Creator Settings',
     tokenSettings: 'Token Settings',
     avatar: 'Avatar',

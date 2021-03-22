@@ -81,6 +81,15 @@ export default {
       // 先调用这个方法～
       await checkCache(state, dispatch)
       return state.creators[address] || null
+    },
+
+    /** 通过主页地址获取钱包地址 */
+    async getAddressByShortname ({ state, dispatch }, shortname) {
+      await checkCache(state, dispatch)
+      for (const [key, value] of Object.entries(state.creators)) {
+        if (value.shortname === shortname) return key
+      }
+      return ''
     }
   }
 }

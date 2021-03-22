@@ -24,7 +24,9 @@ export default {
   },
   watch: {
     $route (val, oldVal) {
-      if (val.params.id !== oldVal.params.id) this.routerRefresh()
+      const noId = val.params.id !== oldVal.params.id
+      const noShortname = val.params.shortname !== oldVal.params.shortname
+      if (noId || noShortname) this.routerRefresh()
     }
   }
 }
