@@ -51,6 +51,18 @@ const routes = [
     ]
   },
   {
+    path: '/@:shortname',
+    component: User,
+    children: [
+      {
+        path: '',
+        name: 'Creator',
+        component: UserIndex,
+        props: true
+      }
+    ]
+  },
+  {
     path: '/setting/creator',
     name: 'Setting-Creator',
     component: SettingCreator

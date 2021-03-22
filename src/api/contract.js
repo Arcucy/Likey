@@ -2,7 +2,8 @@ import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 
-const LIKEY_CONTRACT = 'izuE0eTEBrBjb0do7NwAHWceJ-Bxibz1W5liWLAloOA'
+// const LIKEY_CONTRACT = 'ztM2Ewn6gaptOskYbW35OyQD-MoZ86NckQWjkGxtXhA'
+const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
@@ -206,7 +207,7 @@ export default {
    * @param {*} winstonQty ？
    */
   async interactWrite (jwk, input, tags, target, winstonQty) {
-    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
       return {
@@ -214,7 +215,7 @@ export default {
         isTestMode: TEST_MODE
       }
     }
-    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, input, tags, target, winstonQty)
+    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
     return {
       ...resDryRun,
       data: res,
@@ -225,9 +226,16 @@ export default {
   /** 创建创作者 */
   async announceCreator (jwk, creator, ticker, items) {
     const obj = LikeyContract.announceCreator(creator, ticker, items)
-    console.log(obj)
 
     const res = await this.interactWrite(jwk, obj)
     return res
   }
+}
+
+/**
+ * 斩断变量与它前世的姻缘
+ * @param {*} data 需要被斩断的变量
+ */
+function copy (data) {
+  return data && typeof data === 'object' ? JSON.parse(JSON.stringify(data)) : data
 }

@@ -10,26 +10,34 @@
       </div>
     </div>
     <!-- 用户信息 -->
-    <div class="user-header-info">
-      <div class="user-header-info-avatar">
-        <div class="avatar-ring">
-          <Avatar size="120px" :src="basicInfo.avatar" />
+    <div class="user-header-info-bg">
+      <div class="user-header-info">
+        <div class="user-header-info-avatar">
+          <div class="avatar-ring">
+            <Avatar size="120px" :src="basicInfo.avatar" />
+          </div>
         </div>
-      </div>
-      <div class="user-header-info-text">
-        <h3>
-          {{ basicInfo.username }}
-        </h3>
-        <p>
-          {{ creatorInfo.introduction || $t('userProfile.noIntroductionYet') }}
-        </p>
+        <div class="user-header-info-text">
+          <h3>
+            {{ basicInfo.username }}
+          </h3>
+          <p>
+            {{ creatorInfo.intro || $t('userProfile.noIntroductionYet') }}
+          </p>
+        </div>
+        <div v-if="isMe(address) && isCreator" class="user-header-info-edit">
+          <router-link :to="{ name: 'Setting-Creator' }">
+            <span class="mdi mdi-cog-outline" />
+            {{ $t('setting.settings') }}
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import Avatar from '@/components/User/Avatar'
 
 export default {
@@ -39,14 +47,25 @@ export default {
   inject: ['routerRefresh'],
   data () {
     return {
-      loading: true,
+      basicLoading: true,
+      creatorLoading: true,
+      address: '',
       basicInfo: {
         username: '',
         avatar: '',
         address: ''
       },
       creatorInfo: {
-        introduction: ''
+        shortname: '',
+        intro: '',
+        category: '',
+        scale: '',
+        ticker: {
+          name: '',
+          ticker: '',
+          contract: ''
+        },
+        items: []
       }
     }
   },
@@ -54,23 +73,31 @@ export default {
     ...mapState({
       myInfo: state => state.user.myInfo
     }),
-    ...mapGetters(['isMe'])
+    ...mapGetters(['isMe']),
+    loading () {
+      return this.basicLoading || this.creatorLoading
+    },
+    isCreator () {
+      return Boolean(this.creatorInfo.shortname)
+    }
   },
   watch: {
   },
-  mounted () {
-    const address = this.$route.params.id
-    this.initBasicInfo(address)
-    this.initAvatar(address)
+  async mounted () {
+    this.address = await this.getAddress()
+    this.initBasicInfo(this.address)
+    this.initAvatar(this.address)
+    this.initCreatorInfo(this.address)
   },
   methods: {
+    ...mapActions(['getCreatorInfo', 'getAddressByShortname']),
     /** 初始化用户的基础信息 */
     async initBasicInfo (address) {
       if (this.isMe(address)) {
         this.basicInfo.address = address
         this.basicInfo.username = this.myInfo.username
         this.basicInfo.avatar = this.myInfo.avatar
-        this.loading = false
+        this.basicLoading = false
         this.pushBasicInfo()
         return
       }
@@ -78,7 +105,7 @@ export default {
         const res = await this.$api.gql.getIdByAddress(address)
         this.basicInfo.username = res.data
         this.basicInfo.address = address
-        this.loading = false
+        this.basicLoading = false
         this.pushBasicInfo()
       } catch (err) {
         // 错误处理
@@ -106,6 +133,23 @@ export default {
         console.warn('uncaught error: ' + err)
         this.$message.error(this.$t('failure.unknownErrorCausedLoadingFailure'))
       }
+    },
+    async getAddress () {
+      if (this.$route.name !== 'User') {
+        return await this.getAddressByShortname(this.$route.params.shortname)
+      }
+      return this.$route.params.id
+    },
+    async initCreatorInfo (address) {
+      this.creatorLoading = true
+      try {
+        const res = await this.getCreatorInfo(address)
+        if (res) this.creatorInfo = res
+      } catch (err) {
+        console.error('Failed to obtain creator information', err)
+        this.$message.error(this.$t('failure.failedToObtainContractStatus'))
+      }
+      this.creatorLoading = false
     },
     pushBasicInfo () {
       this.$emit('basic-info', this.basicInfo)
@@ -139,15 +183,24 @@ export default {
     }
   }
 
+  &-info-bg {
+    box-shadow: 0 0 2px 0 #0000001a;
+    background: @background;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+  }
+
   &-info {
     width: 100%;
-    background: @background;
+    max-width: 1220px;
     padding: 0 10px 40px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 0 2px 0 #0000001a;
+    position: relative;
     &-avatar {
       margin-top: -64px;
       display: flex;
@@ -185,6 +238,21 @@ export default {
         text-align: center;
       }
     }
+
+    &-edit  {
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      a {
+        font-size: 14px;
+        text-decoration: none;
+        color: @dark;
+
+        &:hover {
+          color: @primary;
+        }
+      }
+    }
   }
 }
 
@@ -193,6 +261,14 @@ export default {
     &-cover {
       &-pillar {
         padding-bottom: 42.85%;
+      }
+    }
+
+    &-info {
+      &-edit  {
+        a {
+          font-size: 12px;
+        }
       }
     }
   }

@@ -15,11 +15,11 @@
     <div v-else class="no-creator">
       <p>{{ $t('userProfile.notYetACreator') }}</p>
       <router-link :to="{ name: 'Setting-Creator' }">
-        <el-button v-if="isMyself" class="no-creator-btn" type="primary">
+        <el-button v-if="isMyself && !creatorLoading" class="no-creator-btn" type="primary">
           {{ $t('becomeACreatorBtn') }}
         </el-button>
       </router-link>
-      <div v-if="isMyself" class="no-creator-edit">
+      <div v-if="isMyself && !creatorLoading" class="no-creator-edit">
         <p>{{ $t('userProfile.editUsernameAndAvatar') }}</p>
         <a href="https://arweave.net/fGUdNmXFmflBMGI2f9vD7KzsrAc1s1USQgQLgAVT0W0" target="_blank">
           Arweave ID
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -52,7 +52,19 @@ export default {
   },
   data () {
     return {
-      isCreator: false
+      creatorLoading: false,
+      creatorInfo: {
+        shortname: '',
+        intro: '',
+        category: '',
+        scale: '',
+        ticker: {
+          name: '',
+          ticker: '',
+          contract: ''
+        },
+        items: []
+      }
     }
   },
   computed: {
@@ -64,9 +76,33 @@ export default {
     },
     isMyself () {
       return this.isMe(this.address)
+    },
+    isCreator () {
+      return Boolean(this.creatorInfo.shortname)
     }
   },
   watch: {
+    address: {
+      handler (val) {
+        if (val) this.initCreatorInfo(val)
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    ...mapActions(['getCreatorInfo']),
+    /** 初始化获取创作者信息 */
+    async initCreatorInfo (address) {
+      this.creatorLoading = true
+      try {
+        const res = await this.getCreatorInfo(address)
+        if (res) this.creatorInfo = res
+      } catch (err) {
+        console.error('Failed to obtain creator information', err)
+        this.$message.error(this.$t('failure.failedToObtainContractStatus'))
+      }
+      this.creatorLoading = false
+    }
   }
 }
 </script>
