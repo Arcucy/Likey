@@ -27,81 +27,59 @@ export default {
    */
   async createNewStatus (status, key, callback) {
   },
+  /**
+   * createNewFile 创建一个文件上传交易
+   * @param {*} file        - 要上传的文件，必须包含字段 data，type，可以参考 Uploader 组件
+   * @param {*} fileType    - 上传类型，image，audio，file 三选一
+   * @param {*} key         - 用户 JWK 钱包，如果是钱包插件可以传入空对象
+   * @param {*} callback    - 回调函数，返回当前上传百分比，以及一个 uplodaer（可以断点续传的上传对象）
+   * @returns               - 返回一个对象，包含 id 和 status 字段，id 字段是交易 id，status 字段是交易上传状态
+   */
+  async createNewFile (file, fileType, key, callback) {
+    const types = {
+      image: 'Likey-Images',
+      audio: 'Likey-Audio',
+      file: 'Likey-File'
+    }
 
-  async createNewImage (image, key, callback) {
-    const address = await API.ArweaveNative.wallets.getAddress(key)
+    const type = types[fileType] || 'Likey-File'
+
     let tx = null
     try {
-      tx = await arweave.createTransaction({ data: image.data }, key)
+      tx = await arweave.createTransaction({ data: file.data }, key)
     } catch (err) {
       throw new Error(err)
     }
 
     // // Add tag 添加标签
-    tx.addTag('Content-Type', image.type)
+    tx.addTag('Content-Type', file.type)
     tx.addTag('App-Name', 'likey-app-dev')
     tx.addTag('Unix-Time', Date.now())
-    tx.addTag('Type', 'image')
-    tx.addTag('Author-Address', address)
+    tx.addTag('Type', type)
 
     try {
       await arweave.transactions.sign(tx, key)
     } catch (err) {
       throw new Error(err)
     }
-    let imgUploader = null
+    let uploader = null
     try {
-      imgUploader = await arweave.transactions.getUploader(tx)
+      uploader = await arweave.transactions.getUploader(tx)
     } catch (err) {
       throw new Error(err)
     }
 
-    while (!imgUploader.isComplete) {
+    callback(uploader.pctComplete, uploader)
+    while (!uploader.isComplete) {
       try {
-        await imgUploader.uploadChunk()
+        await uploader.uploadChunk()
       } catch (err) {
         throw new Error(err)
       }
-      callback(imgUploader.pctComplete)
+      callback(uploader.pctComplete, uploader)
     }
 
     const result = await arweave.transactions.getStatus(tx.id)
-    return { id: tx.id, status: result.status, confirmed: result.confirmed, error: null }
-  },
-  async createNewAudios (audios = [], key, callback) {
-
-  },
-  async createNewFiles (files = [], key, callback) {
-
-  },
-  postImageQueue (queue = [], key, callback) {
-    return new Promise((resolve, reject) => {
-      let current = 0
-      const imageTx = []
-      const total = queue.length * 100
-
-      queue.forEach(i => {
-        // 调用单次上传方法
-        this.createNewImage(i, key, (pct) => {
-          // 更新上传进度（所有文件一起计算）
-          current += pct
-          const currentBn = new Bignumber(current)
-          const pctCurrent = currentBn.div(total).multipliedBy(100)
-          // 返回计算好的百分比
-          callback(parseInt(pctCurrent.toString()))
-        }).then(res => {
-          // 如果成功的话往 imageTx 加一条
-          imageTx.push(res)
-          // 长度一致的话就返回
-          if (imageTx.length === queue.length) {
-            resolve(imageTx)
-          }
-        }).catch(err => {
-          // 不行就报错
-          console.error(err)
-          reject(err)
-        })
-      })
-    })
+    return { id: tx.id, status: result }
   }
 }
