@@ -49,6 +49,7 @@ export default {
     editUsernameAndAvatar: '编辑用户名和头像'
   },
   setting: {
+    settings: '设置',
     creatorSetting: '创作设置',
     tokenSettings: '代币设置',
     avatar: '头像',

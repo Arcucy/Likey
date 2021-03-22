@@ -28,7 +28,7 @@
         <div v-if="isMe(address) && isCreator" class="user-header-info-edit">
           <router-link :to="{ name: 'Setting-Creator' }">
             <span class="mdi mdi-cog-outline" />
-            设置
+            {{ $t('setting.settings') }}
           </router-link>
         </div>
       </div>
