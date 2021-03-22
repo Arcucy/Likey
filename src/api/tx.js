@@ -1,4 +1,9 @@
+/* eslint-disable no-useless-catch */
+/* eslint-disable no-unused-vars */
 import Arweave from 'arweave'
+import Bignumber from 'bignumber.js'
+
+import API from './api'
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -21,20 +26,60 @@ export default {
    * @param {*} callback  - 监听交易状态的回调参数
    */
   async createNewStatus (status, key, callback) {
-    console.log(arweave)
-    // setTimeout(() => {
-    //   const status = { type: 'process', message: 'process.data', status: 'process.ok' }
-    //   callback(status)
-    // }, 5000)
   },
+  /**
+   * createNewFile 创建一个文件上传交易
+   * @param {*} file        - 要上传的文件，必须包含字段 data，type，可以参考 Uploader 组件
+   * @param {*} fileType    - 上传类型，image，audio，file 三选一
+   * @param {*} key         - 用户 JWK 钱包，如果是钱包插件可以传入空对象
+   * @param {*} callback    - 回调函数，返回当前上传百分比，以及一个 uplodaer（可以断点续传的上传对象）
+   * @returns               - 返回一个对象，包含 id 和 status 字段，id 字段是交易 id，status 字段是交易上传状态
+   */
+  async createNewFile (file, fileType, key, callback) {
+    const types = {
+      image: 'Likey-Images',
+      audio: 'Likey-Audio',
+      file: 'Likey-File'
+    }
 
-  async createNewImages (images = [], key, callback) {
+    const type = types[fileType] || 'Likey-File'
 
-  },
-  async createNewAudios (audios = [], key, callback) {
+    let tx = null
+    try {
+      tx = await arweave.createTransaction({ data: file.data }, key)
+    } catch (err) {
+      throw new Error(err)
+    }
 
-  },
-  async createNewFiles (files = [], key, callback) {
+    // // Add tag 添加标签
+    tx.addTag('Content-Type', file.type)
+    tx.addTag('App-Name', 'likey-app-dev')
+    tx.addTag('Unix-Time', Date.now())
+    tx.addTag('Type', type)
 
+    try {
+      await arweave.transactions.sign(tx, key)
+    } catch (err) {
+      throw new Error(err)
+    }
+    let uploader = null
+    try {
+      uploader = await arweave.transactions.getUploader(tx)
+    } catch (err) {
+      throw new Error(err)
+    }
+
+    callback(uploader.pctComplete, uploader)
+    while (!uploader.isComplete) {
+      try {
+        await uploader.uploadChunk()
+      } catch (err) {
+        throw new Error(err)
+      }
+      callback(uploader.pctComplete, uploader)
+    }
+
+    const result = await arweave.transactions.getStatus(tx.id)
+    return { id: tx.id, status: result }
   }
 }

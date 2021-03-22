@@ -1,15 +1,15 @@
 <template>
-  <div class="file-input cursor-pointer" id="file-input">
+  <div class="image-input cursor-pointer" id="image-input">
     <label
-      for="file-input-area"
+      for="image-input-area"
     >
-      <span class="mdi mdi-file-outline mdicon cursor-pointer" />
+      <span class="mdi mdi-image-multiple mdicon cursor-pointer" />
     </label>
     <input
-      class="file-input-area"
-      id="file-input-area"
+      class="image-input-area"
+      id="image-input-area"
       type="file"
-      accept="*"
+      accept="image/*"
       :multiple="multiple"
     >
   </div>
@@ -34,9 +34,9 @@ export default {
   },
   methods: {
     initFileInputEventListener () {
-      const fileInput = document.getElementById('file-input-area')
+      const fileInput = document.getElementById('image-input-area')
       fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 20) {
+        if (fileInput.files.length > 4) {
           console.error('Exceeded File Limits')
           return
         }
@@ -57,7 +57,7 @@ export default {
       })
     },
     done () {
-      this.$emit('file-input', this.fileBuffer)
+      this.$emit('image-input', this.fileBuffer)
       this.fileBuffer = []
     }
   }
@@ -69,7 +69,7 @@ export default {
   cursor: pointer;
 }
 
-.file-input {
+.image-input {
   width: 30px;
   height: 30px;
   display: flex;
