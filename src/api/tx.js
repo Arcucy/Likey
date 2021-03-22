@@ -1,4 +1,7 @@
+/* eslint-disable no-unused-vars */
 import Arweave from 'arweave'
+
+import API from './api'
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -21,15 +24,33 @@ export default {
    * @param {*} callback  - 监听交易状态的回调参数
    */
   async createNewStatus (status, key, callback) {
-    console.log(arweave)
-    // setTimeout(() => {
-    //   const status = { type: 'process', message: 'process.data', status: 'process.ok' }
-    //   callback(status)
-    // }, 5000)
   },
 
   async createNewImages (images = [], key, callback) {
+    console.log(images)
+    // const address = await API.ArweaveNative.wallets.getAddress(key)
+    // const imageTxs = []
+    // for (let i = 0; i < images.length; i++) {
+    //   const image = images[i]
+    //   const tx = await arweave.createTransaction({ data: image }, key).catch(err => console.error('Image Transaction Created Failed: ', err))
 
+    //   // // Add tag 添加标签
+    //   tx.addTag('Content-Type', 'image/png')
+    //   tx.addTag('App-Name', 'likey-app-dev')
+    //   tx.addTag('Unix-Time', Date.now())
+    //   tx.addTag('Type', 'image')
+    //   tx.addTag('Author-Address', address)
+
+    //   await arweave.transactions.sign(tx, key)
+    //   const imgUploader = await arweave.transactions.getUploader(tx)
+
+    //   while (!imgUploader.isComplete) {
+    //     // await imgUploader.uploadChunk()
+    //     callback(imgUploader.pctComplete)
+    //   }
+
+    //   await arweave.transactions.post(tx)
+    // }
   },
   async createNewAudios (audios = [], key, callback) {
 

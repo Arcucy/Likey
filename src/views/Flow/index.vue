@@ -2,7 +2,7 @@
   <div class="flow">
     <h3>{{ $t("flow.flow") }}</h3>
     <div class="flow-container">
-      <AudioUploader @audio-list="getAudioFiles" />
+      <AudioUploader @audio-input="getAudioFiles" />
       <FileUploader @file-input="getFiles" />
     </div>
     <el-button
@@ -31,12 +31,6 @@ export default {
     }
   },
   mounted () {
-    // const jwk = getCookie('arclight_userkey')
-    // this.$api.contract.announceCreator(JSON.parse(jwk),
-    //   { scale: 'Personal', category: 'writing', shortname: 'ayakaneko', intro: 'Hi' },
-    //   { name: 'Ayaka Neko Coin', ticker: 'ANC', contract: 'mGjKEbZnNXkxIXIJNkzMZi_jBADXC9QGlovd2fGmQas' },
-    //   []
-    // )
   },
   methods: {
     // 获得音乐文件
