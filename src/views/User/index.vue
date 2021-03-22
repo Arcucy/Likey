@@ -5,11 +5,15 @@
         <div class="col-header">
           <h3>{{ $t('userProfile.flow') }}</h3>
         </div>
+        <InputBox />
+        <FlowCard :data="{}" />
       </div>
       <div class="col-3">
         <div class="col-header">
           <h3>{{ $t('userProfile.sponsorship') }}</h3>
         </div>
+        <SponsorStatistics :address="address" />
+        <UnlockSolutionList :address="address" />
       </div>
     </div>
     <div v-else class="no-creator">
@@ -35,8 +39,17 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 
+import SponsorStatistics from '@/components/Creator/SponsorStatistics'
+import UnlockSolutionList from '@/components/Creator/UnlockSolutionList'
+import FlowCard from '@/components/FlowCard'
+import InputBox from '@/components/Creator/InputBox'
+
 export default {
   components: {
+    SponsorStatistics,
+    UnlockSolutionList,
+    FlowCard,
+    InputBox
   },
   props: {
     basicInfo: {
@@ -171,6 +184,7 @@ export default {
 }
 
 .col-header {
+  margin-bottom: 20px;
   h3 {
     margin: 0;
     padding: 0;
