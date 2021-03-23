@@ -1,9 +1,9 @@
 <template>
-  <div class="file-input cursor-pointer" id="file-input">
+  <div :class="{ disabled }" class="file-input" id="file-input">
     <label
       for="file-input-area"
     >
-      <span class="mdi mdi-file-outline mdicon cursor-pointer" />
+      <span class="mdi mdi-file-outline mdicon" />
     </label>
     <input
       class="file-input-area"
@@ -11,6 +11,7 @@
       type="file"
       accept="*"
       :multiple="multiple"
+      :disabled="disabled"
     >
   </div>
 </template>
@@ -18,7 +19,13 @@
 <script>
 export default {
   props: {
+    /** 开启多选 */
     multiple: {
+      type: Boolean,
+      default: false
+    },
+    /** 禁用 */
+    disabled: {
       type: Boolean,
       default: false
     }
@@ -51,7 +58,10 @@ export default {
               this.fileBuffer.push({ data: null, name: '', type: '', size: 0, error: true })
               console.error('Read File Error')
             }
-            if (fileInput.files.length === this.fileBuffer.length) this.done()
+            if (fileInput.files.length === this.fileBuffer.length) {
+              this.done()
+              fileInput.value = null
+            }
           }
         })
       })
@@ -65,10 +75,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .file-input {
   width: 28px;
   height: 28px;
@@ -76,6 +82,15 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  cursor: pointer;
+
+  .mdicon {
+    display: block;
+    margin-top: 2px;
+    font-size: 22px;
+    color: @gray3;
+    cursor: pointer;
+  }
 
   &:hover {
     background-color: @primary-light;
@@ -91,11 +106,14 @@ export default {
     }
   }
 
-  .mdicon {
-    display: block;
-    margin-top: 2px;
-    font-size: 22px;
-    color: @gray3;
+  &.disabled {
+    background-color: #00000000;
+    cursor: not-allowed;
+
+    .mdicon {
+      color: @gray2;
+      cursor: not-allowed;
+    }
   }
 
   &-area {

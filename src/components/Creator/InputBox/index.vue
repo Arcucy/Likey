@@ -14,9 +14,15 @@
       :placeholder="$t('statusInput.contentPlaceholder')"
       v-model="contentInput"
     />
+    <FileCard
+      v-for="(file, index) of files"
+      :key="index"
+      :file="file"
+      @remove-file="removeFile(index)"
+    />
     <div class="inputbox-func">
       <AudioUploader @audio-input="getAudioFiles" />
-      <FileUploader @file-input="getFiles" />
+      <FileUploader @file-input="getFiles" :disabled="files.length >= filesMaxLength" />
       <div class="inputbox-func-count">
         <p :class="content.length > contentMaxLength && 'overflow'">
           {{ content.length }}/{{ contentMaxLength }}
@@ -38,11 +44,13 @@
 <script>
 import AudioUploader from '@/components/Uploader/Audio'
 import FileUploader from '@/components/Uploader/File'
+import FileCard from './FileCard'
 
 export default {
   components: {
     AudioUploader,
-    FileUploader
+    FileUploader,
+    FileCard
   },
   props: {
   },
@@ -50,7 +58,9 @@ export default {
     return {
       title: '',
       content: '',
-      contentMaxLength: 1000
+      contentMaxLength: 1000,
+      files: [],
+      filesMaxLength: 1
     }
   },
   computed: {
@@ -88,11 +98,14 @@ export default {
     },
     // 获得文件
     getFiles (files) {
-      console.log(files)
+      this.files.push(...files)
     },
     /** 发布 */
     push () {
       console.log('发布！')
+    },
+    removeFile (index) {
+      this.files.splice(index, 1)
     }
   }
 }
