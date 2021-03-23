@@ -35,6 +35,15 @@
           {{ $t('setting.canNotBeModified') }}
         </p>
       </div>
+      <!-- 兑换比率 -->
+      <div class="setting-creator-item">
+        <h4>
+          {{ $t('setting.exchangeRatio') }}
+        </h4>
+        <div class="setting-creator-item-input">
+          <span>1:</span><el-input v-model="exchangeRatio" :placeholder="1" type="number" />
+        </div>
+      </div>
 
       <!-- 解锁方案 -->
       <div class="setting-creator-item">
@@ -146,6 +155,8 @@
 </template>
 
 <script>
+import Bignumber from 'bignumber.js'
+
 import { mapGetters, mapState, mapActions } from 'vuex'
 import { getCookie } from '@/util/cookie'
 
@@ -162,6 +173,8 @@ export default {
       authorInfoLoading: true,
       name: '',
       ticker: '',
+      tickerContract: '',
+      ratio: '1:',
       solutionMaximum: 20,
       solutions: [
         {
@@ -193,6 +206,15 @@ export default {
       },
       get () {
         return this.ticker
+      }
+    },
+    exchangeRatio: {
+      /** 输入过滤 */
+      set (val) {
+        this.ratio = val.replace(/[^0-9]/g, '')
+      },
+      get () {
+        return this.ratio
       }
     },
     submitTips () {
@@ -247,28 +269,51 @@ export default {
       this.newAuthor = false
     },
     /** 保存表单 */
-    save () {
+    async save () {
       if (!this.isLoggedIn) return
       if (this.validationForm()) return
       // 新来的调用创建创作者方法，已经是创作者的调用编辑方法
       this.submitting = true
-      if (this.newAuthor) this.cceateCreator()
-      else this.editCreator()
+      if (this.newAuthor) {
+        await this.createCreatorContract()
+        this.createCreator()
+      } else {
+        await this.editToken()
+        this.editCreator()
+      }
     },
     /** 编辑创作者 */
     editCreator () {
       console.log('编辑')
       this.submitting = false
     },
+    async editToken () {
+      this.submitting = false
+      const jwk = JSON.parse(this.myJwk)
+      this.$api.contract.editCreatorItems(jwk, this.solutions)
+    },
+    async createCreatorContract () {
+      const tickerObj = { ticker: this.ticker, name: this.name, ratio: '1:' + this.ratio }
+      const jwk = JSON.parse(this.myJwk)
+      let fee = await this.$api.contract.estimateCreatorPSTContractFee(jwk, tickerObj)
+      const address = await this.$api.gql.getAddress(jwk)
+      let balance = this.$api.ArweaveNative.ar.arToWinston(await this.$api.arql.getBalance(address))
+      balance = new Bignumber(balance)
+      fee = new Bignumber(fee.data)
+      if (balance.lt(fee)) {
+        this.$message.error(this.$t('failure.insufficientFunds'))
+        return
+      }
+      this.tickerContract = await this.$api.contract.createCreatorPSTContract(jwk, tickerObj)
+    },
     /** 创建创作者 */
-    async cceateCreator () {
+    async createCreator () {
       console.log('创建')
       if (!this.creatorFormBackup) {
         this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
         return false
       }
       const jwk = JSON.parse(this.myJwk)
-      const pstAddress = 'A4LCIVue3lxOR1ua_P2zMs_0B9Evsaypk3iNjsft8m0'
       // 上传表单。依次为：创作者表单，代币名称和简写，解锁方案列表
       try {
         const res = await this.$api.contract.announceCreator(jwk, {
@@ -276,7 +321,7 @@ export default {
         }, {
           name: this.name,
           ticker: this.ticker,
-          contract: pstAddress
+          contract: this.tickerContract
         }, this.solutions.filter(item => !item.editor).map(item => {
           return {
             title: item.title,
@@ -444,6 +489,11 @@ export default {
         /deep/ .el-select {
           display: block;
           flex: 1;
+        }
+
+        span {
+          font-weight: 700;
+          font-size: 20px;
         }
       }
 

@@ -15,7 +15,8 @@ export default {
     unknownErrorCausedLoadingFailure: '未知错误导致加载失败',
     noPermissionToAccessPage: '你没有权限访问这个页面',
     failedToObtainContractStatus: '无法获取合约状态',
-    saveFailed: '保存失败'
+    saveFailed: '保存失败',
+    insufficientFunds: '余额不足'
   },
   landing: {
     title: '为你的创作建立社区',
@@ -81,6 +82,7 @@ export default {
     inputNamePlaceholder: '填写自定义的代币名称',
     ticker: '缩写（Ticker）',
     tickerPlaceholder: '填写自定义的代币英文缩写',
+    exchangeRatio: '代币兑换比率',
     unlockPlan: '解锁方案',
     ownBalance: '持有',
     unlock: '解锁',
