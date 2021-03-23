@@ -125,5 +125,10 @@ export default {
     popularScience: 'Popular Science',
     education: 'Education',
     other: 'Other'
+  },
+  statusInput: {
+    titlePlaceholder: '标题',
+    contentPlaceholder: '正文，输入你想要发表的动态吧～',
+    push: 'Push'
   }
 }

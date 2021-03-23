@@ -5,7 +5,7 @@ import { Message } from 'element-ui'
 // const LIKEY_CONTRACT = 'ztM2Ewn6gaptOskYbW35OyQD-MoZ86NckQWjkGxtXhA'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
+const TEST_MODE = false
 console.log('Is it test mode? :', TEST_MODE)
 
 const arweave = Arweave.init({
@@ -194,7 +194,7 @@ export default {
    */
   async readLikeyContract () {
     const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
-    // console.log('likey contract state:', state)
+    console.log('likey contract state:', state)
     return state
   },
 

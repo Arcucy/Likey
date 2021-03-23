@@ -70,25 +70,32 @@ export default {
 }
 
 .audio-input {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
 
   &:hover {
-    background-color: @gray2;
+    background-color: @primary-light;
+    .mdicon {
+      color: @primary;
+    }
   }
 
   &:active {
-    background-color: @gray3;
+    background-color: @primary-dark;
+    .mdicon {
+      color: @primary;
+    }
   }
 
   .mdicon {
     display: block;
     margin-top: 2px;
-    font-size: 25px;
+    font-size: 22px;
+    color: @gray3;
   }
 
   &-area {
