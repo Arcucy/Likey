@@ -41,7 +41,7 @@
           {{ $t('setting.exchangeRatio') }}
         </h4>
         <div class="setting-creator-item-input">
-          <span>1:</span><el-input v-model="exchangeRatio" :placeholder="1" type="number" />
+          <span>1:</span><el-input v-model="exchangeRatio" :placeholder="1" />
         </div>
       </div>
 
@@ -174,7 +174,7 @@ export default {
       name: '',
       ticker: '',
       tickerContract: '',
-      ratio: '1:',
+      ratio: '1',
       solutionMaximum: 20,
       solutions: [
         {
@@ -211,7 +211,8 @@ export default {
     exchangeRatio: {
       /** 输入过滤 */
       set (val) {
-        this.ratio = val.replace(/[^0-9]/g, '')
+        // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
+        this.ratio = val.replace(/([^0-9.])|((?<=(\d+)?\.\d+)\.+(.+)?)|((?<=\.)\.+)/g, '')
       },
       get () {
         return this.ratio
