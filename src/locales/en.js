@@ -15,7 +15,8 @@ export default {
     unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure',
     noPermissionToAccessPage: 'You do not have permission to access this page',
     failedToObtainContractStatus: 'Failed to obtain contract status',
-    saveFailed: 'Save failed'
+    saveFailed: 'Save failed',
+    insufficientFunds: 'Insufficient Funds'
   },
   landing: {
     title: 'Build Your Community For Your Creation',
@@ -81,6 +82,7 @@ export default {
     inputNamePlaceholder: 'Fill in the custom token name',
     ticker: 'Ticker Symbol',
     tickerPlaceholder: 'Fill in the custom ticker symbol',
+    exchangeRatio: 'Exchange Ratio',
     unlockPlan: 'Unlock Solution',
     ownBalance: 'Own',
     unlock: 'Unlock',
