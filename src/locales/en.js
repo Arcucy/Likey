@@ -129,6 +129,7 @@ export default {
   statusInput: {
     titlePlaceholder: '标题',
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
-    push: 'Push'
+    push: 'Push',
+    download: 'Download'
   }
 }
