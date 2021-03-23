@@ -6,7 +6,7 @@ import Axios from 'axios'
 const LIKEY_CREATOR_PST_CONTRACT = 'nkgrioAGagAmmb-7Hr8WJ-Jx2mPpejMZq7UerinrS_o'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
+const TEST_MODE = false
 console.log('Is it test mode? :', TEST_MODE)
 
 const arweave = Arweave.init({

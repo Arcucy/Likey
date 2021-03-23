@@ -60,7 +60,7 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 
 import API from '@/api/api'
-import { FileUtil } from '@/util/file'
+import FileUtil from '@/util/file'
 // import jwkUtil from '@/util/jwk'
 import { getCookie, setCookie, removeCookie } from '@/util/cookie'
 

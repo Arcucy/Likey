@@ -1,9 +1,9 @@
 <template>
-  <div class="audio-input cursor-pointer" id="audio-input">
+  <div :class="{ disabled }" class="audio-input" id="audio-input">
     <label
       for="audio-input-area"
     >
-      <span class="mdi mdi-music-note-eighth mdicon cursor-pointer" />
+      <span class="mdi mdi-music-note-eighth mdicon" />
     </label>
     <input
       class="audio-input-area"
@@ -11,6 +11,7 @@
       type="file"
       accept="audio/mp3,audio/flac,audio/wave,audio/wav,audio/ogg,audio/mpeg"
       :multiple="multiple"
+      :disabled="disabled"
     >
   </div>
 </template>
@@ -19,6 +20,11 @@
 export default {
   props: {
     multiple: {
+      type: Boolean,
+      default: false
+    },
+    /** 禁用 */
+    disabled: {
       type: Boolean,
       default: false
     }
@@ -51,7 +57,10 @@ export default {
               this.fileBuffer.push({ data: null, name: '', type: '', size: 0, error: true })
               console.error('Read File Error')
             }
-            if (fileInput.files.length === this.fileBuffer.length) this.done()
+            if (fileInput.files.length === this.fileBuffer.length) {
+              this.done()
+              fileInput.value = null
+            }
           }
         })
       })
@@ -65,30 +74,45 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .audio-input {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-
-  &:hover {
-    background-color: @gray2;
-  }
-
-  &:active {
-    background-color: @gray3;
-  }
+  cursor: pointer;
 
   .mdicon {
     display: block;
     margin-top: 2px;
-    font-size: 25px;
+    font-size: 22px;
+    color: @gray3;
+    cursor: pointer;
+  }
+
+  &:hover {
+    background-color: @primary-light;
+    .mdicon {
+      color: @primary;
+    }
+  }
+
+  &:active {
+    background-color: @primary-dark;
+    .mdicon {
+      color: @primary;
+    }
+  }
+
+  &.disabled {
+    background-color: #00000000;
+    cursor: not-allowed;
+
+    .mdicon {
+      color: @gray2;
+      cursor: not-allowed;
+    }
   }
 
   &-area {

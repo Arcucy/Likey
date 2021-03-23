@@ -127,5 +127,11 @@ export default {
     popularScience: '科普',
     education: '教育',
     other: '其他'
+  },
+  statusInput: {
+    titlePlaceholder: '标题',
+    contentPlaceholder: '正文，输入你想要发表的动态吧～',
+    push: '发布动态',
+    download: '下载'
   }
 }
