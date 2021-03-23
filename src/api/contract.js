@@ -1,8 +1,9 @@
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
+import Axios from 'axios'
 
-// const LIKEY_CONTRACT = 'ztM2Ewn6gaptOskYbW35OyQD-MoZ86NckQWjkGxtXhA'
+const LIKEY_CREATOR_PST_CONTRACT = 'nkgrioAGagAmmb-7Hr8WJ-Jx2mPpejMZq7UerinrS_o'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
@@ -15,6 +16,109 @@ const arweave = Arweave.init({
   timeout: 20000,
   logging: false
 })
+
+// 合约状态读取请使用 @/store/contract 中的 vuex，那个有缓存功能，
+// 如果没有特殊需求，不要直接调用 readLikeyContract。
+export default {
+  /**
+   * 读取 Likey 主合约
+   */
+  async readLikeyContract () {
+    const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
+    return state
+  },
+
+  /**
+   * 封装好的 interactWrite 方法，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
+   * @param {Object} jwk 钱包
+   * @param {*} input 数据
+   * @param {*} tags 给交易添加标签
+   * @param {*} target ？
+   * @param {*} winstonQty ？
+   */
+  async interactWrite (jwk, input, tags, target, winstonQty) {
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
+    if (resDryRun.type !== 'ok' || TEST_MODE) {
+      return {
+        ...resDryRun,
+        isTestMode: TEST_MODE
+      }
+    }
+    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    return {
+      ...resDryRun,
+      data: res,
+      isTestMode: TEST_MODE
+    }
+  },
+  /**
+   * estimateCreatorPSTContractFee 估算创建创作者的 PST 合约所需要的手续费
+   * @param {*} jwk JWK 密钥
+   * @param {*} ticker ticker PST 信息
+   * @returns fee 手续费
+   */
+  async estimateCreatorPSTContractFee (jwk, ticker, address = '') {
+    if (address === '') {
+      address = await arweave.wallets.getAddress(jwk)
+    }
+    const LikeyPST = LikeyCreatorPSTState()
+    LikeyPST.ticker = ticker.ticker
+    LikeyPST.name = ticker.name
+    LikeyPST.ratio = ticker.ratio || '1:1'
+    LikeyPST.admins = [address]
+    LikeyPST.owner = address
+    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPST))
+    const fee = await Axios.get(`https://${process.env.VUE_APP_ARWEAVE_NODE}/price/${Number(tx.data_size)}`)
+    return fee
+  },
+  /**
+   * createCreatorPSTContract 创建创作者 PST 合约
+   * @param {*} jwk JWK 密钥
+   * @param {*} ticker ticker PST 信息
+   * @returns id 合约 ID
+   */
+  async createCreatorPSTContract (jwk, ticker, address = '') {
+    if (address === '') {
+      address = await arweave.wallets.getAddress(jwk)
+    }
+    const LikeyPST = LikeyCreatorPSTState()
+    LikeyPST.ticker = ticker.ticker
+    LikeyPST.name = ticker.name
+    LikeyPST.ratio = ticker.ratio || '1:1'
+    LikeyPST.admins = [address]
+    LikeyPST.owner = address
+    console.log(LikeyPST)
+    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyCreatorPSTState))
+    return contractId
+  },
+
+  /** 创建创作者 */
+  async announceCreator (jwk, creator, ticker, items) {
+    const obj = LikeyContract.announceCreator(creator, ticker, items)
+
+    const res = await this.interactWrite(jwk, obj)
+    return res
+  },
+  /** 更新创作者解锁方案 */
+  async editCreatorItems (jwk, items, address = '') {
+    if (address === '') {
+      address = await arweave.wallets.getAddress(jwk)
+    }
+    items.forEach(i => delete i.editing)
+    const obj = LikeyContract.editItem(address, items)
+    const res = await this.interactWrite(jwk, obj)
+    return res
+  }
+}
+
+/**
+ * 斩断变量与它前世的姻缘
+ * @param {*} data 需要被斩断的变量
+ */
+function copy (data) {
+  return data && typeof data === 'object' ? JSON.parse(JSON.stringify(data)) : data
+}
 
 const LikeyContract = {
   /**
@@ -186,56 +290,126 @@ const LikeyContract = {
   }
 }
 
-// 合约状态读取请使用 @/store/contract 中的 vuex，那个有缓存功能，
-// 如果没有特殊需求，不要直接调用 readLikeyContract。
-export default {
-  /**
-   * 读取 Likey 主合约
-   */
-  async readLikeyContract () {
-    const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
-    // console.log('likey contract state:', state)
-    return state
-  },
-
-  /**
-   * 封装好的 interactWrite 方法，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
-   * @param {Object} jwk 钱包
-   * @param {*} input 数据
-   * @param {*} tags 给交易添加标签
-   * @param {*} target ？
-   * @param {*} winstonQty ？
-   */
-  async interactWrite (jwk, input, tags, target, winstonQty) {
-    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
-    if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
-    if (resDryRun.type !== 'ok' || TEST_MODE) {
-      return {
-        ...resDryRun,
-        isTestMode: TEST_MODE
-      }
-    }
-    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
-    return {
-      ...resDryRun,
-      data: res,
-      isTestMode: TEST_MODE
-    }
-  },
-
-  /** 创建创作者 */
-  async announceCreator (jwk, creator, ticker, items) {
-    const obj = LikeyContract.announceCreator(creator, ticker, items)
-
-    const res = await this.interactWrite(jwk, obj)
-    return res
+const LikeyCreatorPSTState = () => {
+  return {
+    name: '',
+    ticker: '',
+    owner: '',
+    admins: [],
+    divisibility: 1000000000000,
+    ratio: '1:1',
+    balances: {},
+    holders: '0',
+    totalSupply: '0',
+    donations: [],
+    attributes: [],
+    settings: [],
+    version: '1.0.1'
   }
 }
 
-/**
- * 斩断变量与它前世的姻缘
- * @param {*} data 需要被斩断的变量
- */
-function copy (data) {
-  return data && typeof data === 'object' ? JSON.parse(JSON.stringify(data)) : data
+// eslint-disable-next-line no-unused-vars
+const LikeyCreatorPST = {
+  /**
+   * mint 合约写入方法
+   * 为指定地址铸币
+   * target 填写地址，quantity 填写数量
+   */
+  mint (recipient, quantity) {
+    return {
+      function: 'mint',
+      recipient,
+      quantity
+    }
+  },
+  /**
+   * burn 合约写入方法
+   * 销毁指定地址的资产
+   * target 填写地址，quantity 填写数量
+   */
+  burn (target, quantity) {
+    return {
+      function: 'burn',
+      target,
+      quantity
+    }
+  },
+  /**
+   * transfer 合约写入方法
+   * PST 转账，通用方法
+   * recipient 填写地址，qty 填写数量
+   */
+  transfer (target, qty) {
+    return {
+      function: 'transfer',
+      target,
+      qty
+    }
+  },
+  /**
+   * sponsorAdded 合约写入方法
+   * 购买作者的售卖方案
+   * 购买时直接通过这个方法转账
+   * 调用此合约时，必须包含调用合约的 target 和 winstonQty 参数，参见 SmartWeave
+   */
+  sponsorAdded () {
+    return {
+      function: 'sponsorAdded'
+    }
+  },
+  /**
+   * donationAdded 合约写入方法
+   * 打赏作者的动态
+   * data 结构中含有 statusId 字段
+   * 调用此合约时，必须包含调用合约的 target 和 winstonQty 参数，参见 SmartWeave
+   */
+  donationAdded (statusId) {
+    return {
+      function: 'donationAdded',
+      data: {
+        statusId
+      }
+    }
+  },
+  /**
+   * updateRatio 合约写入方法
+   * 更新合约兑换比率
+   * data 结构中含有 ratio 字段
+   */
+  updateRatio (ratio) {
+    return {
+      function: 'updateRatio',
+      data: {
+        ratio
+      }
+    }
+  },
+  /**
+   * editSettings 合约写入方法
+   * 更新合约支持的设定参数
+   * data 结构中含有 settings 对象
+   * settings 对象必须是数组，元素也应该是数组
+   */
+  editSettings (settings = []) {
+    return {
+      function: 'editSettings',
+      data: {
+        settings
+      }
+    }
+  },
+  /**
+   * editAttributes 合约写入方法
+   * 更新合约支持的拓展标签
+   * data 结构中含有 attributes 对象
+   * attributes 对象必须是数组，元素必须是对象
+   */
+  editAttributes (attributes = []) {
+    return {
+      function: 'editAttributes',
+      data: {
+        attributes
+      }
+    }
+  }
 }

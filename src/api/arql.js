@@ -798,14 +798,12 @@ const arql = {
     return arweave.ar.winstonToAr(winston)
   },
 
-  getBalance (key) {
+  getBalance (address) {
     return new Promise((resolve, reject) => {
-      arweave.wallets.jwkToAddress(key).then(address => {
-        arweave.wallets.getBalance(address).then((balance) => {
-          resolve(arweave.ar.winstonToAr(balance))
-        }).catch(err => {
-          reject(err)
-        })
+      arweave.wallets.getBalance(address).then((balance) => {
+        resolve(arweave.ar.winstonToAr(balance))
+      }).catch(err => {
+        reject(err)
       })
     })
   }
