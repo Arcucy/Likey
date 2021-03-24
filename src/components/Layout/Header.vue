@@ -105,7 +105,6 @@ export default {
       async handler (val) {
         if (val) {
           const res = await this.getCreatorInfo(this.myInfo.address)
-          console.log('创作者信息:', res)
           this.isCreator = Boolean(res)
         } else this.isCreator = false
       },
@@ -250,14 +249,12 @@ export default {
           const themeName = themes[0].split('-')[0]
           ls.removeItem('theme')
           ls.setItem('theme', themeName)
-          console.log('get theme: ', ls.getItem('theme'))
           this.$switchElementTheme(themeName)
         } else {
           current.add(themes[themes.indexOf(currentTheme) + 1])
           const themeName = themes[themes.indexOf(currentTheme) + 1].split('-')[0]
           ls.removeItem('theme')
           ls.setItem('theme', themeName)
-          console.log('get theme: ', ls.getItem('theme'))
           this.$switchElementTheme(themeName)
         }
       }

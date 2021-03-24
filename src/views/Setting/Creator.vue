@@ -106,6 +106,7 @@
         <el-button
           v-else
           type="primary"
+          :loading="submitting"
           :disabled="initLoading"
           @click="save"
         >
@@ -133,6 +134,7 @@ export default {
   },
   data () {
     return {
+      submitting: false,
       profileAddress: '',
       introduction: '',
       creationCategory: '',
@@ -153,6 +155,7 @@ export default {
     ...mapGetters(['isLoggedIn']),
     ...mapState({
       myInfo: state => state.user.myInfo,
+      myJwk: state => state.user.myJwk,
       creatorFormBackup: state => state.user.creatorFormBackup
     }),
     initLoading () {
@@ -183,7 +186,6 @@ export default {
     /** 初始化表单数据 */
     async initFormData () {
       const res = await this.getCreatorInfo(this.myInfo.address)
-      console.log('res1:', res)
       this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
@@ -199,13 +201,24 @@ export default {
       this.creationCategory = data.category
       this.creationScale = data.scale
     },
-    save () {
+    async save () {
       if (this.validationForm()) return
-      console.log('成功')
+      this.submitting = true
+      const info = await this.getCreatorInfo(this.myInfo.address)
+      if (!(info.category === this.creationCategory && info.scale === this.creationScale && info.intro === this.introduction)) {
+        const jwk = JSON.parse(this.myJwk)
+        await this.$api.contract.updateCreator(jwk, {
+          shortname: this.profileAddress,
+          intro: this.introduction,
+          category: this.creationCategory,
+          scale: this.creationScale
+        })
+      }
+      this.$message.success(this.$t('success.success'))
+      this.submitting = false
     },
     nextStep () {
       if (this.validationForm()) return
-      console.log('成功')
       this.setCreatorFormBackup({
         shortname: this.profileAddress,
         intro: this.introduction,

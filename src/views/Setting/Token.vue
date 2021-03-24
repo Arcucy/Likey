@@ -246,7 +246,6 @@ export default {
     /** 初始化表单数据 */
     async initFormData () {
       const res = await this.getCreatorInfo(this.myInfo.address)
-      console.log('res1:', res)
       this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
@@ -280,13 +279,7 @@ export default {
         this.createCreator()
       } else {
         await this.editToken()
-        this.editCreator()
       }
-    },
-    /** 编辑创作者 */
-    editCreator () {
-      console.log('编辑')
-      this.submitting = false
     },
     async editToken () {
       this.submitting = false
@@ -309,7 +302,6 @@ export default {
     },
     /** 创建创作者 */
     async createCreator () {
-      console.log('创建')
       if (!this.creatorFormBackup) {
         this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
         return false
@@ -331,9 +323,7 @@ export default {
           }
         }))
         this.submitting = false
-        console.log('创建创作者完成：', res)
         if (res.type !== 'ok') {
-          console.error('Save failed, res:', res)
           this.$message.warning(this.$t('failure.saveFailed'))
         } else {
           this.$alert(this.$t('setting.createSuccessfulAlertContent'), this.$t('success.created'), {
@@ -344,7 +334,6 @@ export default {
           })
         }
       } catch (err) {
-        console.error('Save failed, error:', err)
         this.submitting = false
         this.$message.warning(this.$t('failure.saveFailed'))
       }

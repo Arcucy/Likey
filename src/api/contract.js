@@ -6,7 +6,7 @@ import Axios from 'axios'
 const LIKEY_CREATOR_PST_CONTRACT = 'nkgrioAGagAmmb-7Hr8WJ-Jx2mPpejMZq7UerinrS_o'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = false
+const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
 
 const arweave = Arweave.init({
@@ -88,7 +88,6 @@ export default {
     LikeyPST.ratio = ticker.ratio || '1:1'
     LikeyPST.admins = [address]
     LikeyPST.owner = address
-    console.log(LikeyPST)
     const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyCreatorPSTState))
     return contractId
   },
@@ -96,6 +95,13 @@ export default {
   /** 创建创作者 */
   async announceCreator (jwk, creator, ticker, items) {
     const obj = LikeyContract.announceCreator(creator, ticker, items)
+
+    const res = await this.interactWrite(jwk, obj)
+    return res
+  },
+  /** 更新创作者 */
+  async updateCreator (jwk, creator) {
+    const obj = LikeyContract.updateCreator(creator)
 
     const res = await this.interactWrite(jwk, obj)
     return res

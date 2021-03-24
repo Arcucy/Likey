@@ -1,5 +1,6 @@
 export default {
   success: {
+    success: 'Success',
     login: 'Login successful',
     copy: 'Copy successfully',
     created: 'Created successfully'

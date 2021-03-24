@@ -1,5 +1,6 @@
 export default {
   success: {
+    success: '成功',
     login: '登录成功',
     copy: '复制成功',
     created: '创建成功'
