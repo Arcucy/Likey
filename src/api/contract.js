@@ -160,18 +160,16 @@ export default {
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
   async sponsorAdded (jwk, contract, quantity) {
-    let target = ''
     try {
       const pstState = await this.readLikeyCreatorPSTContract(contract)
-      target = pstState.owner
+
+      const obj = LikeyCreatorPST.sponsorAdded()
+
+      const res = await this.interactWritePST(jwk, contract, obj, [], pstState.owner, quantity)
+      return res
     } catch (err) {
       throw new Error(err)
     }
-
-    const obj = LikeyCreatorPST.sponsorAdded()
-
-    const res = await this.interactWritePST(jwk, contract, obj, [], target, quantity)
-    return res
   },
   /**
    * 打赏动态
@@ -182,18 +180,65 @@ export default {
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
   async donationAdded (jwk, contract, statusId, quantity) {
-    let target = ''
     try {
       const pstState = await this.readLikeyCreatorPSTContract(contract)
-      target = pstState.owner
+
+      const obj = LikeyCreatorPST.donationAdded(statusId)
+
+      const res = await this.interactWritePST(jwk, contract, obj, [], pstState.owner, quantity)
+      return res
     } catch (err) {
       throw new Error(err)
     }
+  },
+  /**
+   * 铸币
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} recipient   - 收款人
+   * @param {*} quantity    - 铸币数量，以 PST 为单位
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async mint (jwk, contract, recipient, quantity) {
+    const obj = LikeyCreatorPST.mint(recipient, quantity)
 
-    const obj = LikeyCreatorPST.donationAdded(statusId)
-
-    const res = await this.interactWritePST(jwk, contract, obj, [], target, quantity)
+    const res = await this.interactWritePST(jwk, contract, obj)
     return res
+  },
+  /**
+   * 转账
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} target      - 收款人
+   * @param {*} quantity    - 转账数量，以 PST 为单位
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async transfer (jwk, contract, target, quantity) {
+    const obj = LikeyCreatorPST.transfer(target, quantity)
+
+    const res = await this.interactWritePST(jwk, contract, obj)
+    return res
+  },
+  /**
+   * 为创作者 PST 添加代币图标
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} logo        - 图片地址，尽量选用 Arweave 链上数据（安全性：本地转换的时候以字符串进行读取）
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async editCreatorPSTLogo (jwk, contract, logo) {
+    try {
+      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      const temp = [...pstState.settings]
+      temp.push(['communityLogo', String(logo)])
+
+      const obj = LikeyCreatorPST.editSettings(temp)
+
+      const res = await this.interactWritePST(jwk, contract, obj)
+      return res
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 }
 
