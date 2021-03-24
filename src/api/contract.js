@@ -115,6 +115,13 @@ export default {
     const obj = LikeyContract.editItem(address, items)
     const res = await this.interactWrite(jwk, obj)
     return res
+  },
+  /** 更新兑换比率 */
+  async updateCreatorRatio (jwk, ratio) {
+    const obj = LikeyCreatorPST.updateRatio(ratio)
+
+    const res = await this.interactWrite(jwk, obj)
+    return res
   }
 }
 

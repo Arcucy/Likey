@@ -41,8 +41,15 @@
           {{ $t('setting.exchangeRatio') }}
         </h4>
         <div class="setting-creator-item-input">
-          <span>1:</span><el-input v-model="exchangeRatio" :placeholder="1" />
+          <span>1 {{ ticker || 'PST' }} =</span>
+          <div class="setting-creator-item-input-ratio">
+            <el-input v-model="exchangeRatio" :placeholder="1" />
+            <span>AR</span>
+          </div>
         </div>
+        <p class="setting-creator-item-desp">
+          {{ $t('setting.exchangeRatioDescription') }}
+        </p>
       </div>
 
       <!-- 解锁方案 -->
@@ -174,7 +181,7 @@ export default {
       name: '',
       ticker: '',
       tickerContract: '',
-      ratio: '1',
+      ratio: '',
       solutionMaximum: 20,
       solutions: [
         {
@@ -282,9 +289,28 @@ export default {
       }
     },
     async editToken () {
-      this.submitting = false
+      this.submitting = true
       const jwk = JSON.parse(this.myJwk)
-      this.$api.contract.editCreatorItems(jwk, this.solutions)
+      const info = await this.getCreatorInfo(this.myInfo.address)
+
+      // 整理配对顺序
+      info.items.sort((a, b) => a.id - b.id)
+      this.solutions.sort((a, b) => a.id - b.id)
+
+      // 统一数据结构
+      this.solutions.forEach((e, i) => {
+        delete e.editing
+        e.id = i
+        e.value = String(e.value)
+        e.title = String(e.title)
+        e.description = String(e.description)
+      })
+
+      if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
+        console.log(await this.$api.contract.editCreatorItems(jwk, this.solutions))
+      }
+      this.$message.success(this.$t('success.success'))
+      this.submitting = false
     },
     async createCreatorContract () {
       const tickerObj = { ticker: this.ticker, name: this.name, ratio: '1:' + this.ratio }
@@ -480,10 +506,17 @@ export default {
           display: block;
           flex: 1;
         }
-
         span {
           font-weight: 700;
           font-size: 20px;
+        }
+
+        &-ratio {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          column-gap: 10px;
+          width: 150px;
         }
       }
 

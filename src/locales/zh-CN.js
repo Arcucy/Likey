@@ -84,6 +84,7 @@ export default {
     ticker: '缩写（Ticker）',
     tickerPlaceholder: '填写自定义的代币英文缩写',
     exchangeRatio: '代币兑换比率',
+    exchangeRatioDescription: '分润代币兑换 AR 的初始兑换率',
     unlockPlan: '解锁方案',
     ownBalance: '持有',
     unlock: '解锁',
