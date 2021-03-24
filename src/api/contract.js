@@ -27,7 +27,13 @@ export default {
     const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
     return state
   },
-
+  /**
+   * 读取 Likey PST 合约信息
+   */
+  async readLikeyCreatorPSTContract (address) {
+    const state = await SmartWeave.readContract(arweave, address)
+    return state
+  },
   /**
    * 封装好的 interactWrite 方法，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
    * @param {Object} jwk 钱包
@@ -91,7 +97,6 @@ export default {
     const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyCreatorPSTState))
     return contractId
   },
-
   /** 创建创作者 */
   async announceCreator (jwk, creator, ticker, items) {
     const obj = LikeyContract.announceCreator(creator, ticker, items)

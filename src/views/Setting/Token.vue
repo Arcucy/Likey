@@ -263,6 +263,14 @@ export default {
         }
         return
       }
+      let tickerContract = {}
+      try {
+        tickerContract = await this.readLikeyCreatorPSTContract(res.ticker.contract)
+        const halfRatio = String(tickerContract.ratio).split(':')[1]
+        this.ratio = !halfRatio ? 'N/A' : '1:' + halfRatio
+      } catch (e) {
+        this.ratio = '1'
+      }
       this.name = res.ticker.name
       this.ticker = res.ticker.ticker
       if (res.items && res.items.length > 0) {
@@ -309,6 +317,10 @@ export default {
       if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
         console.log(await this.$api.contract.editCreatorItems(jwk, this.solutions))
       }
+      const pstState = await this.$api.readLikeyCreatorPSTContract(info.ticker.contract)
+      if ('1:' + this.ratio !== pstState.ratio) {
+        await this.$api.contract.editCreatorItems(jwk, '1:' + this.ratio)
+      }
       this.$message.success(this.$t('success.success'))
       this.submitting = false
     },
@@ -340,7 +352,8 @@ export default {
         }, {
           name: this.name,
           ticker: this.ticker,
-          contract: this.tickerContract
+          contract: this.tickerContract,
+          ratio: '1:' + this.ratio
         }, this.solutions.filter(item => !item.editor).map(item => {
           return {
             title: item.title,
