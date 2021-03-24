@@ -1,5 +1,6 @@
 export default {
   success: {
+    success: 'Success',
     login: 'Login successful',
     copy: 'Copy successfully',
     created: 'Created successfully'
@@ -83,6 +84,7 @@ export default {
     ticker: 'Ticker Symbol',
     tickerPlaceholder: 'Fill in the custom ticker symbol',
     exchangeRatio: 'Exchange Ratio',
+    exchangeRatioDescription: 'Initial PST exchange rate to AR',
     unlockPlan: 'Unlock Solution',
     ownBalance: 'Own',
     unlock: 'Unlock',

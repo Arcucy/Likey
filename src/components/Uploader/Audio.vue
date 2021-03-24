@@ -43,7 +43,6 @@ export default {
       const fileInput = document.getElementById('audio-input-area')
       fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 20) {
-          console.error('Exceeded File Limits')
           return
         }
 
@@ -55,7 +54,6 @@ export default {
               this.fileBuffer.push({ data: res.target.result, name: e.name, type: e.type, size: e.size })
             } catch (err) {
               this.fileBuffer.push({ data: null, name: '', type: '', size: 0, error: true })
-              console.error('Read File Error')
             }
             if (fileInput.files.length === this.fileBuffer.length) {
               this.done()

@@ -7,9 +7,7 @@
       <FileUploader @file-input="getFiles" />
     </div>
     <img v-if="url" :src="url" class="preview">
-    <el-button
-      @click="verifyUploads"
-    >
+    <el-button>
       上传
     </el-button>
   </div>
@@ -52,29 +50,10 @@ export default {
     },
     // 获得音乐文件
     getAudioFiles (files) {
-      console.log(files)
     },
     // 获得文件
     getFiles (files) {
-      console.log(files)
     }
-    // },
-    // async verifyUploads () {
-    //   const key = JSON.parse(getCookie('arclight_userkey'))
-
-    //   try {
-    //     const result = await this.$api.tx.postImageQueue(this.images, key, (pct) => {
-    //       console.log('upload progress: ', pct)
-    //     })
-    //     console.log(result)
-    //   } catch (err) {
-    //     console.error(err)
-    //     this.$message.error({
-    //       duration: 3000,
-    //       message: err
-    //     })
-    //   }
-    // }
   }
 }
 </script>
