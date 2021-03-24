@@ -41,8 +41,15 @@
           {{ $t('setting.exchangeRatio') }}
         </h4>
         <div class="setting-creator-item-input">
-          <span>1:</span><el-input v-model="exchangeRatio" :placeholder="1" />
+          <span>1 {{ ticker || 'PST' }} =</span>
+          <div class="setting-creator-item-input-ratio">
+            <el-input v-model="exchangeRatio" :placeholder="1" />
+            <span>AR</span>
+          </div>
         </div>
+        <p class="setting-creator-item-desp">
+          {{ $t('setting.exchangeRatioDescription') }}
+        </p>
       </div>
 
       <!-- 解锁方案 -->
@@ -174,7 +181,7 @@ export default {
       name: '',
       ticker: '',
       tickerContract: '',
-      ratio: '1',
+      ratio: '',
       solutionMaximum: 20,
       solutions: [
         {
@@ -246,7 +253,6 @@ export default {
     /** 初始化表单数据 */
     async initFormData () {
       const res = await this.getCreatorInfo(this.myInfo.address)
-      console.log('res1:', res)
       this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
@@ -256,6 +262,14 @@ export default {
           this.solutions = this.tokenFormBackup.items
         }
         return
+      }
+      let tickerContract = {}
+      try {
+        tickerContract = await this.readLikeyCreatorPSTContract(res.ticker.contract)
+        const halfRatio = String(tickerContract.ratio).split(':')[1]
+        this.ratio = !halfRatio ? 'N/A' : '1:' + halfRatio
+      } catch (e) {
+        this.ratio = '1'
       }
       this.name = res.ticker.name
       this.ticker = res.ticker.ticker
@@ -280,18 +294,35 @@ export default {
         this.createCreator()
       } else {
         await this.editToken()
-        this.editCreator()
       }
     },
-    /** 编辑创作者 */
-    editCreator () {
-      console.log('编辑')
-      this.submitting = false
-    },
     async editToken () {
-      this.submitting = false
+      this.submitting = true
       const jwk = JSON.parse(this.myJwk)
-      this.$api.contract.editCreatorItems(jwk, this.solutions)
+      const info = await this.getCreatorInfo(this.myInfo.address)
+
+      // 整理配对顺序
+      info.items.sort((a, b) => a.id - b.id)
+      this.solutions.sort((a, b) => a.id - b.id)
+
+      // 统一数据结构
+      this.solutions.forEach((e, i) => {
+        delete e.editing
+        e.id = i
+        e.value = String(e.value)
+        e.title = String(e.title)
+        e.description = String(e.description)
+      })
+
+      if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
+        console.log(await this.$api.contract.editCreatorItems(jwk, this.solutions))
+      }
+      const pstState = await this.$api.readLikeyCreatorPSTContract(info.ticker.contract)
+      if ('1:' + this.ratio !== pstState.ratio) {
+        await this.$api.contract.editCreatorItems(jwk, '1:' + this.ratio)
+      }
+      this.$message.success(this.$t('success.success'))
+      this.submitting = false
     },
     async createCreatorContract () {
       const tickerObj = { ticker: this.ticker, name: this.name, ratio: '1:' + this.ratio }
@@ -309,7 +340,6 @@ export default {
     },
     /** 创建创作者 */
     async createCreator () {
-      console.log('创建')
       if (!this.creatorFormBackup) {
         this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
         return false
@@ -322,7 +352,8 @@ export default {
         }, {
           name: this.name,
           ticker: this.ticker,
-          contract: this.tickerContract
+          contract: this.tickerContract,
+          ratio: '1:' + this.ratio
         }, this.solutions.filter(item => !item.editor).map(item => {
           return {
             title: item.title,
@@ -331,9 +362,7 @@ export default {
           }
         }))
         this.submitting = false
-        console.log('创建创作者完成：', res)
         if (res.type !== 'ok') {
-          console.error('Save failed, res:', res)
           this.$message.warning(this.$t('failure.saveFailed'))
         } else {
           this.$alert(this.$t('setting.createSuccessfulAlertContent'), this.$t('success.created'), {
@@ -344,7 +373,6 @@ export default {
           })
         }
       } catch (err) {
-        console.error('Save failed, error:', err)
         this.submitting = false
         this.$message.warning(this.$t('failure.saveFailed'))
       }
@@ -491,10 +519,17 @@ export default {
           display: block;
           flex: 1;
         }
-
         span {
           font-weight: 700;
           font-size: 20px;
+        }
+
+        &-ratio {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          column-gap: 10px;
+          width: 150px;
         }
       }
 

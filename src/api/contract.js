@@ -6,7 +6,7 @@ import Axios from 'axios'
 const LIKEY_CREATOR_PST_CONTRACT = 'nkgrioAGagAmmb-7Hr8WJ-Jx2mPpejMZq7UerinrS_o'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = false
+const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
 
 const arweave = Arweave.init({
@@ -27,7 +27,13 @@ export default {
     const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
     return state
   },
-
+  /**
+   * 读取 Likey PST 合约信息
+   */
+  async readLikeyCreatorPSTContract (address) {
+    const state = await SmartWeave.readContract(arweave, address)
+    return state
+  },
   /**
    * 封装好的 interactWrite 方法，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
    * @param {Object} jwk 钱包
@@ -46,6 +52,30 @@ export default {
       }
     }
     const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    return {
+      ...resDryRun,
+      data: res,
+      isTestMode: TEST_MODE
+    }
+  },
+  /**
+   * 封装好的 interactWritePST 方法，用于写入 PST 合约，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
+   * @param {Object} jwk 钱包
+   * @param {*} input 数据
+   * @param {*} tags 给交易添加标签
+   * @param {*} target ？
+   * @param {*} winstonQty ？
+   */
+  async interactWritePST (jwk, contract, input, tags, target, winstonQty) {
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, contract, copy(input), tags, target, winstonQty)
+    if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
+    if (resDryRun.type !== 'ok' || TEST_MODE) {
+      return {
+        ...resDryRun,
+        isTestMode: TEST_MODE
+      }
+    }
+    const res = await SmartWeave.interactWrite(arweave, jwk, contract, copy(input), tags, target, winstonQty)
     return {
       ...resDryRun,
       data: res,
@@ -88,14 +118,19 @@ export default {
     LikeyPST.ratio = ticker.ratio || '1:1'
     LikeyPST.admins = [address]
     LikeyPST.owner = address
-    console.log(LikeyPST)
     const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyCreatorPSTState))
     return contractId
   },
-
   /** 创建创作者 */
   async announceCreator (jwk, creator, ticker, items) {
     const obj = LikeyContract.announceCreator(creator, ticker, items)
+
+    const res = await this.interactWrite(jwk, obj)
+    return res
+  },
+  /** 更新创作者 */
+  async updateCreator (jwk, creator) {
+    const obj = LikeyContract.updateCreator(creator)
 
     const res = await this.interactWrite(jwk, obj)
     return res
@@ -109,6 +144,101 @@ export default {
     const obj = LikeyContract.editItem(address, items)
     const res = await this.interactWrite(jwk, obj)
     return res
+  },
+  /** 更新兑换比率 */
+  async updateCreatorRatio (jwk, ratio) {
+    const obj = LikeyCreatorPST.updateRatio(ratio)
+
+    const res = await this.interactWrite(jwk, obj)
+    return res
+  },
+  /**
+   * 赞赏创作者
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} quantity    - 赞助金额，以 Winston 为单位，写入数据前请根据兑换比率自行换算，进入合约后才会按照兑换比率换算
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async sponsorAdded (jwk, contract, quantity) {
+    try {
+      const pstState = await this.readLikeyCreatorPSTContract(contract)
+
+      const obj = LikeyCreatorPST.sponsorAdded()
+
+      const res = await this.interactWritePST(jwk, contract, obj, [], pstState.owner, quantity)
+      return res
+    } catch (err) {
+      throw new Error(err)
+    }
+  },
+  /**
+   * 打赏动态
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} statusId    - 打赏的动态 ID
+   * @param {*} quantity    - 打赏金额，单位为 Winston
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async donationAdded (jwk, contract, statusId, quantity) {
+    try {
+      const pstState = await this.readLikeyCreatorPSTContract(contract)
+
+      const obj = LikeyCreatorPST.donationAdded(statusId)
+
+      const res = await this.interactWritePST(jwk, contract, obj, [], pstState.owner, quantity)
+      return res
+    } catch (err) {
+      throw new Error(err)
+    }
+  },
+  /**
+   * 铸币
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} recipient   - 收款人
+   * @param {*} quantity    - 铸币数量，以 PST 为单位
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async mint (jwk, contract, recipient, quantity) {
+    const obj = LikeyCreatorPST.mint(recipient, quantity)
+
+    const res = await this.interactWritePST(jwk, contract, obj)
+    return res
+  },
+  /**
+   * 转账
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} target      - 收款人
+   * @param {*} quantity    - 转账数量，以 PST 为单位
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async transfer (jwk, contract, target, quantity) {
+    const obj = LikeyCreatorPST.transfer(target, quantity)
+
+    const res = await this.interactWritePST(jwk, contract, obj)
+    return res
+  },
+  /**
+   * 为创作者 PST 添加代币图标
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} logo        - 图片地址，尽量选用 Arweave 链上数据（安全性：本地转换的时候以字符串进行读取）
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async editCreatorPSTLogo (jwk, contract, logo) {
+    try {
+      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      const temp = [...pstState.settings]
+      temp.push(['communityLogo', String(logo)])
+
+      const obj = LikeyCreatorPST.editSettings(temp)
+
+      const res = await this.interactWritePST(jwk, contract, obj)
+      return res
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 }
 
