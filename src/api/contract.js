@@ -152,8 +152,45 @@ export default {
     const res = await this.interactWrite(jwk, obj)
     return res
   },
-  async sponsorAdded (jwk, contract, target, quantity) {
+  /**
+   * 赞赏创作者
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} quantity    - 赞助金额，以 Winston 为单位，写入数据前请根据兑换比率自行换算，进入合约后才会按照兑换比率换算
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async sponsorAdded (jwk, contract, quantity) {
+    let target = ''
+    try {
+      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      target = pstState.owner
+    } catch (err) {
+      throw new Error(err)
+    }
+
     const obj = LikeyCreatorPST.sponsorAdded()
+
+    const res = await this.interactWritePST(jwk, contract, obj, [], target, quantity)
+    return res
+  },
+  /**
+   * 打赏动态
+   * @param {*} jwk         - JWK 密钥
+   * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
+   * @param {*} statusId    - 打赏的动态 ID
+   * @param {*} quantity    - 打赏金额，单位为 Winston
+   * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
+   */
+  async donationAdded (jwk, contract, statusId, quantity) {
+    let target = ''
+    try {
+      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      target = pstState.owner
+    } catch (err) {
+      throw new Error(err)
+    }
+
+    const obj = LikeyCreatorPST.donationAdded(statusId)
 
     const res = await this.interactWritePST(jwk, contract, obj, [], target, quantity)
     return res
