@@ -25,7 +25,60 @@ export default {
    * @param {*} key       - JWK 签名密钥
    * @param {*} callback  - 监听交易状态的回调参数
    */
-  async createNewStatus (status, key, callback) {
+  async createNewStatus (status, extra, key, callback) {
+    const obj = {
+      title: String(status.title),
+      content: String(status.content),
+      isTop: Boolean(status.isTop),
+      isLock: Boolean(status.isLock),
+      extra: {
+        media: extra.media || [],
+        audio: extra.audio || [],
+        file: extra.file || []
+      }
+    }
+
+    let tx = null
+    try {
+      tx = await arweave.createTransaction({ data: obj }, key)
+    } catch (err) {
+      throw new Error(err)
+    }
+
+    // Add tag 添加标签
+    tx.addTag('Content-Type', 'application/json')
+    tx.addTag('App-Name', 'likey-app-dev')
+    tx.addTag('Schema-Version', '0.1.0')
+    tx.addTag('Unix-Time', Date.now())
+    tx.addTag('Type', 'status')
+    tx.addTag('Title', String(status.title))
+    tx.addTag('Summary', String(status.title).substring(0, 100))
+    tx.addTag('Extra', JSON.stringify({ media: extra.media.length || 0, audio: extra.audio.length || 0, file: extra.file.length || 0 }))
+
+    try {
+      await arweave.transactions.sign(tx, key)
+    } catch (err) {
+      throw new Error(err)
+    }
+    let uploader = null
+    try {
+      uploader = await arweave.transactions.getUploader(tx)
+    } catch (err) {
+      throw new Error(err)
+    }
+
+    callback(uploader.pctComplete, uploader)
+    while (!uploader.isComplete) {
+      try {
+        await uploader.uploadChunk()
+      } catch (err) {
+        throw new Error(err)
+      }
+      callback(uploader.pctComplete, uploader)
+    }
+
+    const result = await arweave.transactions.getStatus(tx.id)
+    return { id: tx.id, status: result }
   },
   /**
    * createNewFile 创建一个文件上传交易
@@ -51,9 +104,10 @@ export default {
       throw new Error(err)
     }
 
-    // // Add tag 添加标签
+    // Add tag 添加标签
     tx.addTag('Content-Type', file.type)
     tx.addTag('App-Name', 'likey-app-dev')
+    tx.addTag('Schema-Version', '0.1.0')
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', type)
 

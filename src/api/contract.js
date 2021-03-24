@@ -59,6 +59,30 @@ export default {
     }
   },
   /**
+   * 封装好的 interactWritePST 方法，用于写入 PST 合约，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
+   * @param {Object} jwk 钱包
+   * @param {*} input 数据
+   * @param {*} tags 给交易添加标签
+   * @param {*} target ？
+   * @param {*} winstonQty ？
+   */
+  async interactWritePST (jwk, contract, input, tags, target, winstonQty) {
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, contract, copy(input), tags, target, winstonQty)
+    if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
+    if (resDryRun.type !== 'ok' || TEST_MODE) {
+      return {
+        ...resDryRun,
+        isTestMode: TEST_MODE
+      }
+    }
+    const res = await SmartWeave.interactWrite(arweave, jwk, contract, copy(input), tags, target, winstonQty)
+    return {
+      ...resDryRun,
+      data: res,
+      isTestMode: TEST_MODE
+    }
+  },
+  /**
    * estimateCreatorPSTContractFee 估算创建创作者的 PST 合约所需要的手续费
    * @param {*} jwk JWK 密钥
    * @param {*} ticker ticker PST 信息
@@ -126,6 +150,12 @@ export default {
     const obj = LikeyCreatorPST.updateRatio(ratio)
 
     const res = await this.interactWrite(jwk, obj)
+    return res
+  },
+  async sponsorAdded (jwk, contract, target, quantity) {
+    const obj = LikeyCreatorPST.sponsorAdded()
+
+    const res = await this.interactWritePST(jwk, contract, obj, [], target, quantity)
     return res
   }
 }
