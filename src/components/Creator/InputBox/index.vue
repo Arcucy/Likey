@@ -14,11 +14,10 @@
       :placeholder="$t('statusInput.contentPlaceholder')"
       v-model="contentInput"
     />
-    <FileCard
-      v-for="(file, index) of files"
-      :key="'FileCard-' + index"
-      :file="file"
-      @remove-file="removeFile(index)"
+    <PhotoCards
+      v-if="imageFiles && imageFiles.length"
+      :files="imageFiles"
+      @remove-file="removeImageFile"
     />
     <AudioCard
       v-for="(audioFile, index) of audioFiles"
@@ -26,9 +25,26 @@
       :file="audioFile"
       @remove-file="removeAudioFile(index)"
     />
+    <FileCard
+      v-for="(file, index) of files"
+      :key="'FileCard-' + index"
+      :file="file"
+      @remove-file="removeFile(index)"
+    />
     <div class="inputbox-func">
-      <AudioUploader @audio-input="getAudioFiles" :disabled="audioFiles.length >= audioFilesMaxLength" />
-      <FileUploader @file-input="getFiles" :disabled="files.length >= filesMaxLength" />
+      <ImageUploader
+        multiple
+        @image-input="getImageFiles"
+        :disabled="imageFiles.length >= imageFilesMaxLength"
+      />
+      <AudioUploader
+        @audio-input="getAudioFiles"
+        :disabled="audioFiles.length >= audioFilesMaxLength"
+      />
+      <FileUploader
+        @file-input="getFiles"
+        :disabled="files.length >= filesMaxLength"
+      />
       <div class="inputbox-func-count">
         <p :class="content.length > contentMaxLength && 'overflow'">
           {{ content.length }}/{{ contentMaxLength }}
@@ -48,17 +64,21 @@
 </template>
 
 <script>
+import ImageUploader from '@/components/Uploader/Image'
 import AudioUploader from '@/components/Uploader/Audio'
 import FileUploader from '@/components/Uploader/File'
-import FileCard from './FileCard'
+import PhotoCards from './PhotoCards'
 import AudioCard from './AudioCard'
+import FileCard from './FileCard'
 
 export default {
   components: {
+    ImageUploader,
     AudioUploader,
     FileUploader,
-    FileCard,
-    AudioCard
+    PhotoCards,
+    AudioCard,
+    FileCard
   },
   props: {
   },
@@ -67,10 +87,12 @@ export default {
       title: '',
       content: '',
       contentMaxLength: 1000,
-      files: [],
+      imageFiles: [],
       audioFiles: [],
-      filesMaxLength: 1,
-      audioFilesMaxLength: 1
+      files: [],
+      imageFilesMaxLength: 4,
+      audioFilesMaxLength: 1,
+      filesMaxLength: 1
     }
   },
   computed: {
@@ -102,9 +124,24 @@ export default {
   watch: {
   },
   methods: {
+    // 获得图片文件
+    async getImageFiles (files) {
+      files = [...files]
+      console.log(files)
+      if (this.imageFiles.length + files.length > this.imageFilesMaxLength) {
+        this.$message.warning(this.$t('statusInput.pictureSelectionLimitWarning', [this.imageFilesMaxLength]))
+        return
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        const url = await this.getBase64Url(files[i].data, files[i].type)
+        files[i] = { ...files[i], url }
+      }
+
+      this.imageFiles.push(...files)
+    },
     // 获得音乐文件
     getAudioFiles (files) {
-      console.log(files)
       this.audioFiles.push(...files)
     },
     // 获得文件
@@ -115,11 +152,26 @@ export default {
     push () {
       console.log('发布！')
     },
-    removeFile (index) {
-      this.files.splice(index, 1)
+    removeImageFile (index) {
+      this.imageFiles.splice(index, 1)
     },
     removeAudioFile (index) {
       this.audioFiles.splice(index, 1)
+    },
+    removeFile (index) {
+      this.files.splice(index, 1)
+    },
+    /** 将资源加载到一个 url */
+    getBase64Url (buffer, type) {
+      return new Promise((resolve, reject) => {
+        // 挂载音频到一个 URL，并指定给 audio.pic
+        const reader = new FileReader()
+        reader.readAsArrayBuffer(new Blob([new Uint8Array(buffer)], { type }))
+        reader.onload = (event) => {
+          const url = window.webkitURL.createObjectURL(new Blob([event.target.result], { type }))
+          resolve(url)
+        }
+      })
     }
   }
 }

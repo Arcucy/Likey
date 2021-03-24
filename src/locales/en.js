@@ -132,6 +132,7 @@ export default {
     titlePlaceholder: '标题',
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
     push: 'Push',
-    download: 'Download'
+    download: 'Download',
+    pictureSelectionLimitWarning: '最多只能选择 {0} 张照片'
   }
 }

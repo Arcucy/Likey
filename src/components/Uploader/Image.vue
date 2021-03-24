@@ -1,9 +1,9 @@
 <template>
-  <div class="image-input cursor-pointer" id="image-input">
+  <div :class="{ disabled }" class="image-input" id="image-input">
     <label
       for="image-input-area"
     >
-      <span class="mdi mdi-image-multiple mdicon cursor-pointer" />
+      <span class="mdi mdi-image-outline mdicon" />
     </label>
     <input
       class="image-input-area"
@@ -11,6 +11,7 @@
       type="file"
       accept="image/*"
       :multiple="multiple"
+      :disabled="disabled"
     >
   </div>
 </template>
@@ -19,6 +20,11 @@
 export default {
   props: {
     multiple: {
+      type: Boolean,
+      default: false
+    },
+    /** 禁用 */
+    disabled: {
       type: Boolean,
       default: false
     }
@@ -36,7 +42,7 @@ export default {
     initFileInputEventListener () {
       const fileInput = document.getElementById('image-input-area')
       fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 4) {
+        if (fileInput.files.length > 20) {
           console.error('Exceeded File Limits')
           return
         }
@@ -51,7 +57,10 @@ export default {
               this.fileBuffer.push({ data: null, name: '', type: '', size: 0, error: true })
               console.error('Read File Error')
             }
-            if (fileInput.files.length === this.fileBuffer.length) this.done()
+            if (fileInput.files.length === this.fileBuffer.length) {
+              this.done()
+              fileInput.value = null
+            }
           }
         })
       })
@@ -65,30 +74,53 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .image-input {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  cursor: pointer;
 
-  &:hover {
-    background-color: @gray2;
-  }
-
-  &:active {
-    background-color: @gray3;
+  label {
+    width: 100%;
+    text-align: center;
   }
 
   .mdicon {
     display: block;
     margin-top: 2px;
-    font-size: 25px;
+    font-size: 22px;
+    color: @gray3;
+    cursor: pointer;
+    &::before {
+      cursor: pointer;
+    }
+  }
+
+  &:hover {
+    background-color: @primary-light;
+    .mdicon {
+      color: @primary;
+    }
+  }
+
+  &:active {
+    background-color: @primary-dark;
+    .mdicon {
+      color: @primary;
+    }
+  }
+
+  &.disabled {
+    background-color: #00000000;
+    cursor: not-allowed;
+
+    .mdicon {
+      color: @gray2;
+      cursor: not-allowed;
+    }
   }
 
   &-area {

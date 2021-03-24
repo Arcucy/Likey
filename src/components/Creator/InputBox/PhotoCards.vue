@@ -7,6 +7,10 @@
         v-if="imgUrls.length === 1"
         class="album-one"
       >
+        <span
+          class="mdi mdi-close-thick photo-close-btn"
+          @click="$emit('remove-file', 0)"
+        />
         <el-image
           :src="imgUrls[0]"
           alt="image"
@@ -21,6 +25,10 @@
         class="album-two"
       >
         <div class="album-two-column">
+          <span
+            class="mdi mdi-close-thick photo-close-btn"
+            @click="$emit('remove-file', 0)"
+          />
           <el-image
             :src="imgUrls[0]"
             alt="image"
@@ -30,6 +38,10 @@
           />
         </div>
         <div class="album-two-column">
+          <span
+            class="mdi mdi-close-thick photo-close-btn"
+            @click="$emit('remove-file', 1)"
+          />
           <el-image
             :src="imgUrls[1]"
             alt="image"
@@ -45,6 +57,10 @@
         class="album-three"
       >
         <div class="album-three-column">
+          <span
+            class="mdi mdi-close-thick photo-close-btn"
+            @click="$emit('remove-file', 0)"
+          />
           <el-image
             :src="imgUrls[0]"
             alt="image"
@@ -55,6 +71,10 @@
         </div>
         <div class="album-three-column">
           <div class="album-three-column-line">
+            <span
+              class="mdi mdi-close-thick photo-close-btn"
+              @click="$emit('remove-file', 1)"
+            />
             <el-image
               :src="imgUrls[1]"
               alt="image"
@@ -64,10 +84,14 @@
             />
           </div>
           <div class="album-three-column-line">
+            <span
+              class="mdi mdi-close-thick photo-close-btn"
+              @click="$emit('remove-file', 2)"
+            />
             <el-image
-              :src="imgUrls[3]"
+              :src="imgUrls[2]"
               alt="image"
-              :preview-src-list="getImgList(3)"
+              :preview-src-list="getImgList(2)"
               fit="cover"
               lazy
             />
@@ -81,6 +105,10 @@
       >
         <div class="album-three-column">
           <div class="album-three-column-line">
+            <span
+              class="mdi mdi-close-thick photo-close-btn"
+              @click="$emit('remove-file', 0)"
+            />
             <el-image
               :src="imgUrls[0]"
               alt="image"
@@ -90,6 +118,10 @@
             />
           </div>
           <div class="album-three-column-line">
+            <span
+              class="mdi mdi-close-thick photo-close-btn"
+              @click="$emit('remove-file', 2)"
+            />
             <el-image
               :src="imgUrls[2]"
               alt="image"
@@ -101,6 +133,10 @@
         </div>
         <div class="album-three-column">
           <div class="album-three-column-line">
+            <span
+              class="mdi mdi-close-thick photo-close-btn"
+              @click="$emit('remove-file', 1)"
+            />
             <el-image
               :src="imgUrls[1]"
               alt="image"
@@ -110,6 +146,10 @@
             />
           </div>
           <div class="album-three-column-line">
+            <span
+              class="mdi mdi-close-thick photo-close-btn"
+              @click="$emit('remove-file', 3)"
+            />
             <el-image
               :src="imgUrls[3]"
               alt="image"
@@ -131,19 +171,15 @@ export default {
   },
   props: {
     // 卡片数据
-    media: {
+    files: {
       type: Array,
       required: true
-    }
-  },
-  data () {
-    return {
     }
   },
   computed: {
     imgUrls () {
       try {
-        return this.media.map(item => item.id)
+        return this.files.map(item => item.url)
       } catch (e) {
         console.error('[Unable to display picture]:', e)
         return []
@@ -166,24 +202,32 @@ img {
   width: 100%;
   height: 100%;
 }
-.gif-label {
+.photo-close-btn {
   position: absolute;
-  left: 10px;
+  right: 10px;
   top: 10px;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
   background: #000000c4;
-  border-radius: 4px;
-  font-size: 13px;
   color: white;
-  font-weight: 700;
-  line-height: 20px;
-  height: 20px;
-  padding: 0 5px;
+  font-size: 16px;
   z-index: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: @primary;
+    background: #000000c4;
+  }
 }
 
 .album-frame {
   position: relative;
   width: 100%;
+  margin-bottom: 10px;
 
   &-pillar {
     padding-bottom: 56.25%;
@@ -273,6 +317,7 @@ img {
       height: 100%;
     }
     &-column {
+      position: relative;
       height: 100%;
       flex: 1;
       display: flex;
