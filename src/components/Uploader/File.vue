@@ -84,6 +84,11 @@ export default {
   border-radius: 6px;
   cursor: pointer;
 
+  label {
+    width: 100%;
+    text-align: center;
+  }
+
   .mdicon {
     display: block;
     margin-top: 2px;

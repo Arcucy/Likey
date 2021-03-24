@@ -60,14 +60,9 @@ export default {
   watch: {
     file: {
       async handler (value) {
-        console.log('res:', value.data, Buffer.from(value.data))
         if (value) this.src = await this.getBase64Url(value.data, value.type)
-        console.log(this.src)
       },
       immediate: true
-    },
-    primaryColor (val) {
-      console.log('primaryColor', val)
     },
     themeName: {
       handler () {
