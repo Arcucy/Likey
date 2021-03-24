@@ -3,7 +3,8 @@ export default {
   namespaced: false,
 
   state: {
-    appLang: 'en'
+    appLang: 'en',
+    themeName: ''
   },
   getters: {
     appLang: (state) => {
@@ -11,7 +12,8 @@ export default {
     }
   },
   mutations: {
-    setAppLang (state, lang) { state.appLang = lang }
+    setAppLang (state, lang) { state.appLang = lang },
+    mSetThemeName (state, name) { state.themeName = name }
   },
   actions: {
   }
