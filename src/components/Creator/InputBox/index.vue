@@ -16,12 +16,18 @@
     />
     <FileCard
       v-for="(file, index) of files"
-      :key="index"
+      :key="'FileCard-' + index"
       :file="file"
       @remove-file="removeFile(index)"
     />
+    <AudioCard
+      v-for="(audioFile, index) of audioFiles"
+      :key="'AudioCard-' + index"
+      :file="audioFile"
+      @remove-file="removeAudioFile(index)"
+    />
     <div class="inputbox-func">
-      <AudioUploader @audio-input="getAudioFiles" />
+      <AudioUploader @audio-input="getAudioFiles" :disabled="audioFiles.length >= audioFilesMaxLength" />
       <FileUploader @file-input="getFiles" :disabled="files.length >= filesMaxLength" />
       <div class="inputbox-func-count">
         <p :class="content.length > contentMaxLength && 'overflow'">
@@ -45,12 +51,14 @@
 import AudioUploader from '@/components/Uploader/Audio'
 import FileUploader from '@/components/Uploader/File'
 import FileCard from './FileCard'
+import AudioCard from './AudioCard'
 
 export default {
   components: {
     AudioUploader,
     FileUploader,
-    FileCard
+    FileCard,
+    AudioCard
   },
   props: {
   },
@@ -60,7 +68,9 @@ export default {
       content: '',
       contentMaxLength: 1000,
       files: [],
-      filesMaxLength: 1
+      audioFiles: [],
+      filesMaxLength: 1,
+      audioFilesMaxLength: 1
     }
   },
   computed: {
@@ -95,6 +105,7 @@ export default {
     // 获得音乐文件
     getAudioFiles (files) {
       console.log(files)
+      this.audioFiles.push(...files)
     },
     // 获得文件
     getFiles (files) {
@@ -106,6 +117,9 @@ export default {
     },
     removeFile (index) {
       this.files.splice(index, 1)
+    },
+    removeAudioFile (index) {
+      this.audioFiles.splice(index, 1)
     }
   }
 }
