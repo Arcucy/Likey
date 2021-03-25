@@ -11,6 +11,15 @@
     </div>
     <SettingNav v-else />
     <div class="setting-creator">
+      <div class="setting-creator-item">
+        <h4>
+          {{ $t('setting.contractAddress') }}
+        </h4>
+        <div class="setting-creator-item-contract">
+          <span>{{ tickerContract }}</span>
+          <span class="mdi mdi-content-copy copy-icon" @click="() => copyContractAddress(tickerContract)" />
+        </div>
+      </div>
       <!-- 名称 -->
       <div class="setting-creator-item">
         <h4>
@@ -180,7 +189,7 @@ export default {
       authorInfoLoading: true,
       name: '',
       ticker: '',
-      tickerContract: '',
+      tickerContract: 'gcF5fDyfAG8JCZI6kfdSS7cl3DEtgtbAyy9kI1GOVkA',
       ratio: '',
       solutionMaximum: 20,
       solutions: [
@@ -260,19 +269,24 @@ export default {
           this.name = this.tokenFormBackup.name
           this.ticker = this.tokenFormBackup.ticker
           this.solutions = this.tokenFormBackup.items
+          this.ratio = this.tokenFormBackup.ratio
         }
         return
       }
+
+      // 初始化兑换比率
       let tickerContract = {}
       try {
         tickerContract = await this.readLikeyCreatorPSTContract(res.ticker.contract)
-        const halfRatio = String(tickerContract.ratio).split(':')[1]
-        this.ratio = !halfRatio ? 'N/A' : '1:' + halfRatio
+        const halfRatio = String(parseFloat(String(tickerContract.ratio).split(':')[1]))
+        this.ratio = !halfRatio ? '' : halfRatio
       } catch (e) {
         this.ratio = '1'
       }
+
       this.name = res.ticker.name
       this.ticker = res.ticker.ticker
+      this.tickerContract = res.ticker.contract
       if (res.items && res.items.length > 0) {
         this.solutions = res.items.map(item => {
           return {
@@ -296,6 +310,7 @@ export default {
         await this.editToken()
       }
     },
+    /** 编辑代币 */
     async editToken () {
       this.submitting = true
       const jwk = JSON.parse(this.myJwk)
@@ -324,15 +339,16 @@ export default {
       this.$message.success(this.$t('success.success'))
       this.submitting = false
     },
+    /** 创建代币 */
     async createCreatorContract () {
       const tickerObj = { ticker: this.ticker, name: this.name, ratio: '1:' + this.ratio }
       const jwk = JSON.parse(this.myJwk)
-      let fee = await this.$api.contract.estimateCreatorPSTContractFee(jwk, tickerObj)
+      const tx = await this.$api.contract.estimateCreatorPSTContractFee(jwk, tickerObj)
       const address = await this.$api.gql.getAddress(jwk)
       let balance = this.$api.ArweaveNative.ar.arToWinston(await this.$api.arql.getBalance(address))
       balance = new Bignumber(balance)
-      fee = new Bignumber(fee.data)
-      if (balance.lt(fee)) {
+      tx.fee = new Bignumber(tx.fee.data)
+      if (balance.lt(tx.fee)) {
         this.$message.error(this.$t('failure.insufficientFunds'))
         return
       }
@@ -342,6 +358,7 @@ export default {
     async createCreator () {
       if (!this.creatorFormBackup) {
         this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
+        this.submitting = false
         return false
       }
       const jwk = JSON.parse(this.myJwk)
@@ -352,8 +369,7 @@ export default {
         }, {
           name: this.name,
           ticker: this.ticker,
-          contract: this.tickerContract,
-          ratio: '1:' + this.ratio
+          contract: this.tickerContract
         }, this.solutions.filter(item => !item.editor).map(item => {
           return {
             title: item.title,
@@ -398,6 +414,14 @@ export default {
       if (this.solutions.find(item => item.editing && !this.isCmptySolution(item))) {
         this.$message.warning(this.$t('setting.solutionEditingHasNotCompletedYet'))
         return 5
+      }
+      if (this.ratio.length > String(1000000000000).length) {
+        this.$message.warning(this.$t('setting.exchangeRatioExceedsTheLimitation'))
+        return 6
+      }
+      if (this.ratio === '') {
+        this.$message.warning(this.$t('setting.pleaseFillInTheExchangeRatio'))
+        return 7
       }
       return 0
     },
@@ -465,9 +489,25 @@ export default {
       this.setTokenFormBackup({
         name: this.name,
         ticker: this.ticker,
-        items: this.solutions
+        items: this.solutions,
+        ratio: this.ratio
       })
       this.$router.push({ name: 'Setting-Creator' })
+    },
+    /** 复制合约地址 */
+    copyContractAddress (address) {
+      this.$copyText(address).then(
+        () => {
+          this.$message({
+            showClose: true,
+            message: this.$t('success.copy'),
+            type: 'success'
+          })
+        },
+        () => {
+          this.$message({ showClose: true, message: this.$t('error.copy'), type: 'error' })
+        }
+      )
     }
   }
 }
@@ -499,6 +539,29 @@ export default {
 
     &-item {
       margin: 0 0 40px;
+
+      &-contract {
+        display: flex;
+        column-gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+
+        .copy-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: @primary;
+
+          &:hover {
+            color: @secondary;
+          }
+
+          &:active {
+            color: @primary-dark;
+          }
+        }
+      }
 
       h4 {
         color: @dark;

@@ -3,10 +3,10 @@ import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import Axios from 'axios'
 
-const LIKEY_CREATOR_PST_CONTRACT = 'nkgrioAGagAmmb-7Hr8WJ-Jx2mPpejMZq7UerinrS_o'
+const LIKEY_CREATOR_PST_CONTRACT = 'skE0Tux5FDahegQn5vNQAn2rLxxacU2DXhXB-zPUYaE'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
+const TEST_MODE = false
 console.log('Is it test mode? :', TEST_MODE)
 
 const arweave = Arweave.init({
@@ -100,7 +100,7 @@ export default {
     LikeyPST.owner = address
     const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPST))
     const fee = await Axios.get(`https://${process.env.VUE_APP_ARWEAVE_NODE}/price/${Number(tx.data_size)}`)
-    return fee
+    return { id: tx.id, fee }
   },
   /**
    * createCreatorPSTContract 创建创作者 PST 合约
@@ -118,7 +118,7 @@ export default {
     LikeyPST.ratio = ticker.ratio || '1:1'
     LikeyPST.admins = [address]
     LikeyPST.owner = address
-    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyCreatorPSTState))
+    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPST))
     return contractId
   },
   /** 创建创作者 */
