@@ -67,6 +67,7 @@
 import ImageUploader from '@/components/Uploader/Image'
 import AudioUploader from '@/components/Uploader/Audio'
 import FileUploader from '@/components/Uploader/File'
+
 import PhotoCards from './PhotoCards'
 import AudioCard from './AudioCard'
 import FileCard from './FileCard'
@@ -127,7 +128,6 @@ export default {
     // 获得图片文件
     async getImageFiles (files) {
       files = [...files]
-      console.log(files)
       if (this.imageFiles.length + files.length > this.imageFilesMaxLength) {
         this.$message.warning(this.$t('statusInput.pictureSelectionLimitWarning', [this.imageFilesMaxLength]))
         return

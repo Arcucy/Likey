@@ -17,7 +17,9 @@ export default {
     noPermissionToAccessPage: '你没有权限访问这个页面',
     failedToObtainContractStatus: '无法获取合约状态',
     saveFailed: '保存失败',
-    insufficientFunds: '余额不足'
+    insufficientFunds: '余额不足',
+    autoCompressionFail: '图片压缩失败',
+    imgVeryBIg: '图片过大'
   },
   landing: {
     title: '为你的创作建立社区',

@@ -17,7 +17,9 @@ export default {
     noPermissionToAccessPage: 'You do not have permission to access this page',
     failedToObtainContractStatus: 'Failed to obtain contract status',
     saveFailed: 'Save failed',
-    insufficientFunds: 'Insufficient Funds'
+    insufficientFunds: 'Insufficient Funds',
+    autoCompressionFail: 'Image compression failed',
+    imgVeryBIg: 'Image too large'
   },
   landing: {
     title: 'Build Your Community For Your Creation',
