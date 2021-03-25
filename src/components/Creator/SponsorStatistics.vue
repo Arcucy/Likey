@@ -14,7 +14,7 @@
           {{ contract.holders || 0 }}
         </h4>
         <p>
-          赞赏人数
+          {{ $t('sponsor.donationAndSponsorCount') }}
         </p>
       </div>
       <div class="sponsor-data-item">
@@ -22,7 +22,7 @@
           {{ contract.totalSupply || 0 }}
         </h4>
         <p>
-          发行量
+          {{ $t('sponsor.totalSupply') }}
         </p>
       </div>
       <div class="sponsor-data-item">

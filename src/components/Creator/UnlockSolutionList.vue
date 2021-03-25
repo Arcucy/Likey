@@ -23,7 +23,7 @@
           Locked
         </span>
         <el-button class="solution-unlock-btn" type="primary" @click="buyUnlockSolution(item, index)">
-          AR${{ convertPSTToAR(item.value) || pstToAR }}
+          {{ convertPSTToWinston(item.value) | winstonToAr }} AR
         </el-button>
       </div>
     </div>
@@ -53,7 +53,7 @@
       <div class="solution-unlock">
         <span class="solution-unlock-status" />
         <el-button class="solution-unlock-btn" type="primary" @click="buyCustomSolution(customPstInput)">
-          AR${{ customPstInput }}
+          {{ customPstInput }} AR
         </el-button>
       </div>
     </div>
@@ -112,20 +112,24 @@ export default {
       console.log('购买自定义方案', value)
     },
     async initContractInfo () {
-      this.convertPSTToAR()
       this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
       this.ratio = this.contractState.ratio
     },
-    convertPSTToAR (value) {
+    convertPSTToWinston (value) {
       const { from, to } = this.getRatio(this.ratio)
       value = new Bignumber(value).multipliedBy(from).div(to)
-      return value.toFixed(12)
+      value = value.toFixed(12)
+
+      if (value === 'Infinity') {
+        return '0'
+      }
+      return value
     },
     getRatio (ratio) {
       if (!/^1:\d*\.?\d*$/.test(ratio)) {
         return { from: '1', to: '0' }
       }
-      let from = 1
+      let from = 1000000000000
       let to = parseFloat(ratio.split(':').pop())
       let iteration = 0
 
@@ -227,9 +231,13 @@ export default {
     align-items: center;
     user-select: none;
     margin: 10px 0 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     &-status {
       flex: 1;
+      white-space:nowrap;
+      margin: 10px 5px 10px 0;
       .mdi-lock-open {
         display: none;
       }

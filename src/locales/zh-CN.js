@@ -145,5 +145,12 @@ export default {
     everyoneCanSee: '所有人可见',
     allSponsors: '所有持仓者',
     ownNUnlock: '持有 {0} {1}/解锁'
+  },
+  sponsor: {
+    sponsor: '赞助',
+    sponsorStatistics: '赞赏统计',
+    totalSupply: '发行总量',
+    holders: '持仓人数',
+    donationAndSponsorCount: '赞赏总数'
   }
 }

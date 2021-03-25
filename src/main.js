@@ -11,6 +11,7 @@ import Aplayer from 'vue-aplayer'
 
 import '@/icons'
 import API from '../src/api/api'
+import Filters from '../src/filters/index'
 
 const loadCSS = (path) => {
   const head = document.getElementsByTagName('head')[0]
@@ -49,15 +50,10 @@ const loadTheme = async (themeName) => {
 }
 loadTheme(themeName)
 
-Vue.filter('pstToAR', function (val) {
-  if (!val) return '0'
-  return parseFloat(val)
+Object.keys(Filters).forEach(key => {
+  Vue.filter(key, Filters[key])
 })
 
-Vue.filter('arToPST', function (val) {
-  if (!val) return '0'
-  return parseFloat(val)
-})
 Vue.use(VueClipboards)
 
 Vue.component('aplayer', Aplayer)

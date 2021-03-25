@@ -141,9 +141,16 @@ export default {
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
     push: 'Push',
     download: 'Download',
-    pictureSelectionLimitWarning: '最多只能选择 {0} 张照片',
+    pictureSelectionLimitWarning: 'You can only select {0} image(s)',
     everyoneCanSee: 'Everyone Can See',
-    allSponsors: '所有持仓者',
+    allSponsors: 'All Sponsors',
     ownNUnlock: 'Own {0} {1}/Unlock'
+  },
+  sponsor: {
+    sponsor: 'Sponsors',
+    sponsorStatistics: 'Sponsor Statistics',
+    totalSupply: 'Total Supply',
+    holders: 'Holders',
+    donationAndSponsorCount: 'Purchased'
   }
 }
