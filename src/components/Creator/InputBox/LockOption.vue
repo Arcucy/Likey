@@ -4,7 +4,7 @@
       <span v-if="!value" class="mdi mdi-lock-open-outline mdicon" />
       <span v-else class="mdi mdi-lock-outline mdicon" />
     </div>
-    <el-dropdown-menu slot="dropdown">
+    <el-dropdown-menu class="lock-option" slot="dropdown">
       <!-- 所有人可见 -->
       <el-dropdown-item
         class="lock-option-item"
@@ -120,6 +120,11 @@ export default {
       cursor: not-allowed;
     }
   }
+}
+
+.lock-option {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .lock-option-item {
