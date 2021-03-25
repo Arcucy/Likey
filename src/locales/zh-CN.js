@@ -19,7 +19,8 @@ export default {
     saveFailed: '保存失败',
     insufficientFunds: '余额不足',
     autoCompressionFail: '图片压缩失败',
-    imgVeryBIg: '图片过大'
+    imgVeryBIg: '图片过大',
+    unableToGetFile: '无法获取文件'
   },
   landing: {
     title: '为你的创作建立社区',

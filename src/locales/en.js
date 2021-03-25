@@ -19,7 +19,8 @@ export default {
     saveFailed: 'Save failed',
     insufficientFunds: 'Insufficient Funds',
     autoCompressionFail: 'Image compression failed',
-    imgVeryBIg: 'Image too large'
+    imgVeryBIg: 'Image too large',
+    unableToGetFile: 'Unable to get file'
   },
   landing: {
     title: 'Build Your Community For Your Creation',
