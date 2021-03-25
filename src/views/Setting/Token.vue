@@ -11,12 +11,12 @@
     </div>
     <SettingNav v-else />
     <div class="setting-creator">
-      <div class="setting-creator-item">
+      <div class="setting-creator-item" v-if="!newAuthor">
         <h4>
           {{ $t('setting.contractAddress') }}
         </h4>
         <div class="setting-creator-item-contract">
-          <span>{{ tickerContract }}</span>
+          <span>{{ tickerContract || 'Invalid Contract' }}</span>
           <span class="mdi mdi-content-copy copy-icon" @click="() => copyContractAddress(tickerContract)" />
         </div>
       </div>

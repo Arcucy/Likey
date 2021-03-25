@@ -23,7 +23,7 @@
           Locked
         </span>
         <el-button class="solution-unlock-btn" type="primary" @click="buyUnlockSolution(item, index)">
-          AR${{ convertPSTToAR(item.value) }}
+          AR${{ convertPSTToAR(item.value) || pstToAR }}
         </el-button>
       </div>
     </div>
@@ -96,13 +96,7 @@ export default {
     },
     items () {
       if (!this.creator) return []
-      return [
-        {
-          title: '1',
-          value: '100',
-          description: 'This 1'
-        }
-      ]
+      return this.creator.items
     }
   },
   watch: {
@@ -120,10 +114,10 @@ export default {
     async initContractInfo () {
       this.convertPSTToAR()
       this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
-      console.log(this.contractState)
+      this.ratio = this.contractState.ratio
     },
     convertPSTToAR (value) {
-      const { from, to } = this.getRatio('1:2.555555')
+      const { from, to } = this.getRatio(this.ratio)
       value = new Bignumber(value).multipliedBy(from).div(to)
       return value.toFixed(12)
     },

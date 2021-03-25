@@ -11,7 +11,7 @@
     <div class="sponsor-data">
       <div class="sponsor-data-item">
         <h4>
-          100
+          {{ contract.holders || 0 }}
         </h4>
         <p>
           赞赏人数
@@ -19,7 +19,7 @@
       </div>
       <div class="sponsor-data-item">
         <h4>
-          100
+          {{ contract.totalSupply || 0 }}
         </h4>
         <p>
           发行量
@@ -68,20 +68,19 @@ export default {
     name () {
       if (!this.creator) return ''
       return this.creator.ticker.name
+    },
+    contract () {
+      if (!this.creator) return ''
+      return this.contractState
     }
-    // contract () {
-    //   // if (!this.creator) return ''
-    // }
   },
   watch: {
   },
   mounted () {
-    this.initContractInfo()
   },
   methods: {
     async initContractInfo () {
       this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
-      console.log(this.contractState)
     }
   }
 }
