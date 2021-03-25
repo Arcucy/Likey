@@ -228,6 +228,7 @@ img {
   position: relative;
   width: 100%;
   margin-bottom: 10px;
+  user-select: none;
 
   &-pillar {
     padding-bottom: 56.25%;

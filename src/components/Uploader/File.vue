@@ -65,7 +65,8 @@ export default {
       })
     },
     done () {
-      this.$emit('file-input', this.fileBuffer)
+      if (this.fileBuffer.find(item => item.error)) this.$message.error(this.$t('failure.unableToGetFile'))
+      this.$emit('file-input', this.fileBuffer.filter(item => !item.error))
       this.fileBuffer = []
     }
   }
