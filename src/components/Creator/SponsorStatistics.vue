@@ -51,6 +51,7 @@ export default {
   },
   data () {
     return {
+      contractState: {}
     }
   },
   computed: {
@@ -68,10 +69,20 @@ export default {
       if (!this.creator) return ''
       return this.creator.ticker.name
     }
+    // contract () {
+    //   // if (!this.creator) return ''
+    // }
   },
   watch: {
   },
+  mounted () {
+    this.initContractInfo()
+  },
   methods: {
+    async initContractInfo () {
+      this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
+      console.log(this.contractState)
+    }
   }
 }
 </script>

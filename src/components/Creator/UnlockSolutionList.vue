@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import Bignumber from 'bignumber.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -74,7 +75,8 @@ export default {
   },
   data () {
     return {
-      customPstInput: 1
+      customPstInput: 1,
+      ratio: ''
     }
   },
   computed: {
@@ -94,10 +96,19 @@ export default {
     },
     items () {
       if (!this.creator) return []
-      return this.creator.items
+      return [
+        {
+          title: '1',
+          value: '100',
+          description: 'This 1'
+        }
+      ]
     }
   },
   watch: {
+  },
+  async mounted () {
+    this.initContractInfo()
   },
   methods: {
     buyUnlockSolution (item, index) {
@@ -105,6 +116,38 @@ export default {
     },
     buyCustomSolution (value) {
       console.log('购买自定义方案', value)
+    },
+    async initContractInfo () {
+      this.convertPSTToAR()
+      this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
+      console.log(this.contractState)
+    },
+    convertPSTToAR (value) {
+      console.log(this.getRatio('1:2'))
+      return value
+    },
+    getRatio (ratio) {
+      if (!/1:\d+\.?\d+(?!\d+)/.test(ratio)) {
+        return { from: '1', to: '0' }
+      }
+      let from = 1
+      let to = parseFloat(ratio.split(':').pop())
+      let iteration = 0
+
+      while (true) {
+        if (!Number.isInteger(to)) {
+          to = to * 10
+          iteration++
+          continue
+        }
+        break
+      }
+
+      for (let i = 0; i < iteration; i++) {
+        from = Bignumber(from).multiplyBy(10)
+      }
+      to = Bignumber(to)
+      return { from, to }
     }
   }
 }

@@ -28,7 +28,6 @@ const loadCSS = (path) => {
   link.setAttribute('type', 'text/css')
   head.appendChild(link)
 }
-
 const ls = localStorage || window.localStorage
 const themeName = ls.getItem('theme')
 if (!themeName) {
@@ -47,9 +46,17 @@ const loadTheme = async (themeName) => {
       break
   }
 }
-
 loadTheme(themeName)
 
+Vue.filter('pstToAR', function (val) {
+  if (!val) return '0'
+  return parseFloat(val)
+})
+
+Vue.filter('arToPST', function (val) {
+  if (!val) return '0'
+  return parseFloat(val)
+})
 Vue.use(VueClipboards)
 
 Vue.config.productionTip = false

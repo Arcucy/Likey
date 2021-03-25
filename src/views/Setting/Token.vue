@@ -332,9 +332,9 @@ export default {
       if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
         console.log(await this.$api.contract.editCreatorItems(jwk, this.solutions))
       }
-      const pstState = await this.$api.readLikeyCreatorPSTContract(info.ticker.contract)
+      const pstState = await this.$api.contract.readLikeyCreatorPSTContract(info.ticker.contract)
       if ('1:' + this.ratio !== pstState.ratio) {
-        await this.$api.contract.editCreatorItems(jwk, '1:' + this.ratio)
+        console.log(await this.$api.contract.updateCreatorRatio(jwk, '1:' + this.ratio))
       }
       this.$message.success(this.$t('success.success'))
       this.submitting = false
