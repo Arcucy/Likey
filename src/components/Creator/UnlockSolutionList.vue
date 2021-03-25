@@ -23,7 +23,7 @@
           Locked
         </span>
         <el-button class="solution-unlock-btn" type="primary" @click="buyUnlockSolution(item, index)">
-          AR${{ item.value }}
+          AR${{ convertPSTToAR(item.value) }}
         </el-button>
       </div>
     </div>
@@ -123,11 +123,12 @@ export default {
       console.log(this.contractState)
     },
     convertPSTToAR (value) {
-      console.log(this.getRatio('1:2'))
-      return value
+      const { from, to } = this.getRatio('1:2.555555')
+      value = new Bignumber(value).multipliedBy(from).div(to)
+      return value.toFixed(12)
     },
     getRatio (ratio) {
-      if (!/1:\d+\.?\d+(?!\d+)/.test(ratio)) {
+      if (!/^1:\d*\.?\d*$/.test(ratio)) {
         return { from: '1', to: '0' }
       }
       let from = 1
@@ -144,10 +145,10 @@ export default {
       }
 
       for (let i = 0; i < iteration; i++) {
-        from = Bignumber(from).multiplyBy(10)
+        from = Bignumber(from).multipliedBy(10)
       }
       to = Bignumber(to)
-      return { from, to }
+      return { from: new Bignumber(String(from)), to }
     }
   }
 }
