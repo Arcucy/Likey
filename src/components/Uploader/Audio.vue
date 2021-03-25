@@ -64,7 +64,8 @@ export default {
       })
     },
     done () {
-      this.$emit('audio-input', this.fileBuffer)
+      if (this.fileBuffer.find(item => item.error)) this.$message.error(this.$t('failure.unableToGetFile'))
+      this.$emit('audio-input', this.fileBuffer.filter(item => !item.error))
       this.fileBuffer = []
     }
   }
@@ -80,6 +81,11 @@ export default {
   justify-content: center;
   border-radius: 6px;
   cursor: pointer;
+
+  label {
+    width: 100%;
+    text-align: center;
+  }
 
   .mdicon {
     display: block;

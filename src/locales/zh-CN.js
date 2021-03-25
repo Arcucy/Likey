@@ -17,7 +17,10 @@ export default {
     noPermissionToAccessPage: '你没有权限访问这个页面',
     failedToObtainContractStatus: '无法获取合约状态',
     saveFailed: '保存失败',
-    insufficientFunds: '余额不足'
+    insufficientFunds: '余额不足',
+    autoCompressionFail: '图片压缩失败',
+    imgVeryBIg: '图片过大',
+    unableToGetFile: '无法获取文件'
   },
   landing: {
     title: '为你的创作建立社区',
@@ -137,6 +140,10 @@ export default {
     titlePlaceholder: '标题',
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
     push: '发布动态',
-    download: '下载'
+    download: '下载',
+    pictureSelectionLimitWarning: '最多只能选择{0}张照片',
+    everyoneCanSee: '所有人可见',
+    allSponsors: '所有持仓者',
+    ownNUnlock: '持有 {0} {1}/解锁'
   }
 }

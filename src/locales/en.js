@@ -17,7 +17,10 @@ export default {
     noPermissionToAccessPage: 'You do not have permission to access this page',
     failedToObtainContractStatus: 'Failed to obtain contract status',
     saveFailed: 'Save failed',
-    insufficientFunds: 'Insufficient Funds'
+    insufficientFunds: 'Insufficient Funds',
+    autoCompressionFail: 'Image compression failed',
+    imgVeryBIg: 'Image too large',
+    unableToGetFile: 'Unable to get file'
   },
   landing: {
     title: 'Build Your Community For Your Creation',
@@ -137,6 +140,10 @@ export default {
     titlePlaceholder: '标题',
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
     push: 'Push',
-    download: 'Download'
+    download: 'Download',
+    pictureSelectionLimitWarning: '最多只能选择 {0} 张照片',
+    everyoneCanSee: 'Everyone Can See',
+    allSponsors: '所有持仓者',
+    ownNUnlock: 'Own {0} {1}/Unlock'
   }
 }

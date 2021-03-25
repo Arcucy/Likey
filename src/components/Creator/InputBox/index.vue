@@ -14,20 +14,53 @@
       :placeholder="$t('statusInput.contentPlaceholder')"
       v-model="contentInput"
     />
+    <PhotoCards
+      v-if="imageFiles && imageFiles.length"
+      :files="imageFiles"
+      @remove-file="removeImageFile"
+    />
+    <AudioCard
+      v-for="(audioFile, index) of audioFiles"
+      :key="'AudioCard-' + index"
+      :file="audioFile"
+      @remove-file="removeAudioFile(index)"
+    />
     <FileCard
       v-for="(file, index) of files"
-      :key="index"
+      :key="'FileCard-' + index"
       :file="file"
       @remove-file="removeFile(index)"
     />
+    <div v-if="lockModeShow" class="inputbox-lockmode">
+      <p>
+        <span class="mdi mdi-lock-outline" />
+        {{ lockModeShow.label }}
+      </p>
+      <span class="mdi mdi-close-thick inputbox-lockmode-btn" @click="lockMode = null" />
+    </div>
     <div class="inputbox-func">
-      <AudioUploader @audio-input="getAudioFiles" />
-      <FileUploader @file-input="getFiles" :disabled="files.length >= filesMaxLength" />
+      <ImageUploader
+        multiple
+        @image-input="getImageFiles"
+        :disabled="imageFiles.length >= imageFilesMaxLength"
+      />
+      <AudioUploader
+        @audio-input="getAudioFiles"
+        :disabled="audioFiles.length >= audioFilesMaxLength"
+      />
+      <FileUploader
+        @file-input="getFiles"
+        :disabled="files.length >= filesMaxLength"
+      />
       <div class="inputbox-func-count">
         <p :class="content.length > contentMaxLength && 'overflow'">
           {{ content.length }}/{{ contentMaxLength }}
         </p>
       </div>
+      <LockOption
+        v-model="lockMode"
+        :address="address"
+      />
       <el-button
         class="inputbox-btn"
         type="primary"
@@ -42,28 +75,55 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import ImageUploader from '@/components/Uploader/Image'
 import AudioUploader from '@/components/Uploader/Audio'
 import FileUploader from '@/components/Uploader/File'
+
+import PhotoCards from './PhotoCards'
+import AudioCard from './AudioCard'
 import FileCard from './FileCard'
+
+import LockOption from './LockOption'
 
 export default {
   components: {
+    ImageUploader,
     AudioUploader,
     FileUploader,
-    FileCard
+    PhotoCards,
+    AudioCard,
+    FileCard,
+    LockOption
   },
   props: {
+    address: {
+      type: String,
+      required: true
+    }
   },
   data () {
     return {
       title: '',
       content: '',
       contentMaxLength: 1000,
+      imageFiles: [],
+      audioFiles: [],
       files: [],
-      filesMaxLength: 1
+      imageFilesMaxLength: 4,
+      audioFilesMaxLength: 1,
+      filesMaxLength: 1,
+      lockMode: null
     }
   },
   computed: {
+    ...mapState({
+      creators: state => state.contract.creators
+    }),
+    creator () {
+      return this.creators ? this.creators[this.address] : null
+    },
     titleInput: {
       set (val) {
         /** 限制，开头不能有空白，空白字符不能连续超过两个 */
@@ -87,14 +147,42 @@ export default {
       const noContent = this.content.length === 0
       const contentOverflow = this.content.length > this.contentMaxLength
       return noContent || contentOverflow
+    },
+    lockModeShow () {
+      if (!this.lockMode) return null
+      if (this.lockMode && this.lockMode.all) {
+        return {
+          label: this.$t('statusInput.allSponsors')
+        }
+      }
+      const ticker = this.creator.ticker.ticker
+      return {
+        ...this.lockMode,
+        label: `${this.$t('statusInput.ownNUnlock', [this.lockMode.value, ticker])} - ${this.lockMode.title}`
+      }
     }
   },
   watch: {
   },
   methods: {
+    // 获得图片文件
+    async getImageFiles (files) {
+      files = [...files]
+      if (this.imageFiles.length + files.length > this.imageFilesMaxLength) {
+        this.$message.warning(this.$t('statusInput.pictureSelectionLimitWarning', [this.imageFilesMaxLength]))
+        return
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        const url = await this.getBase64Url(files[i].data, files[i].type)
+        files[i] = { ...files[i], url }
+      }
+
+      this.imageFiles.push(...files)
+    },
     // 获得音乐文件
     getAudioFiles (files) {
-      console.log(files)
+      this.audioFiles.push(...files)
     },
     // 获得文件
     getFiles (files) {
@@ -104,8 +192,26 @@ export default {
     push () {
       console.log('发布！')
     },
+    removeImageFile (index) {
+      this.imageFiles.splice(index, 1)
+    },
+    removeAudioFile (index) {
+      this.audioFiles.splice(index, 1)
+    },
     removeFile (index) {
       this.files.splice(index, 1)
+    },
+    /** 将资源加载到一个 url */
+    getBase64Url (buffer, type) {
+      return new Promise((resolve, reject) => {
+        // 挂载音频到一个 URL，并指定给 audio.pic
+        const reader = new FileReader()
+        reader.readAsArrayBuffer(new Blob([new Uint8Array(buffer)], { type }))
+        reader.onload = (event) => {
+          const url = window.webkitURL.createObjectURL(new Blob([event.target.result], { type }))
+          resolve(url)
+        }
+      })
     }
   }
 }
@@ -142,6 +248,47 @@ export default {
       font-size: 15px;
       line-height: 20px;
       background-color: @background;
+    }
+  }
+
+  &-lockmode {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      color: @gray3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+      word-break: break-all;
+      white-space: normal;
+    }
+
+    &-btn {
+      font-size: 18px;
+      color: @gray3;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+      margin: 0 0 0 5px;
+      cursor: pointer;
+
+      &:hover {
+        color: @primary;
+        background: @primary-light;
+      }
+
+      &:active {
+        color: @primary;
+        background: @primary-dark;
+      }
     }
   }
 

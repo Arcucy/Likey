@@ -57,7 +57,7 @@
 
 <script>
 // import Axios from 'axios'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 
 import API from '@/api/api'
 import FileUtil from '@/util/file'
@@ -119,6 +119,7 @@ export default {
   },
   methods: {
     ...mapActions(['setMyJwk', 'setMyInfo', 'setMyAddress', 'setMyAvatar', 'logout', 'initLikeyContract', 'getCreatorInfo']),
+    ...mapMutations(['mSetThemeName']),
     /** 初始化 JWK 登录 */
     async initJwkLogin () {
       if (this.isLoggedIn) return
@@ -229,6 +230,7 @@ export default {
           current.remove(currentTheme)
         }
         current.add(lsThemeName + '-theme')
+        this.mSetThemeName(lsThemeName)
         this.$switchElementTheme(lsThemeName)
       }
     },
@@ -249,12 +251,14 @@ export default {
           const themeName = themes[0].split('-')[0]
           ls.removeItem('theme')
           ls.setItem('theme', themeName)
+          this.mSetThemeName(themeName)
           this.$switchElementTheme(themeName)
         } else {
           current.add(themes[themes.indexOf(currentTheme) + 1])
           const themeName = themes[themes.indexOf(currentTheme) + 1].split('-')[0]
           ls.removeItem('theme')
           ls.setItem('theme', themeName)
+          this.mSetThemeName(themeName)
           this.$switchElementTheme(themeName)
         }
       }

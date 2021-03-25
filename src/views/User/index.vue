@@ -5,7 +5,7 @@
         <div class="col-header">
           <h3>{{ $t('userProfile.flow') }}</h3>
         </div>
-        <InputBox />
+        <InputBox :address="address" />
         <FlowCard :data="{}" />
       </div>
       <div class="col-3">

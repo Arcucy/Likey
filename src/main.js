@@ -7,6 +7,7 @@ import '@mdi/font/css/materialdesignicons.css'
 
 import VueClipboards from 'vue-clipboard2'
 import i18n from './i18n'
+import Aplayer from 'vue-aplayer'
 
 import '@/icons'
 import API from '../src/api/api'
@@ -58,6 +59,8 @@ Vue.filter('arToPST', function (val) {
   return parseFloat(val)
 })
 Vue.use(VueClipboards)
+
+Vue.component('aplayer', Aplayer)
 
 Vue.config.productionTip = false
 Vue.prototype.$api = API
