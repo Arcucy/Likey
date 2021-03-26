@@ -71,8 +71,10 @@
 </template>
 
 <script>
-import Bignumber from 'bignumber.js'
-import { mapState } from 'vuex'
+import BigNumber from 'bignumber.js'
+import { mapActions, mapState } from 'vuex'
+
+import { getCookie } from '@/util/cookie'
 
 export default {
   components: {
@@ -92,7 +94,8 @@ export default {
   },
   computed: {
     ...mapState({
-      creators: state => state.contract.creators
+      creators: state => state.contract.creators,
+      creatorPst: state => state.contract.creatorPst
     }),
     creator () {
       return this.creators ? this.creators[this.address] : null
@@ -108,32 +111,47 @@ export default {
     items () {
       if (!this.creator) return []
       return this.creator.items
+    },
+    contract () {
+      if (!this.creator) return {}
+      return this.creatorPst[this.creator.ticker.contract]
     }
   },
   watch: {
   },
-  async mounted () {
+  mounted () {
     this.initContractInfo()
   },
   methods: {
-    buyUnlockSolution (item, index) {
-      console.log('购买解锁方案', item, index)
+    ...mapActions(['getPstContract']),
+    async buyUnlockSolution (item, index) {
+      // 换算为具体支付的金额
+      let value = this.convertPstToWinston(item.value)
+      value = new BigNumber(value).toFixed(0)
+
+      // 执行合约
+      const jwk = JSON.parse(getCookie('arclight_userkey'))
+      console.log(await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, value))
     },
-    buyCustomSolution (value) {
-      console.log('购买自定义方案', value)
+    async buyCustomSolution (value) {
+      // 换算为具体支付的金额
+      value = this.convertPstToWinston(value)
+      value = new BigNumber(value).toFixed(0)
+
+      const jwk = JSON.parse(getCookie('arclight_userkey'))
+      console.warn(await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, value))
     },
     /** 初始化合约状态 */
     async initContractInfo () {
       this.loading = true
-      this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
-      this.ratio = this.contractState.ratio
-      console.log(this.ratio)
+      await this.getPstContract(this.creator.ticker.contract)
+      this.ratio = this.contract.ratio
       this.loading = false
     },
     /** 转换 PST 为 Winston */
     convertPstToWinston (value) {
       const { from, to } = this.getRatio(this.ratio)
-      value = new Bignumber(value).multipliedBy(to).div(from).multipliedBy(1000000000000)
+      value = new BigNumber(value).multipliedBy(to).div(from).multipliedBy(1000000000000)
       value = value.toFixed(12)
 
       if (value === 'Infinity') {
@@ -147,8 +165,7 @@ export default {
         return { from: '1', to: '0' }
       }
       let from = 1
-      let to = parseFloat(ratio.split(':').pop())
-      to = 0.0000000001
+      let to = parseFloat(parseFloat(ratio.split(':').pop()).toFixed(12))
       let iteration = 0
 
       while (true) {
@@ -161,10 +178,10 @@ export default {
       }
 
       for (let i = 0; i < iteration; i++) {
-        from = Bignumber(from).multipliedBy(10)
+        from = new BigNumber(from).multipliedBy(10)
       }
-      to = Bignumber(to)
-      return { from: new Bignumber(String(from)), to }
+      to = BigNumber(to)
+      return { from: new BigNumber(String(from)), to }
     }
   }
 }

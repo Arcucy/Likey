@@ -371,7 +371,8 @@ export default {
         }, {
           name: this.name,
           ticker: this.ticker,
-          contract: this.tickerContract
+          contract: this.tickerContract,
+          ratio: '1:' + this.ratio
         }, this.solutions.filter(item => !item.editor).map(item => {
           return {
             title: item.title,
