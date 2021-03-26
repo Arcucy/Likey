@@ -3,7 +3,7 @@ import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import Axios from 'axios'
 
-const LIKEY_CREATOR_PST_CONTRACT = 'BGDvDdVHGpcw-PbAbe1HFqCsIJxgA45nlm4QQtpyea4'
+const LIKEY_CREATOR_PST_CONTRACT = 'b60zm53uuEMh7UdMgqdODtmW-QfdNWdQgkWFzyUH4QA'
 const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
@@ -165,7 +165,7 @@ export default {
 
       const obj = LikeyCreatorPst.sponsorAdded()
 
-      const res = await this.interactWritePst(jwk, contract, obj, [], pstState.owner, quantity)
+      const res = await this.interactWritePst(jwk, contract, obj, undefined, pstState.owner, quantity)
       return res
     } catch (err) {
       throw new Error(err)
