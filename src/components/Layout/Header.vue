@@ -111,7 +111,8 @@ export default {
       immediate: true
     }
   },
-  mounted () {
+  async mounted () {
+    await this.$api.contract.readLikeyContract()
     this.initJwkLogin()
     this.initWalletPlugin()
     this.initTheme()

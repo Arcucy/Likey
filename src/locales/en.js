@@ -54,7 +54,8 @@ export default {
     flow: 'Flow',
     sponsorship: 'Sponsorship',
     notYetACreator: 'Not yet a creator',
-    editUsernameAndAvatar: 'Edit username and avatar'
+    editUsernameAndAvatar: 'Edit username and avatar',
+    changeBanner: 'Update Banner'
   },
   setting: {
     settings: 'Settings',
