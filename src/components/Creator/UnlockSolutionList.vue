@@ -22,8 +22,13 @@
           <span class="mdi mdi-lock-open" />
           Locked
         </span>
-        <el-button class="solution-unlock-btn" type="primary" @click="buyUnlockSolution(item, index)">
-          AR${{ item.value }}
+        <el-button
+          class="solution-unlock-btn"
+          type="primary"
+          @click="buyUnlockSolution(item, index)"
+          :loading="loading"
+        >
+          {{ convertPstToWinston(item.value) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -45,15 +50,20 @@
         </span>
       </div>
       <p style="line-height: normal;" class="solution-title">
-        自定义
+        {{ $t('sponsor.custom') }}
       </p>
       <p class="solution-desp">
-        本方案可自定义 PST 购买数量
+        {{ $t('sponsor.customInputDescription') }}
       </p>
       <div class="solution-unlock">
         <span class="solution-unlock-status" />
-        <el-button class="solution-unlock-btn" type="primary" @click="buyCustomSolution(customPstInput)">
-          AR${{ customPstInput }}
+        <el-button
+          class="solution-unlock-btn"
+          type="primary"
+          @click="buyCustomSolution(customPstInput)"
+          :loading="loading"
+        >
+          {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -61,6 +71,7 @@
 </template>
 
 <script>
+import Bignumber from 'bignumber.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -74,7 +85,9 @@ export default {
   },
   data () {
     return {
-      customPstInput: 1
+      customPstInput: 1,
+      ratio: '',
+      loading: false
     }
   },
   computed: {
@@ -99,12 +112,59 @@ export default {
   },
   watch: {
   },
+  async mounted () {
+    this.initContractInfo()
+  },
   methods: {
     buyUnlockSolution (item, index) {
       console.log('购买解锁方案', item, index)
     },
     buyCustomSolution (value) {
       console.log('购买自定义方案', value)
+    },
+    /** 初始化合约状态 */
+    async initContractInfo () {
+      this.loading = true
+      this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
+      this.ratio = this.contractState.ratio
+      console.log(this.ratio)
+      this.loading = false
+    },
+    /** 转换 PST 为 Winston */
+    convertPstToWinston (value) {
+      const { from, to } = this.getRatio(this.ratio)
+      value = new Bignumber(value).multipliedBy(to).div(from).multipliedBy(1000000000000)
+      value = value.toFixed(12)
+
+      if (value === 'Infinity') {
+        return '0'
+      }
+      return value
+    },
+    /** 拆分换算比率 */
+    getRatio (ratio) {
+      if (!/^1:\d*\.?\d*$/.test(ratio)) {
+        return { from: '1', to: '0' }
+      }
+      let from = 1
+      let to = parseFloat(ratio.split(':').pop())
+      to = 0.0000000001
+      let iteration = 0
+
+      while (true) {
+        if (!Number.isInteger(to)) {
+          to = to * 10
+          iteration++
+          continue
+        }
+        break
+      }
+
+      for (let i = 0; i < iteration; i++) {
+        from = Bignumber(from).multipliedBy(10)
+      }
+      to = Bignumber(to)
+      return { from: new Bignumber(String(from)), to }
     }
   }
 }
@@ -189,9 +249,13 @@ export default {
     align-items: center;
     user-select: none;
     margin: 10px 0 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 
     &-status {
       flex: 1;
+      white-space:nowrap;
+      margin: 10px 5px 10px 0;
       .mdi-lock-open {
         display: none;
       }

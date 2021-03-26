@@ -22,6 +22,9 @@ export default {
     imgVeryBIg: 'Image too large',
     unableToGetFile: 'Unable to get file'
   },
+  app: {
+    loading: 'Loading'
+  },
   landing: {
     title: 'Build Your Community For Your Creation',
     description: 'Likey provides powerful tools from blockchain technologies to help integrate your creation together and gain more attractions from your fans and interested people while giving the income management back to you',
@@ -82,12 +85,15 @@ export default {
     pleaseSelectACreationScale: 'Please select a creation scale',
     pleaseFillInTheIntroduction: 'Please fill in the introduction',
     introductionIsTooLong: 'Introduction is too long',
+    contractAddress: 'Contract Address',
     inputName: 'Name',
     inputNamePlaceholder: 'Fill in the custom token name',
     ticker: 'Ticker Symbol',
     tickerPlaceholder: 'Fill in the custom ticker symbol',
     exchangeRatio: 'Exchange Ratio',
-    exchangeRatioDescription: 'Initial PST exchange rate to AR',
+    exchangeRatioDescription: 'Initial exchange ratio is used to convert the AR sponsored by the user to token',
+    exchangeRatioExceedsTheLimitation: 'Exchang ratio decimals should not beyond the token',
+    pleaseFillInTheExchangeRatio: 'Please fill in the exchange ratio',
     unlockPlan: 'Unlock Solution',
     ownBalance: 'Own',
     unlock: 'Unlock',
@@ -138,9 +144,18 @@ export default {
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
     push: 'Push',
     download: 'Download',
-    pictureSelectionLimitWarning: '最多只能选择 {0} 张照片',
+    pictureSelectionLimitWarning: 'You can only select {0} image(s)',
     everyoneCanSee: 'Everyone Can See',
-    allSponsors: '所有持仓者',
+    allSponsors: 'All Sponsors',
     ownNUnlock: 'Own {0} {1}/Unlock'
+  },
+  sponsor: {
+    sponsor: 'Sponsors',
+    sponsorStatistics: 'Sponsor Statistics',
+    totalSupply: 'Total Supply',
+    holders: 'Holders',
+    donationAndSponsorCount: 'Purchased',
+    custom: 'Custom',
+    customInputDescription: 'You can specify you purchase amount here'
   }
 }

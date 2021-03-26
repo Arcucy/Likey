@@ -11,6 +11,7 @@ import Aplayer from 'vue-aplayer'
 
 import '@/icons'
 import API from '../src/api/api'
+import Filters from '../src/filters/index'
 
 const loadCSS = (path) => {
   const head = document.getElementsByTagName('head')[0]
@@ -29,7 +30,6 @@ const loadCSS = (path) => {
   link.setAttribute('type', 'text/css')
   head.appendChild(link)
 }
-
 const ls = localStorage || window.localStorage
 const themeName = ls.getItem('theme')
 if (!themeName) {
@@ -48,17 +48,18 @@ const loadTheme = async (themeName) => {
       break
   }
 }
-
 loadTheme(themeName)
 
-Vue.use(VueClipboards)
-
-Vue.component('aplayer', Aplayer)
+Object.keys(Filters).forEach(key => {
+  Vue.filter(key, Filters[key])
+})
 
 Vue.config.productionTip = false
 Vue.prototype.$api = API
 Vue.prototype.$switchElementTheme = loadTheme
 
+Vue.use(VueClipboards)
+Vue.component('aplayer', Aplayer)
 new Vue({
   router,
   store,
