@@ -69,7 +69,6 @@ body {
 
 textarea {
   font-family: Arial, Helvetica, sans-serif;
-  padding: 10px 15px !important;
 }
 
 #app {
