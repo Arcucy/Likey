@@ -3,6 +3,7 @@ import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import Axios from 'axios'
 
+// yL7kkLWLGPoNMPfZymDwvOsmrU-RmNQbhr6y1uTQMbs
 const LIKEY_CREATOR_PST_CONTRACT = 'x4gx02CL12ezSt-qLzmPfkXAhVdd_e1C9cUDksMM4UQ'
 const LIKEY_CONTRACT = 'XUc8q12a_Me80D4TJopM0ruW4McTPTk1EChVHzNk1lM'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
