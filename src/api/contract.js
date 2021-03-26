@@ -2,14 +2,18 @@ import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import Axios from 'axios'
+import BigNumber from 'bignumber.js'
 
-// yL7kkLWLGPoNMPfZymDwvOsmrU-RmNQbhr6y1uTQMbs
-const LIKEY_CREATOR_PST_CONTRACT = 'x4gx02CL12ezSt-qLzmPfkXAhVdd_e1C9cUDksMM4UQ'
+// PST 合约 zNR-5J9CJERI2s4rFnvCHOo85GY3L66prbFygB-5hFg
+const LIKEY_CREATOR_PST_CONTRACT = 'fdCi9eHLKBF4jnH98tbMzSi-VRDBp_Vzs8M5f8Z6JgQ'
 const LIKEY_CONTRACT = 'XUc8q12a_Me80D4TJopM0ruW4McTPTk1EChVHzNk1lM'
-/** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
-console.log('Is it test mode? :', TEST_MODE)
+const DEVELOPER = 't1YdNMmOJFaUwtraiM1I3vJPqhU9QxiWjjiprOPo9aA'
+const PST_HOLDER_TIP = '0.15'
+const DEVELOPER_TIP = '0.05'
 
+/** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
+const TEST_MODE = false
+console.log('Is it test mode? :', TEST_MODE)
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
@@ -21,6 +25,60 @@ const arweave = Arweave.init({
 // 合约状态读取请使用 @/store/contract 中的 vuex，那个有缓存功能，
 // 如果没有特殊需求，不要直接调用 readLikeyContract。
 export default {
+  /**
+   * 计算拥有代币的总人数
+   * @param {*} balances    - PST 中的 balance 字段
+   * @returns               - 持有总人数
+   */
+  _countHolders (balances) {
+    const balancesState = JSON.parse(JSON.stringify(balances))
+    return String(Object.keys(balancesState).length)
+  },
+
+  /**
+   * 计算总共的发行量
+   * @param {*} balances    - PST 中的 balance 字段
+   * @returns               - 总计发行量
+   */
+  _countTotalSupply (balances) {
+    let init = new BigNumber('0')
+    const balancesState = JSON.parse(JSON.stringify(balances))
+    for (const i of Object.values(balancesState)) {
+      const temp = new BigNumber(i)
+      init = init.plus(temp)
+    }
+
+    return init.toString()
+  },
+  /**
+   * Given an map of address->balance, select one random address
+   * weighted by the amount of tokens they hold.
+   *
+   * @param balances  A balances object, where the key is address and the value is the number of tokens they hold
+   */
+  selectWeightedPstHolder (balances) {
+    // Count the total tokens
+    const totalTokens = new BigNumber(this._countTotalSupply(balances))
+    // Create a copy of balances where the amount each holder owns is represented
+    // by a value 0-1.
+    const weighted = {}
+    for (const address of Object.keys(balances)) {
+      let addressBalance = new BigNumber(balances[address])
+      if (addressBalance.toString() === 'NaN') {
+        addressBalance = new BigNumber('0')
+      }
+      weighted[address] = addressBalance.div(totalTokens).toNumber()
+    }
+    let sum = 0
+    const r = Math.random()
+    for (const address of Object.keys(weighted)) {
+      sum += weighted[address]
+      if (r <= sum && weighted[address] > 0) {
+        return address
+      }
+    }
+    throw new Error('Unable to select token holder')
+  },
   /**
    * 读取 Likey 主合约
    */
@@ -155,19 +213,104 @@ export default {
     return { likey, pst }
   },
   /**
+   * 分润
+   * @param {*} quantity      - 金额
+   * @param {*} callback      - 回调函数
+   * @returns                 - 分润后的金额
+   */
+  async distributeTokens (pstState, quantity, jwk, callback) {
+    let quantityBig = new BigNumber(quantity)
+    const pstHolderQuantity = quantityBig.multipliedBy(PST_HOLDER_TIP)
+    const developerQuantity = quantityBig.multipliedBy(DEVELOPER_TIP)
+
+    let status = 'onDistribution'
+
+    // 开始 PST 分润阶段
+    if (pstState.balances && Object.keys(pstState.balances).length > 0) {
+      // 获得被选中的小幸运
+      const selected = this.selectWeightedPstHolder(pstState.balances)
+
+      const pstTransaction = await arweave.createTransaction({
+        target: selected,
+        quantity: pstHolderQuantity.toString()
+      }, jwk)
+
+      // 如果是分发给 PST 持有者，即使用 Likey-Purchase-Holder
+      pstTransaction.addTag('Purchase-Type', 'Likey-Purchase-Holder')
+      // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
+      pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
+
+      await arweave.transactions.sign(pstTransaction, jwk)
+      const uploader = await arweave.transactions.getUploader(pstTransaction)
+
+      // 开始上传并返回上传进度
+      callback(status, uploader.pctComplete, uploader, pstTransaction.id)
+      while (!uploader.isComplete) {
+        await uploader.uploadChunk()
+        callback(status, uploader.pctComplete, uploader, pstTransaction.id)
+      }
+
+      const txStatus = await arweave.transactions.getStatus(pstTransaction)
+      if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
+        status = 'onDistributionError'
+        callback(status, uploader.pctComplete, uploader, pstTransaction.id)
+        throw new Error('Send PST Distribution Failed')
+      }
+
+      // 从总额中去除被减去的部分
+      quantityBig = quantityBig.minus(pstHolderQuantity)
+    }
+
+    status = 'onDeveloper'
+    if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER)) {
+      const developerTransaction = await arweave.createTransaction({
+        target: DEVELOPER,
+        quantity: developerQuantity.toString()
+      }, jwk)
+
+      // 如果是分发给开发者，即使用 Likey-Purchase-Developer
+      developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
+      // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
+      developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
+
+      await arweave.transactions.sign(developerTransaction, jwk)
+      const uploader = await arweave.transactions.getUploader(developerTransaction)
+
+      // 开始上传并返回上传进度
+      callback(status, uploader.pctComplete, uploader, developerTransaction.id)
+      while (!uploader.isComplete) {
+        await uploader.uploadChunk()
+        callback(status, uploader.pctComplete, uploader, developerTransaction.id)
+      }
+
+      const txStatus = await arweave.transactions.getStatus(developerTransaction)
+      if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
+        status = 'onDeveloperError'
+        callback(status, uploader.pctComplete, uploader, developerTransaction.id)
+        throw new Error('Send Developer Tip Failed')
+      }
+
+      // 从总额中去除被减去的部分
+      quantityBig = quantityBig.minus(developerQuantity)
+    }
+    return quantityBig
+  },
+  /**
    * 赞赏创作者
    * @param {*} jwk         - JWK 密钥
    * @param {*} contract    - 要交互的合约地址，创作者的 PST 地址
    * @param {*} quantity    - 赞助金额，以 Winston 为单位，写入数据前请根据兑换比率自行换算，进入合约后才会按照兑换比率换算
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
+  async sponsorAdded (jwk, contract, quantity, callback) {
   async sponsorAdded (jwk, contract, quantity) {
     try {
       const pstState = await this.readLikeyCreatorPstContract(contract)
-
       const obj = LikeyCreatorPst.sponsorAdded()
 
-      const res = await this.interactWritePst(jwk, contract, obj, undefined, pstState.owner, quantity)
+      const quantityBig = await this.distributeTokens(pstState, quantity, jwk, callback)
+
+      const res = await this.interactWritePst(jwk, contract, obj, undefined, pstState.owner, quantityBig.toString())
       return res
     } catch (err) {
       throw new Error(err)
@@ -181,13 +324,14 @@ export default {
    * @param {*} quantity    - 打赏金额，单位为 Winston
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
-  async donationAdded (jwk, contract, statusId, quantity) {
+  async donationAdded (jwk, contract, statusId, quantity, callback) {
     try {
       const pstState = await this.readLikeyCreatorPstContract(contract)
-
       const obj = LikeyCreatorPst.donationAdded(statusId)
 
-      const res = await this.interactWritePst(jwk, contract, obj, [], pstState.owner, quantity)
+      const quantityBig = await this.distributeTokens(pstState, quantity, jwk, callback)
+
+      const res = await this.interactWritePst(jwk, contract, obj, [], pstState.owner, quantityBig.toString())
       return res
     } catch (err) {
       throw new Error(err)
@@ -436,7 +580,7 @@ const LikeyCreatorPstState = () => {
     donations: [],
     attributes: [],
     settings: [],
-    version: '1.0.3'
+    version: '1.0.5'
   }
 }
 
