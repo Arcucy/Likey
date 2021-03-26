@@ -263,12 +263,7 @@ export default {
     /** 初始化表单数据 */
     async initFormData () {
       const res = await this.getCreatorInfo(this.myInfo.address)
-      await this.getPstContract(res.ticker.contract)
       // 这个地方应该正常获取数据
-      console.log('这个地方应该正常获取数据:', this.creatorPst)
-
-      // 初始化兑换比率
-      this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
         if (this.tokenFormBackup) {
@@ -277,11 +272,14 @@ export default {
           this.solutions = this.tokenFormBackup.items
           this.ratio = this.tokenFormBackup.ratio
         }
+        this.authorInfoLoading = false
         return
       }
+      await this.getPstContract(res.ticker.contract)
+      this.authorInfoLoading = false
 
       try {
-        // 这个地方拿不到数据
+        // 初始化兑换比率
         const halfRatio = String(parseFloat(String(this.creatorPst[res.ticker.contract].ratio).split(':')[1]))
         this.ratio = !halfRatio ? '' : halfRatio
       } catch (e) {
