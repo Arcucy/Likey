@@ -57,7 +57,12 @@
       </p>
       <div class="solution-unlock">
         <span class="solution-unlock-status" />
-        <el-button class="solution-unlock-btn" type="primary" @click="buyCustomSolution(customPstInput)">
+        <el-button
+          class="solution-unlock-btn"
+          type="primary"
+          @click="buyCustomSolution(customPstInput)"
+          :loading="loading"
+        >
           {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
@@ -122,12 +127,13 @@ export default {
       this.loading = true
       this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
       this.ratio = this.contractState.ratio
+      console.log(this.ratio)
       this.loading = false
     },
     /** 转换 PST 为 Winston */
     convertPstToWinston (value) {
       const { from, to } = this.getRatio(this.ratio)
-      value = new Bignumber(value).multipliedBy(from).div(to)
+      value = new Bignumber(value).multipliedBy(to).div(from).multipliedBy(1000000000000)
       value = value.toFixed(12)
 
       if (value === 'Infinity') {
@@ -140,8 +146,9 @@ export default {
       if (!/^1:\d*\.?\d*$/.test(ratio)) {
         return { from: '1', to: '0' }
       }
-      let from = 1000000000000
+      let from = 1
       let to = parseFloat(ratio.split(':').pop())
+      to = 0.0000000001
       let iteration = 0
 
       while (true) {

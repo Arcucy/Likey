@@ -338,7 +338,7 @@ export default {
       }
       const pstState = await this.$api.contract.readLikeyCreatorPstContract(info.ticker.contract)
       if ('1:' + this.ratio !== pstState.ratio) {
-        console.log(await this.$api.contract.updateCreatorRatio(jwk, '1:' + this.ratio))
+        console.log(await this.$api.contract.updateCreatorRatio(jwk, info.ticker.contract, '1:' + this.ratio))
       }
       this.$message.success(this.$t('success.success'))
       this.submitting = false
