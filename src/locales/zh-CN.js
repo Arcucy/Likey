@@ -22,6 +22,9 @@ export default {
     imgVeryBIg: '图片过大',
     unableToGetFile: '无法获取文件'
   },
+  app: {
+    loading: '加载中'
+  },
   landing: {
     title: '为你的创作建立社区',
     description: 'Likey 提供了来自区块链技术的强大工具，帮助您将您的创作整合在一起，从您的粉丝和感兴趣的人那里获得更多的吸引力，同时将收益管理权还给您。',
@@ -82,12 +85,15 @@ export default {
     pleaseSelectACreationScale: '请选择一个创作规模',
     pleaseFillInTheIntroduction: '请填写简介',
     introductionIsTooLong: '简介过长',
+    contractAddress: '合约地址',
     inputName: '名称',
     inputNamePlaceholder: '填写自定义的代币名称',
     ticker: '缩写（Ticker）',
     tickerPlaceholder: '填写自定义的代币英文缩写',
     exchangeRatio: '代币兑换比率',
-    exchangeRatioDescription: '分润代币兑换 AR 的初始兑换率',
+    exchangeRatioDescription: '初初始兑换率用于将用户赞助的 AR 数额转化为代币',
+    exchangeRatioExceedsTheLimitation: '兑换比率小数点超出了限制',
+    pleaseFillInTheExchangeRatio: '请输入兑换比率',
     unlockPlan: '解锁方案',
     ownBalance: '持有',
     unlock: '解锁',
@@ -142,5 +148,14 @@ export default {
     everyoneCanSee: '所有人可见',
     allSponsors: '所有持仓者',
     ownNUnlock: '持有 {0} {1}/解锁'
+  },
+  sponsor: {
+    sponsor: '赞助',
+    sponsorStatistics: '赞赏统计',
+    totalSupply: '发行总量',
+    holders: '持仓人数',
+    donationAndSponsorCount: '赞赏总数',
+    custom: '自定义',
+    customInputDescription: '本方案可自定义 PST 购买数量'
   }
 }

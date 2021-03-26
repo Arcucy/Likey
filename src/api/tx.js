@@ -88,7 +88,7 @@ export default {
    * @param {*} callback    - 回调函数，返回当前上传百分比，以及一个 uplodaer（可以断点续传的上传对象）
    * @returns               - 返回一个对象，包含 id 和 status 字段，id 字段是交易 id，status 字段是交易上传状态
    */
-  async createNewFile (file, fileType, key, callback) {
+  async createNewFile (file, fileType, key, tags = [], callback) {
     const types = {
       image: 'Likey-Images',
       audio: 'Likey-Audio',
@@ -110,6 +110,14 @@ export default {
     tx.addTag('Schema-Version', '0.1.0')
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', type)
+
+    if (tags.length > 0) {
+      tags.forEach(tag => {
+        if (!(Object.prototype.hasOwnProperty.call(tag, 'name') || Object.prototype.hasOwnProperty.call(tag, 'value'))) return
+        if (!(tag.name || tag.value)) return
+        tx.addTag(tag.name, tag.value)
+      })
+    }
 
     try {
       await arweave.transactions.sign(tx, key)

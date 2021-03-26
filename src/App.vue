@@ -67,6 +67,10 @@ body {
   padding: 0;
 }
 
+textarea {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 #app {
   width: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
