@@ -210,7 +210,8 @@ export default {
       myInfo: state => state.user.myInfo,
       myJwk: state => state.user.myJwk,
       creatorFormBackup: state => state.user.creatorFormBackup,
-      tokenFormBackup: state => state.user.tokenFormBackup
+      tokenFormBackup: state => state.user.tokenFormBackup,
+      creatorPST: state => state.contract.creatorPST
     }),
     initLoading () {
       return !this.isLoggedIn || this.authorInfoLoading
@@ -258,10 +259,15 @@ export default {
   mounted () {
   },
   methods: {
-    ...mapActions(['getCreatorInfo', 'setTokenFormBackup']),
+    ...mapActions(['getCreatorInfo', 'setTokenFormBackup', 'getPSTContract']),
     /** 初始化表单数据 */
     async initFormData () {
       const res = await this.getCreatorInfo(this.myInfo.address)
+      await this.getPSTContract(res.ticker.contract)
+      // 这个地方应该正常获取数据
+      console.log(this.creatorPST)
+
+      // 初始化兑换比率
       this.authorInfoLoading = false
       if (!res) {
         this.newAuthor = true
@@ -274,11 +280,9 @@ export default {
         return
       }
 
-      // 初始化兑换比率
-      let tickerContract = {}
       try {
-        tickerContract = await this.readLikeyCreatorPSTContract(res.ticker.contract)
-        const halfRatio = String(parseFloat(String(tickerContract.ratio).split(':')[1]))
+        // 这个地方拿不到数据
+        const halfRatio = String(parseFloat(String(this.creatorPST[res.ticker.contract].ratio).split(':')[1]))
         this.ratio = !halfRatio ? '' : halfRatio
       } catch (e) {
         this.ratio = '1'

@@ -54,14 +54,12 @@ Object.keys(Filters).forEach(key => {
   Vue.filter(key, Filters[key])
 })
 
-Vue.use(VueClipboards)
-
-Vue.component('aplayer', Aplayer)
-
 Vue.config.productionTip = false
 Vue.prototype.$api = API
 Vue.prototype.$switchElementTheme = loadTheme
 
+Vue.use(VueClipboards)
+Vue.component('aplayer', Aplayer)
 new Vue({
   router,
   store,

@@ -108,6 +108,7 @@ export default {
                 this.keyFileContent = JSON.parse(e.target.result)
                 this.fileName = this.file.name
                 this.disallowStep2 = false
+                fileInput.value = null
               } catch (err) {
               }
             }
@@ -138,6 +139,7 @@ export default {
       }
 
       this.file = null
+      fileInput.value = null
 
       this.dialogVisible = false
       done()

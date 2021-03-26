@@ -22,6 +22,9 @@ export default {
     imgVeryBIg: 'Image too large',
     unableToGetFile: 'Unable to get file'
   },
+  app: {
+    loading: 'Loading'
+  },
   landing: {
     title: 'Build Your Community For Your Creation',
     description: 'Likey provides powerful tools from blockchain technologies to help integrate your creation together and gain more attractions from your fans and interested people while giving the income management back to you',
@@ -151,6 +154,8 @@ export default {
     sponsorStatistics: 'Sponsor Statistics',
     totalSupply: 'Total Supply',
     holders: 'Holders',
-    donationAndSponsorCount: 'Purchased'
+    donationAndSponsorCount: 'Purchased',
+    custom: 'Custom',
+    customInputDescription: 'You can specify you purchase amount here'
   }
 }

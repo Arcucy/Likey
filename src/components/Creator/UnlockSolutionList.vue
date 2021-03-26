@@ -22,8 +22,13 @@
           <span class="mdi mdi-lock-open" />
           Locked
         </span>
-        <el-button class="solution-unlock-btn" type="primary" @click="buyUnlockSolution(item, index)">
-          {{ convertPSTToWinston(item.value) | winstonToAr }} AR
+        <el-button
+          class="solution-unlock-btn"
+          type="primary"
+          @click="buyUnlockSolution(item, index)"
+          :loading="loading"
+        >
+          {{ convertPSTToWinston(item.value) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -45,15 +50,15 @@
         </span>
       </div>
       <p style="line-height: normal;" class="solution-title">
-        自定义
+        {{ $t('sponsor.custom') }}
       </p>
       <p class="solution-desp">
-        本方案可自定义 PST 购买数量
+        {{ $t('sponsor.customInputDescription') }}
       </p>
       <div class="solution-unlock">
         <span class="solution-unlock-status" />
         <el-button class="solution-unlock-btn" type="primary" @click="buyCustomSolution(customPstInput)">
-          {{ customPstInput }} AR
+          {{ convertPSTToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -76,7 +81,8 @@ export default {
   data () {
     return {
       customPstInput: 1,
-      ratio: ''
+      ratio: '',
+      loading: false
     }
   },
   computed: {
@@ -111,10 +117,14 @@ export default {
     buyCustomSolution (value) {
       console.log('购买自定义方案', value)
     },
+    /** 初始化合约状态 */
     async initContractInfo () {
+      this.loading = true
       this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
       this.ratio = this.contractState.ratio
+      this.loading = false
     },
+    /** 转换 PST 为 Winston */
     convertPSTToWinston (value) {
       const { from, to } = this.getRatio(this.ratio)
       value = new Bignumber(value).multipliedBy(from).div(to)
@@ -125,6 +135,7 @@ export default {
       }
       return value
     },
+    /** 拆分换算比率 */
     getRatio (ratio) {
       if (!/^1:\d*\.?\d*$/.test(ratio)) {
         return { from: '1', to: '0' }

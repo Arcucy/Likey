@@ -24,7 +24,8 @@ export default {
     /** 加载状态 */
     loading: false,
     /** 缓存时间戳 */
-    timestamp: 0
+    timestamp: 0,
+    creatorPST: {}
   },
   getters: {
   },
@@ -55,6 +56,27 @@ export default {
     },
     updateLikeyContractTimestamp (state) {
       state.timestamp = Date.now()
+    },
+    mSetLikeyCreatorPSTContract (state, data) {
+      const { contractId, contractState } = data
+      const obj = {}
+
+      // 重新创建一个并更新数据
+      Object.defineProperty(obj, contractId, {
+        value: { ...contractState, loading: false, timestamp: Date.now() },
+        writable: true,
+        enumerable: true
+      })
+      console.log('更新前: ', obj)
+
+      state.creatorPST = { ...state.creatorPST, ...obj }
+      console.log('更新后: ', state.creatorPST)
+    },
+    mSetLikeyCreatorPSTContractLoading (state, data) {
+
+    },
+    mSetLikeyCreatorPSTContractTimestamp (state, data) {
+
     }
   },
   actions: {
@@ -68,6 +90,20 @@ export default {
         return JSON.parse(JSON.stringify(res))
       } catch (err) {
         commit('mSetLikeyContractLoading', false)
+        throw err
+      }
+    },
+
+    async initLikeyCreatorContract ({ commit }, data) {
+      try {
+        commit('mSetLikeyCreatorPSTContractLoading', { contractId: data.contractId, loading: true })
+        const contractState = await API.contract.readLikeyCreatorPSTContract(data.contractId)
+        commit('mSetLikeyCreatorPSTContract', { contractId: data.contractId, contractState })
+        commit('mSetLikeyCreatorPSTContractTimestamp', { contractId: data.contractId })
+        commit('mSetLikeyCreatorPSTContractLoading', { contractId: data.contractId, loading: false })
+        return JSON.parse(JSON.stringify(contractState))
+      } catch (err) {
+        commit('mSetLikeyCreatorPSTContractLoading', { contractId: data.contractId, loading: false })
         throw err
       }
     },
@@ -90,11 +126,16 @@ export default {
         if (value.shortname === shortname) return key
       }
       return ''
+    },
+
+    async getPSTContract ({ state, dispatch }, contractId) {
+      await checkCreatorPSTContractCache(state, dispatch, contractId)
+      return state.creatorPST[contractId]
     }
   }
 }
 
-/** 检查缓存，如果缓存失效则重新获取，如果正在获取缓存则等待获取完成 */
+/** 适用于主合约，检查缓存，如果缓存失效则重新获取，如果正在获取缓存则等待获取完成 */
 function checkCache (state, dispatch) {
   return new Promise((resolve, reject) => {
     // 正在获取合约状态，等待获取完成
@@ -111,6 +152,48 @@ function checkCache (state, dispatch) {
     const timeDifference = Date.now() - state.timestamp
     if (timeDifference > 1000 * CACHE_DURATION) {
       dispatch('initLikeyContract').then(() => {
+        resolve()
+      }).catch(err => {
+        reject(err)
+      })
+      return
+    }
+    // 没失效，直接用
+    resolve()
+  })
+}
+
+/** 适用于创作者 PST 合约，检查缓存，如果缓存失效则重新获取，如果正在获取缓存则等待获取完成 */
+function checkCreatorPSTContractCache (state, dispatch, contractId) {
+  return new Promise((resolve, reject) => {
+    // 是否已经存在 contractId 这个键？
+    if (!Object.prototype.hasOwnProperty.call(state.creatorPST, contractId)) {
+      const obj = {}
+
+      // 如果没有那就应该创建一个
+      Object.defineProperty(obj, contractId, {
+        value: { loading: false, timestamp: Date.now() },
+        writable: true,
+        enumerable: true
+      })
+
+      state.creatorPST = { ...state.creatorPST, ...obj }
+    }
+
+    // 正在获取合约状态，等待获取完成
+    if (state.creatorPST[contractId].loading) {
+      const loadingTimer = setInterval(() => {
+        if (!state.creatorPST[contractId].loading) {
+          clearInterval(loadingTimer)
+          resolve()
+        }
+      }, 100)
+      return
+    }
+    // 缓存失效，重新获取合约状态
+    const timeDifference = Date.now() - state.creatorPST[contractId].timestamp
+    if (timeDifference > 1000 * CACHE_DURATION) {
+      dispatch('initLikeyCreatorContract', { contractId }).then(() => {
         resolve()
       }).catch(err => {
         reject(err)

@@ -22,6 +22,9 @@ export default {
     imgVeryBIg: '图片过大',
     unableToGetFile: '无法获取文件'
   },
+  app: {
+    loading: '加载中'
+  },
   landing: {
     title: '为你的创作建立社区',
     description: 'Likey 提供了来自区块链技术的强大工具，帮助您将您的创作整合在一起，从您的粉丝和感兴趣的人那里获得更多的吸引力，同时将收益管理权还给您。',
@@ -151,6 +154,8 @@ export default {
     sponsorStatistics: '赞赏统计',
     totalSupply: '发行总量',
     holders: '持仓人数',
-    donationAndSponsorCount: '赞赏总数'
+    donationAndSponsorCount: '赞赏总数',
+    custom: '自定义',
+    customInputDescription: '本方案可自定义 PST 购买数量'
   }
 }
