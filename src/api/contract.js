@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 import Axios from 'axios'
 
 const LIKEY_CREATOR_PST_CONTRACT = 'x4gx02CL12ezSt-qLzmPfkXAhVdd_e1C9cUDksMM4UQ'
-const LIKEY_CONTRACT = 'xfJPpv4bbkaU7r978fl_oiak6JDf_pTFlOZQnKfYTPs'
+const LIKEY_CONTRACT = 'XUc8q12a_Me80D4TJopM0ruW4McTPTk1EChVHzNk1lM'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
