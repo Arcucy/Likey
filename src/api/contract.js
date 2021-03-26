@@ -3,8 +3,8 @@ import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import Axios from 'axios'
 
-const LIKEY_CREATOR_PST_CONTRACT = 'b60zm53uuEMh7UdMgqdODtmW-QfdNWdQgkWFzyUH4QA'
-const LIKEY_CONTRACT = 'fN-nTV-Q6HX9wDPNo89CKpbUhC6nDLWlnic7QzRA1g0'
+const LIKEY_CREATOR_PST_CONTRACT = 'x4gx02CL12ezSt-qLzmPfkXAhVdd_e1C9cUDksMM4UQ'
+const LIKEY_CONTRACT = 'xfJPpv4bbkaU7r978fl_oiak6JDf_pTFlOZQnKfYTPs'
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
@@ -146,11 +146,12 @@ export default {
     return res
   },
   /** 更新兑换比率 */
-  async updateCreatorRatio (jwk, ratio) {
+  async updateCreatorRatio (jwk, contract, ratio) {
     const obj = LikeyCreatorPst.updateRatio(ratio)
 
-    const res = await this.interactWrite(jwk, obj)
-    return res
+    const likey = await this.interactWrite(jwk, obj)
+    const pst = await this.interactWritePst(jwk, contract, obj)
+    return { likey, pst }
   },
   /**
    * 赞赏创作者
