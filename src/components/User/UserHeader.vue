@@ -6,6 +6,16 @@
       <div class="user-header-cover-pillar" />
       <!-- 图片主体 -->
       <div class="user-header-cover-main">
+        <el-tooltip
+          class="item"
+          effect="dark"
+          :content="$t('userProfile.changeBanner')"
+          placement="bottom-end"
+        >
+          <div class="user-header-cover-main-setting" v-if="isMe" @click="updateBanner">
+            <span class="mdi mdi-image-area" />
+          </div>
+        </el-tooltip>
         <img src="@/assets/img/default/myProfileCover.jpg" alt="cover">
       </div>
     </div>
@@ -153,6 +163,9 @@ export default {
     },
     pushBasicInfo () {
       this.$emit('basic-info', this.basicInfo)
+    },
+    async updateBanner () {
+
     }
   }
 }
@@ -175,10 +188,46 @@ export default {
       left: 0;
       right: 0;
       overflow: hidden;
+      display: flex;
+
+      &-setting {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        column-gap: 5px;
+        color: @primary;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        background-color: #ffffffcd;
+        border: 1px solid #ffffff88;
+        padding: 5px 5px;
+        cursor: pointer;
+        outline: none;
+
+        &:hover {
+          background-color: #ffffff;
+        }
+
+        &:active {
+          background-color: #ffffff86;
+        }
+
+        span {
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+        }
+      }
+
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        user-select: none;
       }
     }
   }

@@ -54,7 +54,8 @@ export default {
     flow: '动态',
     sponsorship: '赞助',
     notYetACreator: '还没有成为创作者',
-    editUsernameAndAvatar: '编辑用户名和头像'
+    editUsernameAndAvatar: '编辑用户名和头像',
+    changeBanner: '更换横幅图片'
   },
   setting: {
     settings: '设置',
