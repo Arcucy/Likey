@@ -1,4 +1,5 @@
 import API from '../api/api'
+import Vue from 'vue'
 
 /** 缓存有效时长，单位：秒 */
 const CACHE_DURATION = 30
@@ -25,12 +26,13 @@ export default {
     loading: false,
     /** 缓存时间戳 */
     timestamp: 0,
+    /** PST 合约状态缓存 */
     creatorPst: {}
   },
   getters: {
   },
   mutations: {
-    /** 设置合约状态，传入一个对象，对象内为 undefined 的值将不会被修改 */
+    /** 设置主合约状态，传入一个对象，对象内为 undefined 的值将不会被修改 */
     mSetLikeyContractStatus (state, {
       admins = state.admins,
       creators = state.creators,
@@ -50,39 +52,28 @@ export default {
       }
       state.version = version
     },
-    /** 设置合约是否正在加载 */
+    /** 设置主合约是否正在加载 */
     mSetLikeyContractLoading (state, data) {
       state.loading = !!data
     },
+    /** 更新主合约时间戳 */
     updateLikeyContractTimestamp (state) {
       state.timestamp = Date.now()
     },
-    mSetLikeyCreatorPstContract (state, data) {
-      const { contractId, contractState } = data
-      const obj = {}
-
-      // 重新创建一个并更新数据
-      Object.defineProperty(obj, contractId, {
-        value: { ...contractState, loading: false, timestamp: Date.now() },
-        writable: true,
-        enumerable: true
+    /** 设置 PST 合约状态，设的同时会修改 loading 和 timestamp */
+    mSetLikeyCreatorPstContract (state, { contractId, contractState }) {
+      Vue.set(state.creatorPst, contractId, {
+        ...contractState,
+        loading: false,
+        timestamp: Date.now()
       })
-
-      state.creatorPst = { ...state.creatorPst, ...obj }
     },
-    mSetLikeyCreatorPstContractLoading (state, data) {
-      const { contractId, loading } = data
-      if (!state.creatorPst[contractId]) {
-        return
-      }
-      state.creatorPst[contractId] = { ...state.creatorPst[contractId], loading }
-    },
-    mSetLikeyCreatorPstContractTimestamp (state, data) {
-      const { contractId } = data
-      if (!state.creatorPst[contractId]) {
-        return
-      }
-      state.creatorPst[contractId] = { ...state.creatorPst[contractId], timestamp: Date.now() }
+    /** 设置 PST 合约是否正在加载 */
+    mSetLikeyCreatorPstContractLoading (state, { contractId, loading }) {
+      Vue.set(state.creatorPst, contractId, {
+        ...state.creatorPst[contractId],
+        loading
+      })
     }
   },
   actions: {
@@ -100,16 +91,14 @@ export default {
       }
     },
 
-    async initLikeyCreatorContract ({ commit }, data) {
+    async initLikeyCreatorContract ({ commit }, contractId) {
       try {
-        commit('mSetLikeyCreatorPstContractLoading', { contractId: data.contractId, loading: true })
-        const contractState = await API.contract.readLikeyCreatorPstContract(data.contractId)
-        commit('mSetLikeyCreatorPstContract', { contractId: data.contractId, contractState })
-        commit('mSetLikeyCreatorPstContractTimestamp', { contractId: data.contractId })
-        commit('mSetLikeyCreatorPstContractLoading', { contractId: data.contractId, loading: false })
+        commit('mSetLikeyCreatorPstContractLoading', { contractId: contractId, loading: true })
+        const contractState = await API.contract.readLikeyCreatorPstContract(contractId)
+        commit('mSetLikeyCreatorPstContract', { contractId: contractId, contractState })
         return JSON.parse(JSON.stringify(contractState))
       } catch (err) {
-        commit('mSetLikeyCreatorPstContractLoading', { contractId: data.contractId, loading: false })
+        commit('mSetLikeyCreatorPstContractLoading', { contractId: contractId, loading: false })
         throw err
       }
     },
@@ -117,6 +106,10 @@ export default {
     // ***************************************************
     // * 因为这些数据获取都涉及到异步操作，所以写在 actions 中  *
     // ***************************************************
+
+    // **************
+    // *  主合约部分  *
+    // **************
 
     /** 根据地址获取用户的创作者信息 */
     async getCreatorInfo ({ state, dispatch }, address) {
@@ -134,6 +127,11 @@ export default {
       return ''
     },
 
+    // **************
+    // * PST合约部分 *
+    // **************
+
+    /** 通过合约地址获取 PST 合约状态 */
     async getPstContract ({ state, dispatch }, contractId) {
       await checkCreatorPstContractCache(state, dispatch, contractId)
       return state.creatorPst[contractId]
@@ -182,16 +180,11 @@ function checkCreatorPstContractCache (state, dispatch, contractId) {
       }, 100)
       return
     }
-    let timestamp = 0
-    if (!state.creatorPst[contractId]) {
-      timestamp = 0
-    } else {
-      timestamp = state.creatorPst[contractId].timestamp
-    }
     // 缓存失效，重新获取合约状态
+    const timestamp = state.creatorPst[contractId] ? state.creatorPst[contractId].timestamp : 0
     const timeDifference = Date.now() - timestamp
     if (timeDifference > 1000 * CACHE_DURATION) {
-      dispatch('initLikeyCreatorContract', { contractId }).then(() => {
+      dispatch('initLikeyCreatorContract', contractId).then(() => {
         resolve()
       }).catch(err => {
         reject(err)

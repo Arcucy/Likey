@@ -265,7 +265,7 @@ export default {
       const res = await this.getCreatorInfo(this.myInfo.address)
       await this.getPstContract(res.ticker.contract)
       // 这个地方应该正常获取数据
-      console.log(this.creatorPst)
+      console.log('这个地方应该正常获取数据:', this.creatorPst)
 
       // 初始化兑换比率
       this.authorInfoLoading = false
