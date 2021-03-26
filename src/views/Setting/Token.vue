@@ -211,7 +211,7 @@ export default {
       myJwk: state => state.user.myJwk,
       creatorFormBackup: state => state.user.creatorFormBackup,
       tokenFormBackup: state => state.user.tokenFormBackup,
-      creatorPST: state => state.contract.creatorPST
+      creatorPst: state => state.contract.creatorPst
     }),
     initLoading () {
       return !this.isLoggedIn || this.authorInfoLoading
@@ -259,13 +259,13 @@ export default {
   mounted () {
   },
   methods: {
-    ...mapActions(['getCreatorInfo', 'setTokenFormBackup', 'getPSTContract']),
+    ...mapActions(['getCreatorInfo', 'setTokenFormBackup', 'getPstContract']),
     /** 初始化表单数据 */
     async initFormData () {
       const res = await this.getCreatorInfo(this.myInfo.address)
-      await this.getPSTContract(res.ticker.contract)
+      await this.getPstContract(res.ticker.contract)
       // 这个地方应该正常获取数据
-      console.log(this.creatorPST)
+      console.log(this.creatorPst)
 
       // 初始化兑换比率
       this.authorInfoLoading = false
@@ -282,7 +282,7 @@ export default {
 
       try {
         // 这个地方拿不到数据
-        const halfRatio = String(parseFloat(String(this.creatorPST[res.ticker.contract].ratio).split(':')[1]))
+        const halfRatio = String(parseFloat(String(this.creatorPst[res.ticker.contract].ratio).split(':')[1]))
         this.ratio = !halfRatio ? '' : halfRatio
       } catch (e) {
         this.ratio = '1'
@@ -336,7 +336,7 @@ export default {
       if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
         console.log(await this.$api.contract.editCreatorItems(jwk, this.solutions))
       }
-      const pstState = await this.$api.contract.readLikeyCreatorPSTContract(info.ticker.contract)
+      const pstState = await this.$api.contract.readLikeyCreatorPstContract(info.ticker.contract)
       if ('1:' + this.ratio !== pstState.ratio) {
         console.log(await this.$api.contract.updateCreatorRatio(jwk, '1:' + this.ratio))
       }
@@ -347,7 +347,7 @@ export default {
     async createCreatorContract () {
       const tickerObj = { ticker: this.ticker, name: this.name, ratio: '1:' + this.ratio }
       const jwk = JSON.parse(this.myJwk)
-      const tx = await this.$api.contract.estimateCreatorPSTContractFee(jwk, tickerObj)
+      const tx = await this.$api.contract.estimateCreatorPstContractFee(jwk, tickerObj)
       const address = await this.$api.gql.getAddress(jwk)
       let balance = this.$api.ArweaveNative.ar.arToWinston(await this.$api.arql.getBalance(address))
       balance = new Bignumber(balance)
@@ -356,7 +356,7 @@ export default {
         this.$message.error(this.$t('failure.insufficientFunds'))
         return
       }
-      this.tickerContract = await this.$api.contract.createCreatorPSTContract(jwk, tickerObj)
+      this.tickerContract = await this.$api.contract.createCreatorPstContract(jwk, tickerObj)
     },
     /** 创建创作者 */
     async createCreator () {

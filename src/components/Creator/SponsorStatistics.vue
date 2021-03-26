@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     async initContractInfo () {
-      this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
+      this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
     }
   }
 }

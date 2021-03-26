@@ -30,7 +30,7 @@ export default {
   /**
    * 读取 Likey PST 合约信息
    */
-  async readLikeyCreatorPSTContract (address) {
+  async readLikeyCreatorPstContract (address) {
     const state = await SmartWeave.readContract(arweave, address)
     return state
   },
@@ -59,14 +59,14 @@ export default {
     }
   },
   /**
-   * 封装好的 interactWritePST 方法，用于写入 PST 合约，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
+   * 封装好的 interactWritePst 方法，用于写入 PST 合约，会先进行 interactWriteDryRun 模拟运行，成功后在实际执行 interactWrite
    * @param {Object} jwk 钱包
    * @param {*} input 数据
    * @param {*} tags 给交易添加标签
    * @param {*} target ？
    * @param {*} winstonQty ？
    */
-  async interactWritePST (jwk, contract, input, tags, target, winstonQty) {
+  async interactWritePst (jwk, contract, input, tags, target, winstonQty) {
     const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, contract, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
@@ -83,42 +83,42 @@ export default {
     }
   },
   /**
-   * estimateCreatorPSTContractFee 估算创建创作者的 PST 合约所需要的手续费
+   * estimateCreatorPstContractFee 估算创建创作者的 PST 合约所需要的手续费
    * @param {*} jwk JWK 密钥
    * @param {*} ticker ticker PST 信息
    * @returns fee 手续费
    */
-  async estimateCreatorPSTContractFee (jwk, ticker, address = '') {
+  async estimateCreatorPstContractFee (jwk, ticker, address = '') {
     if (address === '') {
       address = await arweave.wallets.getAddress(jwk)
     }
-    const LikeyPST = LikeyCreatorPSTState()
-    LikeyPST.ticker = ticker.ticker
-    LikeyPST.name = ticker.name
-    LikeyPST.ratio = ticker.ratio || '1:1'
-    LikeyPST.admins = [address]
-    LikeyPST.owner = address
-    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPST))
+    const LikeyPst = LikeyCreatorPstState()
+    LikeyPst.ticker = ticker.ticker
+    LikeyPst.name = ticker.name
+    LikeyPst.ratio = ticker.ratio || '1:1'
+    LikeyPst.admins = [address]
+    LikeyPst.owner = address
+    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst))
     const fee = await Axios.get(`https://${process.env.VUE_APP_ARWEAVE_NODE}/price/${Number(tx.data_size)}`)
     return { id: tx.id, fee }
   },
   /**
-   * createCreatorPSTContract 创建创作者 PST 合约
+   * createCreatorPstContract 创建创作者 PST 合约
    * @param {*} jwk JWK 密钥
    * @param {*} ticker ticker PST 信息
    * @returns id 合约 ID
    */
-  async createCreatorPSTContract (jwk, ticker, address = '') {
+  async createCreatorPstContract (jwk, ticker, address = '') {
     if (address === '') {
       address = await arweave.wallets.getAddress(jwk)
     }
-    const LikeyPST = LikeyCreatorPSTState()
-    LikeyPST.ticker = ticker.ticker
-    LikeyPST.name = ticker.name
-    LikeyPST.ratio = ticker.ratio || '1:1'
-    LikeyPST.admins = [address]
-    LikeyPST.owner = address
-    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPST))
+    const LikeyPst = LikeyCreatorPstState()
+    LikeyPst.ticker = ticker.ticker
+    LikeyPst.name = ticker.name
+    LikeyPst.ratio = ticker.ratio || '1:1'
+    LikeyPst.admins = [address]
+    LikeyPst.owner = address
+    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst))
     return contractId
   },
   /** 创建创作者 */
@@ -147,7 +147,7 @@ export default {
   },
   /** 更新兑换比率 */
   async updateCreatorRatio (jwk, ratio) {
-    const obj = LikeyCreatorPST.updateRatio(ratio)
+    const obj = LikeyCreatorPst.updateRatio(ratio)
 
     const res = await this.interactWrite(jwk, obj)
     return res
@@ -161,11 +161,11 @@ export default {
    */
   async sponsorAdded (jwk, contract, quantity) {
     try {
-      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      const pstState = await this.readLikeyCreatorPstContract(contract)
 
-      const obj = LikeyCreatorPST.sponsorAdded()
+      const obj = LikeyCreatorPst.sponsorAdded()
 
-      const res = await this.interactWritePST(jwk, contract, obj, [], pstState.owner, quantity)
+      const res = await this.interactWritePst(jwk, contract, obj, [], pstState.owner, quantity)
       return res
     } catch (err) {
       throw new Error(err)
@@ -181,11 +181,11 @@ export default {
    */
   async donationAdded (jwk, contract, statusId, quantity) {
     try {
-      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      const pstState = await this.readLikeyCreatorPstContract(contract)
 
-      const obj = LikeyCreatorPST.donationAdded(statusId)
+      const obj = LikeyCreatorPst.donationAdded(statusId)
 
-      const res = await this.interactWritePST(jwk, contract, obj, [], pstState.owner, quantity)
+      const res = await this.interactWritePst(jwk, contract, obj, [], pstState.owner, quantity)
       return res
     } catch (err) {
       throw new Error(err)
@@ -200,9 +200,9 @@ export default {
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
   async mint (jwk, contract, recipient, quantity) {
-    const obj = LikeyCreatorPST.mint(recipient, quantity)
+    const obj = LikeyCreatorPst.mint(recipient, quantity)
 
-    const res = await this.interactWritePST(jwk, contract, obj)
+    const res = await this.interactWritePst(jwk, contract, obj)
     return res
   },
   /**
@@ -214,9 +214,9 @@ export default {
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
   async transfer (jwk, contract, target, quantity) {
-    const obj = LikeyCreatorPST.transfer(target, quantity)
+    const obj = LikeyCreatorPst.transfer(target, quantity)
 
-    const res = await this.interactWritePST(jwk, contract, obj)
+    const res = await this.interactWritePst(jwk, contract, obj)
     return res
   },
   /**
@@ -226,15 +226,15 @@ export default {
    * @param {*} logo        - 图片地址，尽量选用 Arweave 链上数据（安全性：本地转换的时候以字符串进行读取）
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
-  async editCreatorPSTLogo (jwk, contract, logo) {
+  async editCreatorPstLogo (jwk, contract, logo) {
     try {
-      const pstState = await this.readLikeyCreatorPSTContract(contract)
+      const pstState = await this.readLikeyCreatorPstContract(contract)
       const temp = [...pstState.settings]
       temp.push(['communityLogo', String(logo)])
 
-      const obj = LikeyCreatorPST.editSettings(temp)
+      const obj = LikeyCreatorPst.editSettings(temp)
 
-      const res = await this.interactWritePST(jwk, contract, obj)
+      const res = await this.interactWritePst(jwk, contract, obj)
       return res
     } catch (err) {
       throw new Error(err)
@@ -420,7 +420,7 @@ const LikeyContract = {
   }
 }
 
-const LikeyCreatorPSTState = () => {
+const LikeyCreatorPstState = () => {
   return {
     name: '',
     ticker: '',
@@ -439,7 +439,7 @@ const LikeyCreatorPSTState = () => {
 }
 
 // eslint-disable-next-line no-unused-vars
-const LikeyCreatorPST = {
+const LikeyCreatorPst = {
   /**
    * mint 合约写入方法
    * 为指定地址铸币

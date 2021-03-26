@@ -28,7 +28,7 @@
           @click="buyUnlockSolution(item, index)"
           :loading="loading"
         >
-          {{ convertPSTToWinston(item.value) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(item.value) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -58,7 +58,7 @@
       <div class="solution-unlock">
         <span class="solution-unlock-status" />
         <el-button class="solution-unlock-btn" type="primary" @click="buyCustomSolution(customPstInput)">
-          {{ convertPSTToWinston(customPstInput) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -120,12 +120,12 @@ export default {
     /** 初始化合约状态 */
     async initContractInfo () {
       this.loading = true
-      this.contractState = await this.$api.contract.readLikeyCreatorPSTContract(this.creator.ticker.contract)
+      this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
       this.ratio = this.contractState.ratio
       this.loading = false
     },
     /** 转换 PST 为 Winston */
-    convertPSTToWinston (value) {
+    convertPstToWinston (value) {
       const { from, to } = this.getRatio(this.ratio)
       value = new Bignumber(value).multipliedBy(from).div(to)
       value = value.toFixed(12)
