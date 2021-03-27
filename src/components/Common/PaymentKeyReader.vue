@@ -9,12 +9,12 @@
     >
       <div>
         <div class="keyreader">
-          <div class="file-input-area" id="file-input-area">
+          <div class="payment-key-area" id="payment-key-area">
             <span v-if="!file" class="filename"><span class="mdi mdi-plus" /></span>
             <span v-else class="filename">{{ fileName }}</span>
             <input
-              class="file-input"
-              id="file-input"
+              class="payment-key"
+              id="payment-key"
               type="file"
               accept="application/json"
             >
@@ -30,7 +30,7 @@
             block
             @click="step2"
           >
-            {{ $t('sponsor.pay') }}
+            {{ $t('payment.pay') }}
           </el-button>
         </div>
       </div>
@@ -69,8 +69,8 @@ export default {
       this.setShowStatus(val)
       if (val) {
         setTimeout(() => {
-          const fileInput = document.getElementById('file-input')
-          const droparea = document.getElementById('file-input-area')
+          const fileInput = document.getElementById('payment-key')
+          const droparea = document.getElementById('payment-key-area')
 
           fileInput.addEventListener('dragenter', () => {
             this.addClass(droparea, 'is-active')
@@ -119,8 +119,8 @@ export default {
       elem.classList.remove(className)
     },
     handleClose (done) {
-      const fileInput = document.getElementById('file-input')
-      const droparea = document.getElementById('file-input-area')
+      const fileInput = document.getElementById('payment-key')
+      const droparea = document.getElementById('payment-key-area')
       fileInput.removeEventListener('dragenter', () => {})
       fileInput.removeEventListener('click', () => {})
       fileInput.removeEventListener('focus', () => {})
@@ -136,6 +136,7 @@ export default {
       fileInput.value = null
 
       this.dialogVisible = false
+      this.$emit('dialog-close', true)
       done()
     },
     step2 () {
@@ -168,7 +169,7 @@ export default {
   }
 }
 
-#file-input-area {
+#payment-key-area {
   margin: 0 auto;
   height: 120px;
   width: 100%;
@@ -197,7 +198,7 @@ export default {
   &.is-active {
     background-color: @gray1;
   }
-  .file-input {
+  .payment-key {
     position: absolute;
     z-index: 22;
     height: 120px;

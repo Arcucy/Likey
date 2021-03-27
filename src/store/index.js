@@ -1,4 +1,3 @@
-/* eslint-disable no-async-promise-executor */
 import Vue from 'vue'
 import Vuex from 'vuex'
 

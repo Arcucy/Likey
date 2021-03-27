@@ -1,5 +1,5 @@
 <template>
-  <a :href="'/#/@' + creator.shortname" target="_blank">
+  <a :href="'/#/@' + creator.shortname">
     <div class="creator-card" v-loading="loading">
       <avatar class="creator-card-avatar" size="48px" :src="avatar" />
       <div style="display: inline-block" class="creator-card-info">
@@ -60,6 +60,7 @@ a {
 
 .creator-card {
   background: @background;
+  color: @dark;
   box-shadow: 0 0 2px 0 #0000001a;
   box-sizing: border-box;
   border-radius: 6px;

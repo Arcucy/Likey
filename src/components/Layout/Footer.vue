@@ -57,8 +57,8 @@ a {
 
 footer {
   width: 100%;
-  height: 250px;
-  padding: 25px 10px;
+  height: fit-content;
+  padding: 25px 10px 25px;
   box-sizing: border-box;
   color: @gray2;
   background-color: @background-dark;
@@ -177,6 +177,33 @@ footer {
             margin-top: 5px;
           }
         }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  footer {
+    padding: 25px 10px 65px;
+
+    .footer {
+      &-brand {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 400px) {
+  footer {
+    padding: 25px 10px 75px;
+
+    .footer {
+      &-brand {
+        display: flex;
+        flex-direction: column;
       }
     }
   }
