@@ -197,9 +197,11 @@ export default {
         margin-top: 15px;
         max-width: 1200px;
         position: absolute;
+        box-sizing: border-box;
         width: 100%;
         display: flex;
         justify-content: flex-end;
+        padding: 0px 20px;
 
         &-icon {
           width: 16px;

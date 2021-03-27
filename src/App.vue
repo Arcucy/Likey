@@ -61,19 +61,31 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang='less'>
 body {
   margin: 0;
   padding: 0;
+  font-family: 'Likey-NunitoSans', 'Microsoft YaHei', sans-serif;
+}
+
+[lang^='zh'] body {
+  font-family: 'Source Han Sans', 'Microsoft YaHei', 'Hiragino Sans GB', '微软雅黑';
+}
+
+[lang^='ja'] body {
+  font-family: 'Source Han Sans', 'ヒラギノ角ゴ Pro','Hiragino Kaku Gothic Pro','メイリオ',Meiryo,Osaka,'ＭＳ Ｐゴシック','MS PGothic','MS Gothic', 'ＭＳ ゴシック','Helvetica Neue',Helvetica,Arial, sans-serif;
+}
+
+[lang^='ko'] body {
+  font-family: 'Source Han Sans', '나눔 고딕','Nanum Gothic', '맑은 고딕', 'Malgun Gothic', 'Apple Gothic',' 돋움', Dotum,' Helvetica Neue', sans-serif;
 }
 
 textarea {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Likey-NunitoSans', 'Microsoft YaHei', 'Source Han Sans', sans-serif;
 }
 
 #app {
   width: 100%;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

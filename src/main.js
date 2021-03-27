@@ -12,6 +12,7 @@ import Aplayer from 'vue-aplayer'
 import '@/icons'
 import API from '../src/api/api'
 import Filters from '../src/filters/index'
+import './index.css'
 
 const loadCSS = (path) => {
   const head = document.getElementsByTagName('head')[0]
