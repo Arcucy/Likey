@@ -7,7 +7,8 @@ export default {
     profitSharingTxSuccess: 'Successfully Profit Share to PST Holder',
     developerTipTxSuccess: 'Successfully Profit Share to Developer',
     sponsorTxSuccess: 'Sponsor Successful',
-    txSuccess: 'Transaction Successful'
+    txSuccess: 'Transaction Successful',
+    statusPublished: 'Status published successfully'
   },
   failure: {
     login: 'Login failed',
@@ -29,7 +30,8 @@ export default {
     developerTipTxFailed: 'Failed to Profit Share to Developer',
     sponsorTxFailed: 'Sponsor Failed',
     txFailed: 'Transaction Failed',
-    txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later'
+    txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
+    dynamicUploadFailed: 'Status upload failed'
   },
   app: {
     loading: 'Loading'
@@ -157,7 +159,8 @@ export default {
     pictureSelectionLimitWarning: 'You can only select {0} image(s)',
     everyoneCanSee: 'Everyone Can See',
     allSponsors: 'All Sponsors',
-    ownNUnlock: 'Own {0} {1}/Unlock'
+    ownNUnlock: 'Own {0} {1}/Unlock',
+    uploadingStatus: 'Uploading Status'
   },
   sponsor: {
     sponsor: 'Sponsors',
@@ -178,5 +181,11 @@ export default {
     fee: 'Fee',
     total: 'Total',
     txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}'
+  },
+  progressText: {
+    status: 'Uploading status',
+    media: 'Uploading media',
+    audio: 'Uploading audio',
+    file: 'Uploading file'
   }
 }
