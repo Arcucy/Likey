@@ -123,8 +123,8 @@ export default {
       .canvas-container {
         &-components {
           .components {
-            height: 600px;
-            width: 700px;
+            height: 500px;
+            width: 600px;
           }
         }
       }
@@ -167,6 +167,32 @@ export default {
         }
       }
     }
+  }
+}
+
+@media screen and (max-width: 500px){
+  .landing {
+    &-canvas {
+      .canvas-container {
+        &-components {
+          .components {
+            height: 200px;
+            width: 200px;
+          }
+        }
+      }
+    }
+
+    &-background {
+    height: 800px;
+    width: 100%;
+
+    img {
+      height: fit-content;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
   }
 }
 </style>
