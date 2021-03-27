@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 import ImageUploader from '@/components/Uploader/Image'
 import AudioUploader from '@/components/Uploader/Audio'
@@ -165,6 +165,7 @@ export default {
   watch: {
   },
   methods: {
+    ...mapActions(['pushUploaderQueue']),
     // 获得图片文件
     async getImageFiles (files) {
       files = [...files]
@@ -190,7 +191,31 @@ export default {
     },
     /** 发布 */
     push () {
-      console.log('发布！')
+      const form = {
+        title: this.title,
+        content: this.content,
+        summary: this.lockMode ? '' : this.content,
+        isTop: this.isTop,
+        isLock: Boolean(this.lockMode),
+        lock: this.copy(this.lockMode),
+        extra: {
+          medias: [...this.imageFiles],
+          audios: [...this.audioFiles],
+          files: [...this.files]
+        }
+      }
+      this.pushUploaderQueue(form)
+      this.clearForm()
+    },
+    /** 清空表单 */
+    clearForm () {
+      this.title = ''
+      this.content = ''
+      this.isTop = false
+      this.lockMode = null
+      this.imageFiles = []
+      this.audioFiles = []
+      this.files = []
     },
     removeImageFile (index) {
       this.imageFiles.splice(index, 1)
@@ -212,6 +237,9 @@ export default {
           resolve(url)
         }
       })
+    },
+    copy (data) {
+      return data && typeof data === 'object' ? JSON.parse(JSON.stringify(data)) : data
     }
   }
 }

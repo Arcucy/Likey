@@ -7,7 +7,8 @@ export default {
     profitSharingTxSuccess: 'PST 持有人分润成功',
     developerTipTxSuccess: '开发者分润成功',
     sponsorTxSuccess: '赞助成功',
-    txSuccess: '交易成功'
+    txSuccess: '交易成功',
+    statusPublished: '动态发布成功'
   },
   failure: {
     login: '登录失败',
@@ -29,7 +30,8 @@ export default {
     developerTipTxFailed: '开发者分润失败',
     sponsorTxFailed: '赞助失败',
     txFailed: '交易失败',
-    txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试'
+    txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
+    dynamicUploadFailed: '动态上传失败，请检查网络后重试'
   },
   app: {
     loading: '加载中'
@@ -157,7 +159,8 @@ export default {
     pictureSelectionLimitWarning: '最多只能选择{0}张照片',
     everyoneCanSee: '所有人可见',
     allSponsors: '所有持仓者',
-    ownNUnlock: '持有 {0} {1}/解锁'
+    ownNUnlock: '持有 {0} {1}/解锁',
+    uploadingStatus: '正在上传动态'
   },
   sponsor: {
     sponsor: '赞助',
@@ -178,5 +181,11 @@ export default {
     fee: '手续费',
     total: '总计',
     txPosted: '交易已经提交至 Arweave 区块链，你可以点击以访问交易：{0}'
+  },
+  progressText: {
+    status: '上传动态中',
+    media: '上传媒体中',
+    audio: '上传音频中',
+    file: '上传文件中'
   }
 }
