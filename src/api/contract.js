@@ -184,15 +184,15 @@ export default {
   /** 创建创作者 */
   async announceCreator (jwk, creator, ticker, items) {
     const obj = LikeyContract.announceCreator(creator, ticker, items)
-
-    const res = await this.interactWrite(jwk, obj)
+    const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
+    const res = await this.interactWrite(jwk, obj, tags)
     return res
   },
   /** 更新创作者 */
   async updateCreator (jwk, creator) {
     const obj = LikeyContract.updateCreator(creator)
-
-    const res = await this.interactWrite(jwk, obj)
+    const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
+    const res = await this.interactWrite(jwk, obj, tags)
     return res
   },
   /** 更新创作者解锁方案 */
@@ -202,15 +202,17 @@ export default {
     }
     items.forEach(i => delete i.editing)
     const obj = LikeyContract.editItem(address, items)
-    const res = await this.interactWrite(jwk, obj)
+    const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
+    const res = await this.interactWrite(jwk, obj, tags)
     return res
   },
   /** 更新兑换比率 */
   async updateCreatorRatio (jwk, contract, ratio) {
     const obj = LikeyCreatorPst.updateRatio(ratio)
+    const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
 
-    const likey = await this.interactWrite(jwk, obj)
-    const pst = await this.interactWritePst(jwk, contract, obj)
+    const likey = await this.interactWrite(jwk, obj, tags)
+    const pst = await this.interactWritePst(jwk, contract, obj, tags)
     return { likey, pst }
   },
   /**
@@ -245,6 +247,7 @@ export default {
 
         reward = reward.plus(pstTransaction.reward)
 
+        pstTransaction.addTag('App-Name', process.env.VUE_APP_APP_NAME)
         // 如果是分发给 PST 持有者，即使用 Likey-Purchase-Holder
         pstTransaction.addTag('Purchase-Type', 'Likey-Purchase-Holder')
         // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
@@ -284,6 +287,7 @@ export default {
 
         reward = reward.plus(developerTransaction.reward)
 
+        developerTransaction.addTag('App-Name', process.env.VUE_APP_APP_NAME)
         // 如果是分发给开发者，即使用 Likey-Purchase-Developer
         developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
         // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
@@ -337,7 +341,8 @@ export default {
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
       const tags = [
         { name: 'Purchase-Type', value: 'Likey-Purchase' },
-        { name: 'Likey-Solution', value: 'Sponsor-Creator' }
+        { name: 'Likey-Solution', value: 'Sponsor-Creator' },
+        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME }
       ]
 
       try {
@@ -374,7 +379,8 @@ export default {
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
       const tags = [
         { name: 'Purchase-Type', value: 'Likey-Donation' },
-        { name: 'Likey-Solution', value: 'Status-Creator' }
+        { name: 'Likey-Solution', value: 'Status-Creator' },
+        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME }
       ]
 
       try {
@@ -403,8 +409,8 @@ export default {
    */
   async mint (jwk, contract, recipient, quantity) {
     const obj = LikeyCreatorPst.mint(recipient, quantity)
-
-    const res = await this.interactWritePst(jwk, contract, obj)
+    const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
+    const res = await this.interactWritePst(jwk, contract, obj, tags)
     return res
   },
   /**
@@ -417,8 +423,8 @@ export default {
    */
   async transfer (jwk, contract, target, quantity) {
     const obj = LikeyCreatorPst.transfer(target, quantity)
-
-    const res = await this.interactWritePst(jwk, contract, obj)
+    const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
+    const res = await this.interactWritePst(jwk, contract, obj, tags)
     return res
   },
   /**
@@ -435,8 +441,8 @@ export default {
       temp.push(['communityLogo', String(logo)])
 
       const obj = LikeyCreatorPst.editSettings(temp)
-
-      const res = await this.interactWritePst(jwk, contract, obj)
+      const tags = [{ name: 'App-Name', value: process.env.VUE_APP_APP_NAME }]
+      const res = await this.interactWritePst(jwk, contract, obj, tags)
       return res
     } catch (err) {
       throw new Error(err)
