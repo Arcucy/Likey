@@ -1,5 +1,5 @@
 <template>
-  <div id="app" v-if="routerAlive" class="light-theme">
+  <div id="app" v-if="routerAlive">
     <Layout>
       <router-view />
     </Layout>
@@ -76,5 +76,22 @@ textarea {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.transaction-message {
+  &-text {
+    display: block;
+    text-align: left;
+  }
+
+  &-id {
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    color: @primary;
+
+    &:hover {
+      color: @secondary;
+    }
+  }
 }
 </style>

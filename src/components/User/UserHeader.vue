@@ -6,16 +6,18 @@
       <div class="user-header-cover-pillar" />
       <!-- 图片主体 -->
       <div class="user-header-cover-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="$t('userProfile.changeBanner')"
-          placement="bottom-end"
-        >
-          <div class="user-header-cover-main-setting" v-if="isMe" @click="updateBanner">
-            <span class="mdi mdi-image-area" />
-          </div>
-        </el-tooltip>
+        <div class="user-header-cover-main-setting">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="$t('userProfile.changeBanner')"
+            placement="bottom-end"
+          >
+            <div class="user-header-cover-main-setting-icon" v-if="isMe" @click="updateBanner">
+              <span class="mdi mdi-image-area" />
+            </div>
+          </el-tooltip>
+        </div>
         <img src="@/assets/img/default/myProfileCover.jpg" alt="cover">
       </div>
     </div>
@@ -189,37 +191,44 @@ export default {
       right: 0;
       overflow: hidden;
       display: flex;
+      justify-content: center;
 
       &-setting {
+        margin-top: 15px;
+        max-width: 1200px;
         position: absolute;
-        right: 20px;
-        top: 15px;
-        font-size: 14px;
+        width: 100%;
         display: flex;
-        align-items: center;
-        column-gap: 5px;
-        color: @primary;
-        transition: all 0.2s ease;
-        border-radius: 6px;
-        background-color: #ffffffcd;
-        border: 1px solid #ffffff88;
-        padding: 5px 5px;
-        cursor: pointer;
-        outline: none;
+        justify-content: flex-end;
 
-        &:hover {
-          background-color: #ffffff;
-        }
-
-        &:active {
-          background-color: #ffffff86;
-        }
-
-        span {
-          font-size: 16px;
+        &-icon {
+          width: 16px;
+          font-size: 14px;
           display: flex;
           align-items: center;
+          color: @primary;
+          transition: all 0.2s ease;
+          border-radius: 6px;
+          background-color: #ffffffcd;
+          border: 1px solid #ffffff88;
+          padding: 5px 5px;
           cursor: pointer;
+          outline: none;
+
+          &:hover {
+            background-color: #ffffff;
+          }
+
+          &:active {
+            background-color: #ffffff86;
+          }
+
+          span {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+          }
         }
       }
 

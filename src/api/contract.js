@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
@@ -218,82 +219,106 @@ export default {
    * @param {*} callback      - 回调函数
    * @returns                 - 分润后的金额
    */
-  async distributeTokens (pstState, quantity, jwk, callback) {
+  async distributeTokens (pstState, quantity, jwk, confirm, callback = () => {}) {
+    if (!confirm) {
+      jwk = await arweave.wallets.generate()
+    }
+
     let quantityBig = new BigNumber(quantity)
-    const pstHolderQuantity = quantityBig.multipliedBy(PST_HOLDER_TIP)
-    const developerQuantity = quantityBig.multipliedBy(DEVELOPER_TIP)
+    const pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
+    const developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(12))
+
+    let selected = ''
+    let reward = new BigNumber('0')
 
     let status = 'onDistribution'
-
-    // 开始 PST 分润阶段
-    if (pstState.balances && Object.keys(pstState.balances).length > 0) {
+    callback(status, '')
+    if (pstState.balances && Object.keys(pstState.balances).length > 0 && pstHolderQuantity.toString() >= 1) {
       // 获得被选中的小幸运
-      const selected = this.selectWeightedPstHolder(pstState.balances)
+      selected = this.selectWeightedPstHolder(pstState.balances)
 
-      const pstTransaction = await arweave.createTransaction({
-        target: selected,
-        quantity: pstHolderQuantity.toString()
-      }, jwk)
+      try {
+        const pstTransaction = await arweave.createTransaction({
+          target: selected,
+          quantity: pstHolderQuantity.toString()
+        }, jwk)
 
-      // 如果是分发给 PST 持有者，即使用 Likey-Purchase-Holder
-      pstTransaction.addTag('Purchase-Type', 'Likey-Purchase-Holder')
-      // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
-      pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
+        reward = reward.plus(pstTransaction.reward)
 
-      await arweave.transactions.sign(pstTransaction, jwk)
-      const uploader = await arweave.transactions.getUploader(pstTransaction)
+        // 如果是分发给 PST 持有者，即使用 Likey-Purchase-Holder
+        pstTransaction.addTag('Purchase-Type', 'Likey-Purchase-Holder')
+        // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
+        pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
 
-      // 开始上传并返回上传进度
-      callback(status, uploader.pctComplete, uploader, pstTransaction.id)
-      while (!uploader.isComplete) {
-        await uploader.uploadChunk()
-        callback(status, uploader.pctComplete, uploader, pstTransaction.id)
+        if (confirm) {
+          await arweave.transactions.sign(pstTransaction, jwk)
+          const txStatus = await arweave.transactions.post(pstTransaction)
+
+          if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
+            status = 'onDistributionError'
+            callback(status, pstTransaction.id)
+            throw new Error('Send PST Distribution Failed')
+          }
+          status = 'onDistributionPosted'
+          callback(status, pstTransaction.id)
+
+          // 从总额中去除被减去的部分
+          quantityBig = quantityBig.minus(pstHolderQuantity)
+        }
+      } catch (err) {
+        status = 'onDistributionCatchError'
+        callback(status, '')
+        console.error(err)
+        throw err
       }
-
-      const txStatus = await arweave.transactions.getStatus(pstTransaction)
-      if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
-        status = 'onDistributionError'
-        callback(status, uploader.pctComplete, uploader, pstTransaction.id)
-        throw new Error('Send PST Distribution Failed')
-      }
-
-      // 从总额中去除被减去的部分
-      quantityBig = quantityBig.minus(pstHolderQuantity)
     }
 
     status = 'onDeveloper'
-    if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER)) {
-      const developerTransaction = await arweave.createTransaction({
-        target: DEVELOPER,
-        quantity: developerQuantity.toString()
-      }, jwk)
+    callback(status, '')
+    if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1) {
+      try {
+        const developerTransaction = await arweave.createTransaction({
+          target: DEVELOPER,
+          quantity: developerQuantity.toString()
+        }, jwk)
 
-      // 如果是分发给开发者，即使用 Likey-Purchase-Developer
-      developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
-      // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
-      developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
+        reward = reward.plus(developerTransaction.reward)
 
-      await arweave.transactions.sign(developerTransaction, jwk)
-      const uploader = await arweave.transactions.getUploader(developerTransaction)
+        // 如果是分发给开发者，即使用 Likey-Purchase-Developer
+        developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
+        // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
+        developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
 
-      // 开始上传并返回上传进度
-      callback(status, uploader.pctComplete, uploader, developerTransaction.id)
-      while (!uploader.isComplete) {
-        await uploader.uploadChunk()
-        callback(status, uploader.pctComplete, uploader, developerTransaction.id)
+        if (confirm) {
+          await arweave.transactions.sign(developerTransaction, jwk)
+          const txStatus = await arweave.transactions.post(developerTransaction)
+
+          if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
+            status = 'onDeveloperError'
+            callback(status, developerTransaction.id)
+            throw new Error('Send Developer Tip Failed')
+          }
+          status = 'onDeveloperPosted'
+          callback(status, developerTransaction.id)
+
+          // 从总额中去除被减去的部分
+          quantityBig = quantityBig.minus(developerQuantity)
+        }
+      } catch (err) {
+        status = 'onDeveloperCatchError'
+        callback(status, '')
+        console.error(err)
+        throw err
       }
-
-      const txStatus = await arweave.transactions.getStatus(developerTransaction)
-      if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
-        status = 'onDeveloperError'
-        callback(status, uploader.pctComplete, uploader, developerTransaction.id)
-        throw new Error('Send Developer Tip Failed')
-      }
-
-      // 从总额中去除被减去的部分
-      quantityBig = quantityBig.minus(developerQuantity)
     }
-    return quantityBig
+
+    const creatorTransaction = await arweave.createTransaction({
+      target: pstState.owner || DEVELOPER,
+      quantity: quantityBig.toString()
+    }, jwk)
+
+    reward = reward.plus(creatorTransaction.reward)
+    return { creator: quantityBig, holders: pstHolderQuantity, selected, developer: developerQuantity, fee: reward, total: new BigNumber(quantity) }
   },
   /**
    * 赞赏创作者
@@ -303,17 +328,32 @@ export default {
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
   async sponsorAdded (jwk, contract, quantity, callback) {
-  async sponsorAdded (jwk, contract, quantity) {
     try {
+      let status = 'onSponsorAddedStarted'
+      callback(status, '')
       const pstState = await this.readLikeyCreatorPstContract(contract)
       const obj = LikeyCreatorPst.sponsorAdded()
 
-      const quantityBig = await this.distributeTokens(pstState, quantity, jwk, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const tags = [
+        { name: 'Purchase-Type', value: 'Likey-Purchase' },
+        { name: 'Likey-Solution', value: 'Sponsor-Creator' }
+      ]
 
-      const res = await this.interactWritePst(jwk, contract, obj, undefined, pstState.owner, quantityBig.toString())
-      return res
+      try {
+        const res = await this.interactWritePst(jwk, contract, obj, tags, pstState.owner, creator.toString())
+        if (!res.isTestMode) {
+          status = 'onSponsorAdded'
+          callback(status, res.data)
+        }
+        return res
+      } catch (err) {
+        status = 'onSponsorAddedCatchError'
+        callback(status, '')
+        throw err
+      }
     } catch (err) {
-      throw new Error(err)
+      throw err
     }
   },
   /**
@@ -326,15 +366,31 @@ export default {
    */
   async donationAdded (jwk, contract, statusId, quantity, callback) {
     try {
+      let status = 'onDonationAddedStarted'
+      callback(status, '')
       const pstState = await this.readLikeyCreatorPstContract(contract)
       const obj = LikeyCreatorPst.donationAdded(statusId)
 
-      const quantityBig = await this.distributeTokens(pstState, quantity, jwk, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const tags = [
+        { name: 'Purchase-Type', value: 'Likey-Donation' },
+        { name: 'Likey-Solution', value: 'Status-Creator' }
+      ]
 
-      const res = await this.interactWritePst(jwk, contract, obj, [], pstState.owner, quantityBig.toString())
-      return res
+      try {
+        const res = await this.interactWritePst(jwk, contract, obj, tags, pstState.owner, creator.toString())
+        if (!res.isTestMode) {
+          status = 'onDonationAdded'
+          callback(status, res.data)
+        }
+        return res
+      } catch (err) {
+        status = 'onDonationAddedCatchError'
+        callback(status, '')
+        throw err
+      }
     } catch (err) {
-      throw new Error(err)
+      throw err
     }
   },
   /**
@@ -584,7 +640,6 @@ const LikeyCreatorPstState = () => {
   }
 }
 
-// eslint-disable-next-line no-unused-vars
 const LikeyCreatorPst = {
   /**
    * mint 合约写入方法

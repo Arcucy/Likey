@@ -1,39 +1,40 @@
 <template>
   <el-dialog
-    title="提示"
+    :title="$t('payment.purchase')"
     :visible.sync="dialogVisible"
-    width="30%"
+    width="380px"
     :before-close="handleClose"
+    custom-class="receipt-dialog"
   >
-    <div class="solution-purchase">
+    <div class="solution-purchase" v-if="receipt.total">
       <div class="solution-purchase-container">
         <div class="solution-purchase-item">
-          <span>Creator</span>
-          <span>0.008 AR</span>
+          <span>{{ $t('payment.creator') }}</span>
+          <span>{{ creatorValue | winstonToAr }} AR</span>
         </div>
         <div class="solution-purchase-item">
-          <span>Developers (~5%)</span>
-          <span>0.0005 AR</span>
+          <span>{{ $t('payment.developer') }} (~5%)</span>
+          <span>{{ developerValue | winstonToAr }} AR</span>
+        </div>
+        <div class="solution-purchase-item" v-if="receipt.selected">
+          <span>{{ $t('payment.pstHolders') }} (~15%)</span>
+          <span>{{ holdersValue | winstonToAr }} AR</span>
         </div>
         <div class="solution-purchase-item">
-          <span>Holders (~15%)</span>
-          <span>0.0015 AR</span>
-        </div>
-        <div class="solution-purchase-item">
-          <span>Fee</span>
-          <span>0.0015 AR</span>
+          <span>{{ $t('payment.fee') }}</span>
+          <span>{{ feeValue | winstonToAr }} AR</span>
         </div>
         <el-divider />
         <div class="solution-purchase-item">
-          <span>Total</span>
-          <span>0.01 AR</span>
+          <span>{{ $t('payment.total') }}</span>
+          <span>{{ totalValue | winstonToAr }} AR</span>
         </div>
       </div>
       <el-button
         type="primary"
-        @click="dialogVisible = false"
+        @click="confirm"
       >
-        确 定
+        {{ $t('payment.checkout') }}
       </el-button>
     </div>
   </el-dialog>
@@ -44,7 +45,21 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: true
+      default: false
+    },
+    receipt: {
+      type: Object,
+      default: () => {
+        return {
+          creator: '',
+          holders: '',
+          developer: '',
+          fee: '',
+          total: '',
+          owner: '',
+          selected: ''
+        }
+      }
     }
   },
   data () {
@@ -52,8 +67,39 @@ export default {
       dialogVisible: this.value
     }
   },
+  computed: {
+    creatorValue () {
+      return this.receipt.creator.toString()
+    },
+    holdersValue () {
+      if (this.receipt.holders.toString() < 1) return '0'
+      return this.receipt.holders.toString()
+    },
+    developerValue () {
+      if (this.receipt.developer.toString() < 1) return '0'
+      return this.receipt.developer.toString()
+    },
+    feeValue () {
+      return this.receipt.fee.toString()
+    },
+    totalValue () {
+      return this.receipt.total.plus(this.receipt.fee).toString()
+    }
+  },
+  watch: {
+    value (val) {
+      this.dialogVisible = val
+    }
+  },
   methods: {
-    handleClose () {
+    handleClose (done) {
+      this.dialogVisible = false
+      this.$emit('dialog-close', true)
+      done()
+    },
+    confirm () {
+      this.$emit('confirm', true)
+      this.dialogVisible = false
     }
   }
 }
@@ -77,5 +123,9 @@ export default {
       justify-content: space-between;
     }
   }
+}
+
+/deep/ .receipt-dialog {
+  border-radius: 6px;
 }
 </style>
