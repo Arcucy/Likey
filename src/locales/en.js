@@ -3,7 +3,11 @@ export default {
     success: 'Success',
     login: 'Login successful',
     copy: 'Copy successfully',
-    created: 'Created successfully'
+    created: 'Created successfully',
+    profitSharingTxSuccess: 'Successfully Profit Share to PST Holder',
+    developerTipTxSuccess: 'Successfully Profit Share to Developer',
+    sponsorTxSuccess: 'Sponsor Successful',
+    txSuccess: 'Transaction Successful'
   },
   failure: {
     login: 'Login failed',
@@ -20,7 +24,12 @@ export default {
     insufficientFunds: 'Insufficient Funds',
     autoCompressionFail: 'Image compression failed',
     imgVeryBIg: 'Image too large',
-    unableToGetFile: 'Unable to get file'
+    unableToGetFile: 'Unable to get file',
+    profitSharingTxFailed: 'Failed to Profit Share to PST Holder',
+    developerTipTxFailed: 'Failed to Profit Share to Developer',
+    sponsorTxFailed: 'Sponsor Failed',
+    txFailed: 'Transaction Failed',
+    txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later'
   },
   app: {
     loading: 'Loading'
@@ -53,7 +62,7 @@ export default {
     noIntroductionYet: 'No Introduction Yet',
     flow: 'Flow',
     sponsorship: 'Sponsorship',
-    notYetACreator: 'Not yet a creator',
+    notYetACreator: 'Not a creator yet',
     editUsernameAndAvatar: 'Edit username and avatar',
     changeBanner: 'Update Banner'
   },
@@ -157,7 +166,17 @@ export default {
     holders: 'Holders',
     donationAndSponsorCount: 'Purchased',
     custom: 'Custom',
-    customInputDescription: 'You can specify you purchase amount here',
-    pay: 'Pay'
+    customInputDescription: 'You can specify you purchase amount here'
+  },
+  payment: {
+    pay: 'Pay',
+    purchase: 'Purchase',
+    checkout: 'Checkout',
+    creator: 'Creator',
+    holder: 'PST Holder',
+    developer: 'Developer',
+    fee: 'Fee',
+    total: 'Total',
+    txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}'
   }
 }

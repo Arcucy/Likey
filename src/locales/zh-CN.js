@@ -3,7 +3,11 @@ export default {
     success: '成功',
     login: '登录成功',
     copy: '复制成功',
-    created: '创建成功'
+    created: '创建成功',
+    profitSharingTxSuccess: 'PST 持有人分润成功',
+    developerTipTxSuccess: '开发者分润成功',
+    sponsorTxSuccess: '赞助成功',
+    txSuccess: '交易成功'
   },
   failure: {
     login: '登录失败',
@@ -20,7 +24,12 @@ export default {
     insufficientFunds: '余额不足',
     autoCompressionFail: '图片压缩失败',
     imgVeryBIg: '图片过大',
-    unableToGetFile: '无法获取文件'
+    unableToGetFile: '无法获取文件',
+    profitSharingTxFailed: 'PST 持有人分润失败',
+    developerTipTxFailed: '开发者分润失败',
+    sponsorTxFailed: '赞助失败',
+    txFailed: '交易失败',
+    txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试'
   },
   app: {
     loading: '加载中'
@@ -157,7 +166,17 @@ export default {
     holders: '持仓人数',
     donationAndSponsorCount: '赞赏总数',
     custom: '自定义',
-    customInputDescription: '本方案可自定义 PST 购买数量',
-    pay: '支付'
+    customInputDescription: '本方案可自定义 PST 购买数量'
+  },
+  payment: {
+    pay: '支付',
+    purchase: '购买',
+    checkout: '结 算',
+    creator: '创作者',
+    holder: '代币持有者',
+    developer: '开发者',
+    fee: '手续费',
+    total: '总计',
+    txPosted: '交易已经提交至 Arweave 区块链，你可以点击以访问交易：{0}'
   }
 }

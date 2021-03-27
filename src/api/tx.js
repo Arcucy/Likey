@@ -1,9 +1,4 @@
-/* eslint-disable no-useless-catch */
-/* eslint-disable no-unused-vars */
 import Arweave from 'arweave'
-import Bignumber from 'bignumber.js'
-
-import API from './api'
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,

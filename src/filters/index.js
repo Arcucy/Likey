@@ -6,7 +6,7 @@ const filters = {
   winstonToAr (val, showDecimals = false) {
     if (!val) return '0'
     val = new BigNumber(val).div(1000000000000)
-    BigNumber.set({ EXPONENTIAL_AT: 13 })
+    BigNumber.set({ EXPONENTIAL_AT: 16 })
     return showDecimals ? val.toFixed(12) : val.toString()
   },
   finalize (val, loading) {
