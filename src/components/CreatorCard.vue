@@ -1,10 +1,10 @@
 <template>
-  <a :href="'/#/@' + shortname" target="_blank">
+  <a :href="'/#/@' + creator.shortname" target="_blank">
     <div class="creator-card" v-loading="loading">
       <avatar class="creator-card-avatar" size="48px" :src="avatar" />
       <div style="display: inline-block" class="creator-card-info">
         <span class="creator-card-info-name">{{ id }}</span><br>
-        <span class="creator-card-info-bio">{{ intro }}</span>
+        <span class="creator-card-info-bio">{{ creator.intro }}</span>
       </div>
     </div>
   </a>
@@ -12,6 +12,7 @@
 <script>
 import Avatar from '@/components/User/Avatar'
 import Api from '@/api/api'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -26,23 +27,21 @@ export default {
   data () {
     return {
       id: 'Loading...',
-      intro: 'Loading...',
       avatar: '',
-      shortname: ''
+      creator: {
+        intro: 'Loading...',
+        shortname: ''
+      }
     }
   },
   computed: {
+    ...mapState(['contract']),
     loading () {
-      return this.id === 'Loading...' || this.avatar === '' || this.intro === 'Loading...'
+      return this.id === 'Loading...' || this.avatar === '' || this.creator.intro === 'Loading...'
     }
   },
   async mounted () {
-    this.$store.dispatch('getCreatorInfo', this.address).then((result) => {
-      this.intro = result.intro
-      this.shortname = result.shortname
-    }).catch(e => {
-      console.log(e)
-    })
+    this.creator = this.contract.creators[this.address]
     Api.gql.getAvatarByAddress(this.address).then((result) => {
       this.avatar = result
     })
