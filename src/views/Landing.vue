@@ -53,20 +53,22 @@ export default {
     flex-direction: column;
     justify-content: center;
     margin-bottom: 30px;
+    max-width: 1200px;
 
     .canvas-container {
       margin: 60px 0px 60px 0px;
       display: flex;
       align-items: center;
       column-gap: 50px;
+      padding: 0 20px;
 
       &-components {
         display: flex;
 
         .components {
           display: block;
-          height: 40vh;
-          width: 40vw;
+          height: 600px;
+          width: 600px;
         }
       }
 
@@ -115,7 +117,37 @@ export default {
   }
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (min-width: 1201px){
+  .landing {
+    &-canvas {
+      .canvas-container {
+        &-components {
+          .components {
+            height: 600px;
+            width: 700px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 900px){
+  .landing {
+    &-canvas {
+      .canvas-container {
+        &-components {
+          .components {
+            height: 400px;
+            width: 400px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
   .landing {
     &-canvas {
       .canvas-container {
@@ -124,8 +156,14 @@ export default {
 
         &-components {
           .components {
-            height: auto;
+            height: 250px;
+            width: 400px;
           }
+        }
+
+        &-text {
+          padding: 0 20px;
+          max-width: 600px;
         }
       }
     }

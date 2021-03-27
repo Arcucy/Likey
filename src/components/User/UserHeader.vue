@@ -210,7 +210,6 @@ export default {
           transition: all 0.2s ease;
           border-radius: 6px;
           background-color: #ffffffcd;
-          border: 1px solid #ffffff88;
           padding: 5px 5px;
           cursor: pointer;
           outline: none;
@@ -221,6 +220,7 @@ export default {
 
           &:active {
             background-color: #ffffff86;
+            border: 1px solid #ffffff88;
           }
 
           span {
