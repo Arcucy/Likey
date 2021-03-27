@@ -1,4 +1,4 @@
-<h1 align="center">Growth</h1>
+<h1 align="center">Likey</h1>
 <p align="center">An Arweave Project</p>
 
 ## Project setup
