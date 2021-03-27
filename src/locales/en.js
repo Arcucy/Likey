@@ -157,6 +157,7 @@ export default {
     holders: 'Holders',
     donationAndSponsorCount: 'Purchased',
     custom: 'Custom',
-    customInputDescription: 'You can specify you purchase amount here'
+    customInputDescription: 'You can specify you purchase amount here',
+    pay: 'Pay'
   }
 }
