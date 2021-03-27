@@ -46,8 +46,7 @@ export default {
     Api.gql.getAvatarByAddress(this.address).then((result) => {
       this.avatar = result
     })
-    // TODO:更换成graphQL
-    Api.arql.getIdFromAddress(this.address).then((result) => {
+    Api.gql.getIdByAddress(this.address).then((result) => {
       this.id = result.data
     })
   }
