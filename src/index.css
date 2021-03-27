@@ -1,0 +1,97 @@
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-ExtraLight.ttf) format("ttf");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-ExtraLightItalic.ttf) format("ttf");
+  font-weight: 200;
+  font-style: italic, oblique;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-Light.ttf) format("ttf");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-LightItalic.ttf) format("ttf");
+  font-weight: 300;
+  font-style: italic, oblique;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-Regular.ttf) format("ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-Italic.ttf) format("ttf");
+  font-weight: 400;
+  font-style: italic, oblique;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-SemiBold.ttf) format("ttf");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-SemiBoldItalic.ttf) format("ttf");
+  font-weight: 600;
+  font-style: italic, oblique;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-Bold.ttf) format("ttf");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-BoldItalic.ttf) format("ttf");
+  font-weight: 700;
+  font-style: italic, oblique;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-ExtraBold.ttf) format("ttf");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-ExtraBoldItalic.ttf) format("ttf");
+  font-weight: 800;
+  font-style: italic, oblique;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-Black.ttf) format("ttf");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Likey-NunitoSans";
+  src: url(./assets/font/NunitoSans-BlackItalic.ttf) format("ttf");
+  font-weight: 900;
+  font-style: italic, oblique;
+}

@@ -47,7 +47,7 @@ module.exports = {
     'style-resources-loader': {
       preProcessor: 'less',
       patterns: [
-        '/Users/yuna/Git/Growth/src/themes/variables.less'
+        path.resolve('./src/style/theme.less')
       ]
     },
     i18n: {
