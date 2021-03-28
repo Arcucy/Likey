@@ -53,7 +53,8 @@ export default {
       encrypting: state => state.uploader.encrypting,
       uploading: state => state.uploader.uploading,
       errorPause: state => state.uploader.errorPause,
-      myJwk: state => state.user.myJwk
+      myJwk: state => state.user.myJwk,
+      themeName: state => state.app.themeName
     }),
     ...mapGetters(['isLoggedIn']),
     processing () {
@@ -140,7 +141,7 @@ export default {
               if (medias) {
                 for (let i = 0; i < medias.length; i++) {
                   try {
-                    medias[i].data = encryptBuffer(new Uint8Array(medias[i].data))
+                    medias[i].data = encryptBuffer(new Uint8Array(medias[i].data)).buffer
                   } catch (err) {
                     this.encryptError(err)
                     reject(err)
@@ -152,7 +153,7 @@ export default {
               if (audios) {
                 for (let i = 0; i < audios.length; i++) {
                   try {
-                    audios[i].data = encryptBuffer(new Uint8Array(audios[i].data))
+                    audios[i].data = encryptBuffer(new Uint8Array(audios[i].data)).buffer
                   } catch (err) {
                     this.encryptError(err)
                     reject(err)
@@ -164,7 +165,7 @@ export default {
               if (files) {
                 for (let i = 0; i < files.length; i++) {
                   try {
-                    files[i].data = encryptBuffer(new Uint8Array(files[i].data))
+                    files[i].data = encryptBuffer(new Uint8Array(files[i].data)).buffer
                   } catch (err) {
                     this.encryptError(err)
                     reject(err)
@@ -361,6 +362,17 @@ export default {
     /** 完成 */
     complete () {
       // 暂停加载状态，从队列中移除完成的任务，弹出成功的消息
+      let message = this.$t('payment.txPosted')
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${this.subqueue[this.subqueue.length - 1].txId}" class="transaction-message-id">${this.subqueue[this.subqueue.length - 1].txId}</a>`)
+
+      this.$notify({
+        title: this.$t('success.statusPublished'),
+        dangerouslyUseHTMLString: true,
+        message: `<span class="transaction-message-text ${this.themeName}-theme">${message}</span>`,
+        type: 'success',
+        duration: Number(20000)
+      })
+
       this.setUploadingState(false)
       this.removeUploaderQueue(0)
       this.$message.success(this.$t('success.statusPublished'))

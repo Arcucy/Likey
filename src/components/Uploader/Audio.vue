@@ -85,7 +85,6 @@ export default {
     },
     done () {
       if (this.fileBuffer.find(item => item.error)) this.$message.error(this.$t('failure.unableToGetFile'))
-      console.log('done: ', this.fileBuffer)
       this.$emit('audio-input', this.fileBuffer.filter(item => !item.error))
       this.fileBuffer = []
     }
