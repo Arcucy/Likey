@@ -2,7 +2,11 @@
   <div v-if="processing" class="scheduler-bg">
     <div class="scheduler-ear">
       <div class="scheduler-ear-main">
-        <p v-if="!errorPause" class="scheduler-ear-main-uploading">
+        <p v-if="encrypting && !uploading" class="scheduler-ear-main-uploading">
+          <span class="mdi mdi-lock" />
+          {{ $t('progressText.encrypting') }}
+        </p>
+        <p v-else-if="!errorPause" class="scheduler-ear-main-uploading">
           <span class="mdi mdi-upload" />
           {{ progressText }}
         </p>
@@ -17,13 +21,19 @@
         </p>
       </div>
     </div>
-    <el-progress class="scheduler-progress" :percentage="progress" :show-text="false" />
+    <el-progress
+      v-if="uploading"
+      class="scheduler-progress"
+      :percentage="progress"
+      :show-text="false"
+    />
     <!-- <div class="scheduler">
     </div> -->
   </div>
 </template>
 
 <script>
+import { encryptText, encryptBuffer } from '@/util/encrypt'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -40,13 +50,14 @@ export default {
   computed: {
     ...mapState({
       queue: state => state.uploader.queue,
+      encrypting: state => state.uploader.encrypting,
       uploading: state => state.uploader.uploading,
       errorPause: state => state.uploader.errorPause,
       myJwk: state => state.user.myJwk
     }),
     ...mapGetters(['isLoggedIn']),
     processing () {
-      return this.uploading || this.errorPause
+      return this.encrypting || this.uploading || this.errorPause
     },
     progressText () {
       const task = this.subqueue[this.queueIndex]
@@ -88,12 +99,16 @@ export default {
   mounted () {
   },
   methods: {
-    ...mapActions(['removeUploaderQueue', 'setUploadingState', 'uploaderErrorPauseOn']),
+    ...mapActions(['removeUploaderQueue', 'encryptingStateOn', 'setUploadingState', 'uploaderErrorPauseOn']),
     async startUpload (data) {
       if (!this.isLoggedIn || !this.myJwk) return
       this.key = JSON.parse(this.myJwk)
-      this.setUploadingState(true)
       this.startUploadingMessage(data)
+      if (data.lock) {
+        this.encryptingStateOn()
+        await this.createEncryption(data)
+      }
+      this.setUploadingState(true)
       this.createSubqueue(data)
       this.queueIndex = 0
       this.progress = 0
@@ -114,6 +129,62 @@ export default {
       this.setUploadingState(true)
       this.progress = 0
       this.executeUploadQueue(this.key)
+    },
+    createEncryption (data) {
+      return new Promise((resolve, reject) => {
+        this.$nextTick(() => {
+          setTimeout(() => {
+            if (data.extra) {
+              const { medias, audios, files } = data.extra
+              // 图片
+              if (medias) {
+                for (let i = 0; i < medias.length; i++) {
+                  try {
+                    medias[i].data = encryptBuffer(new Uint8Array(medias[i].data))
+                  } catch (err) {
+                    this.encryptError(err)
+                    reject(err)
+                    return
+                  }
+                }
+              }
+              // 音乐
+              if (audios) {
+                for (let i = 0; i < audios.length; i++) {
+                  try {
+                    audios[i].data = encryptBuffer(new Uint8Array(audios[i].data))
+                  } catch (err) {
+                    this.encryptError(err)
+                    reject(err)
+                    return
+                  }
+                }
+              }
+              // 文件
+              if (files) {
+                for (let i = 0; i < files.length; i++) {
+                  try {
+                    files[i].data = encryptBuffer(new Uint8Array(files[i].data))
+                  } catch (err) {
+                    this.encryptError(err)
+                    reject(err)
+                    return
+                  }
+                }
+              }
+            }
+
+            try {
+              data.content = encryptText(data.content)
+            } catch (err) {
+              this.encryptError(err)
+              reject(err)
+              return
+            }
+            resolve()
+          }, 2000)
+        })
+      })
     },
     /** 创建子上传队列 */
     createSubqueue (data) {
@@ -179,7 +250,7 @@ export default {
                 name: item.name,
                 type: item.type,
                 size: item.size,
-                duration: 0
+                duration: item.duration
               }
             }),
             files: files.map(item => {
@@ -293,6 +364,12 @@ export default {
       this.setUploadingState(false)
       this.removeUploaderQueue(0)
       this.$message.success(this.$t('success.statusPublished'))
+    },
+    encryptError (err) {
+      console.error('Status Upload Failed:', err)
+      this.$message.error(this.$t('failure.dynamicEncryptFailed'))
+      this.setUploadingState(false)
+      this.removeUploaderQueue(0)
     }
   }
 }

@@ -31,7 +31,8 @@ export default {
     sponsorTxFailed: '赞助失败',
     txFailed: '交易失败',
     txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
-    dynamicUploadFailed: '动态上传失败，请检查网络后重试'
+    dynamicUploadFailed: '动态上传失败，请检查网络后重试',
+    dynamicEncryptFailed: '动态加密失败，出现了重大严重错误，如果屡次出现请反馈指开发者'
   },
   app: {
     loading: '加载中'
@@ -186,6 +187,7 @@ export default {
     status: '上传动态中',
     media: '上传媒体中',
     audio: '上传音频中',
-    file: '上传文件中'
+    file: '上传文件中',
+    encrypting: '加密中'
   }
 }

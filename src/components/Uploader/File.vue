@@ -50,9 +50,15 @@ export default {
         fileInput.files.forEach(e => {
           const reader = new FileReader()
           reader.readAsArrayBuffer(e)
-          reader.onload = (res) => {
+          reader.onload = async (res) => {
             try {
-              this.fileBuffer.push({ data: res.target.result, name: e.name, type: e.type, size: e.size })
+              // 创建音频 blob
+              const fileBuffer = new Uint8Array(res.target.result)
+              const blob = new Blob([fileBuffer], { type: e.type })
+              const url = window.URL || window.webkitURL
+              const fileSrc = url.createObjectURL(blob)
+
+              this.fileBuffer.push({ data: res.target.result, name: e.name, type: e.type, size: e.size, objectUrl: fileSrc })
             } catch (err) {
               this.fileBuffer.push({ data: null, name: '', type: '', size: 0, error: true })
             }

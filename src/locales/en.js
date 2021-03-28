@@ -31,7 +31,8 @@ export default {
     sponsorTxFailed: 'Sponsor Failed',
     txFailed: 'Transaction Failed',
     txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
-    dynamicUploadFailed: 'Status upload failed'
+    dynamicUploadFailed: 'Status upload failed',
+    dynamicEncryptFailed: 'Status Encryption failed, please contact developers if this is often'
   },
   app: {
     loading: 'Loading'
@@ -186,6 +187,7 @@ export default {
     status: 'Uploading status',
     media: 'Uploading media',
     audio: 'Uploading audio',
-    file: 'Uploading file'
+    file: 'Uploading file',
+    encrypting: '加密中'
   }
 }

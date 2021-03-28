@@ -41,7 +41,13 @@ export default {
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', 'status')
     tx.addTag('Title', String(status.title))
-    tx.addTag('Summary', String(status.summary || status.content).substring(0, 100))
+    if (status.lock) {
+      tx.addTag('Lock-Contract', status.lock.contract) // address
+      tx.addTag('Lock-Value', status.lock.value) // 值
+      tx.addTag('Summary', String(status.summary || '').substring(0, 100))
+    } else {
+      tx.addTag('Summary', String(status.summary || status.content).substring(0, 100))
+    }
     tx.addTag('Extra', JSON.stringify({ media: extra.medias.length || 0, audio: extra.audios.length || 0, file: extra.files.length || 0 }))
     if (status.lock) tx.addTag('Lock', JSON.stringify(status.lock))
 

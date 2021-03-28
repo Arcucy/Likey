@@ -169,7 +169,7 @@ export default {
       value = new BigNumber(String(value)).multipliedBy(to).div(from).multipliedBy(1000000000000)
       value = value.toFixed(12)
 
-      if (value === 'Infinity') {
+      if (value === 'Infinity' || value === 'NaN') {
         return '0'
       }
       return value
@@ -287,7 +287,7 @@ export default {
       }
 
       let message = this.$t('payment.txPosted')
-      message = message.replace('{0}', `<a href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
 
       this.$notify({
         title: title,
