@@ -51,7 +51,27 @@ export default {
           reader.readAsArrayBuffer(e)
           reader.onload = (res) => {
             try {
-              this.fileBuffer.push({ data: res.target.result, name: e.name, type: e.type, size: e.size })
+              // 创建音频 blob
+              const audioBuffer = new Uint8Array(res.target.result)
+              const blob = new Blob([audioBuffer], { type: e.type })
+              const url = window.URL || window.webkitURL
+              const audioSrc = url.createObjectURL(blob)
+              // // 创建空元素
+              const audioElement = document.createElement('audio')
+              audioElement.oncanplaythrough = () => {
+                this.fileBuffer.push({ data: res.target.result, name: e.name, type: e.type, size: e.size, duration: parseInt(audioElement.duration * 1000), objectUrl: audioSrc })
+                if (fileInput.files.length === this.fileBuffer.length) {
+                  this.done()
+                  fileInput.value = null
+                }
+                document.getElementById('audio-duration-element').remove()
+              }
+
+              audioElement.src = audioSrc
+              audioElement.id = 'audio-duration-element'
+              audioElement.style.cssText = 'display: none;'
+
+              fileInput.appendChild(audioElement)
             } catch (err) {
               this.fileBuffer.push({ data: null, name: '', type: '', size: 0, error: true })
             }

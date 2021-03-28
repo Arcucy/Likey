@@ -164,6 +164,8 @@ export default {
   },
   watch: {
   },
+  async mounted () {
+  },
   methods: {
     ...mapActions(['pushUploaderQueue']),
     // 获得图片文件
@@ -191,13 +193,21 @@ export default {
     },
     /** 发布 */
     push () {
+      let lock = null
+      if (this.lockMode) {
+        lock = {
+          contract: this.creator.ticker.contract,
+          value: this.lockMode.value || '0'
+        }
+      }
+
       const form = {
         title: this.title,
         content: this.content,
         summary: this.lockMode ? '' : this.content,
         isTop: this.isTop,
         isLock: Boolean(this.lockMode),
-        lock: this.copy(this.lockMode),
+        lock: lock,
         extra: {
           medias: [...this.imageFiles],
           audios: [...this.audioFiles],
@@ -218,12 +228,24 @@ export default {
       this.files = []
     },
     removeImageFile (index) {
+      // 释放内存占用
+      const url = window.URL || window.webkitURL
+      url.revokeObjectURL(this.imageFiles[index].url)
+
       this.imageFiles.splice(index, 1)
     },
     removeAudioFile (index) {
+      // 释放内存占用
+      const url = window.URL || window.webkitURL
+      url.revokeObjectURL(this.audioFiles[index].objectUrl)
+
       this.audioFiles.splice(index, 1)
     },
     removeFile (index) {
+      // 释放内存占用
+      const url = window.URL || window.webkitURL
+      url.revokeObjectURL(this.files[index].objectUrl)
+
       this.files.splice(index, 1)
     },
     /** 将资源加载到一个 url */
