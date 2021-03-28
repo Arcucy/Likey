@@ -197,13 +197,15 @@ export default {
         margin-top: 15px;
         max-width: 1200px;
         position: absolute;
+        box-sizing: border-box;
         width: 100%;
         display: flex;
         justify-content: flex-end;
-
+        padding: 0px 20px;
+        box-sizing: content-box;
         &-icon {
-          width: 16px;
-          font-size: 14px;
+          width: fit-content;
+          font-size: 16px;
           display: flex;
           align-items: center;
           color: @primary;
@@ -220,7 +222,6 @@ export default {
 
           &:active {
             background-color: #ffffff86;
-            border: 1px solid #ffffff88;
           }
 
           span {

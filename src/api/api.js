@@ -22,7 +22,7 @@ const API = {
   ArweaveNative: ArweaveNative,
   /** Arweave 工具集，包含 crypto，util 等快速转换和加密方法 */
   ArweaveUtil: ArweaveUtil,
-  /** Growth 后端 API 集合 */
+  /** Likey 后端 API 集合 */
   be: backend,
   /** 合约调用 API 集合 */
   contract: contract,

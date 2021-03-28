@@ -30,7 +30,7 @@
       </div>
       <div class="footer-brand">
         <div class="logo">
-          Growth
+          Likey
         </div>
         <div class="copyright">
           Arcucy Team ©️ 2021
@@ -58,7 +58,7 @@ a {
 footer {
   width: 100%;
   height: fit-content;
-  padding: 25px 10px 25px;
+  padding: 35px 10px 35px;
   box-sizing: border-box;
   color: @gray2;
   background-color: @background-dark;
@@ -88,7 +88,7 @@ footer {
         }
 
         &-content {
-          font-weight: 100;
+          font-weight: 400;
           margin-top: 10px;
           display: flex;
           flex-direction: column;
@@ -184,7 +184,7 @@ footer {
 
 @media screen and (max-width: 500px) {
   footer {
-    padding: 25px 10px 65px;
+    padding: 35px 10px 65px;
 
     .footer {
       &-brand {
@@ -198,7 +198,7 @@ footer {
 
 @media screen and (max-width: 400px) {
   footer {
-    padding: 25px 10px 75px;
+    padding: 35px 10px 75px;
 
     .footer {
       &-brand {

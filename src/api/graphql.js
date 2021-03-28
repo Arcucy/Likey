@@ -1,7 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request'
 import Arweave from 'arweave'
 
-import decode from '../util/decode'
+import localforage from 'localforage'
+import { cache } from '@/util/cache'
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -51,11 +52,19 @@ export default {
   /**
    * Get transaction detail entirely based on given txid
    * 根据给定的 txid (交易ID) 获取完整的交易明细
+   * !!获取到的data字段已在这一步完成解码，无需再次解码!!
    * @param {String} txid     - 交易编号
    */
-  getTransactionDetail (txid) {
+  async getTransactionDetail (txid) {
+    // 查询是否已经缓存
+    const key = await cache.getKeyByTxid(txid)
+    if (key) {
+      return JSON.parse(await localforage.getItem(key))
+    }
     return new Promise((resolve, reject) => {
-      arweave.transactions.get(txid).then(detail => {
+      arweave.transactions.get(txid).then(async (detail) => {
+        // 当获取成功时存入缓存
+        await cache.cacheTheTransaction(txid, detail)
         resolve(detail)
       }).catch(err => {
         reject(err)
@@ -121,12 +130,12 @@ export default {
         let detail
         try {
           detail = await this.getTransactionDetail(value.node.id)
+          detail.data = Buffer.from(detail.data).toString('utf-8')
         } catch (err) {
           if (err.type !== 'TX_PENDING') throw new Error(err)
         }
         if (!detail) return { type: 'Guest', data: 'Guest' }
-        // 解码并获取 data
-        const data = decode.uint8ArrayToString(detail.data) || 'Guest'
+        const data = detail.data || 'Guest'
         return { type: 'User', data }
       }
     }
@@ -171,13 +180,12 @@ export default {
         let detail
         try {
           detail = await this.getTransactionDetail(value.node.id)
+          detail.data = Buffer.from(detail.data).toString()
         } catch (err) {
           if (err.type !== 'TX_PENDING') throw new Error(err)
         }
         if (!detail) return ''
-        // 解码并获取 data
-        const data = decode.uint8ArrayToString(detail.data)
-        return data
+        return detail.data
       }
     }
     return ''

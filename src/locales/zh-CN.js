@@ -32,6 +32,10 @@ export default {
     txFailed: '交易失败',
     txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
     dynamicUploadFailed: '动态上传失败，请检查网络后重试',
+    dynamicEncryptFailed: '动态加密失败',
+    dynamicEncryptFailedMessage: '动态加密失败，出现了重大严重错误，如果屡次出现请反馈指开发者',
+    shouldnotSponsorYourSelf: '不能自己赞助以及打赏自己',
+    youCanOnlyPayForYourSelf: '你只能使用与你当前登录地址相同的钱包进行支付'
     getStatusDetails: '无法获取动态详情'
   },
   app: {
@@ -173,7 +177,7 @@ export default {
     customInputDescription: '本方案可自定义 PST 购买数量'
   },
   payment: {
-    pay: '支付',
+    pay: '支 付',
     purchase: '购买',
     checkout: '结 算',
     creator: '创作者',
@@ -187,7 +191,8 @@ export default {
     status: '上传动态中',
     media: '上传媒体中',
     audio: '上传音频中',
-    file: '上传文件中'
+    file: '上传文件中',
+    encrypting: '加密中'
   },
   flowCard: {
     loadMore: '加载全文',

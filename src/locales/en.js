@@ -32,6 +32,10 @@ export default {
     txFailed: 'Transaction Failed',
     txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
     dynamicUploadFailed: 'Status upload failed',
+    dynamicEncryptFailed: 'Status encryption failed',
+    dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
+    shouldnotSponsorYourSelf: 'Can\'t sponsor or donate yourself',
+    youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address'
     getStatusDetails: 'Unable to get status details'
   },
   app: {
@@ -49,7 +53,7 @@ export default {
     saveYourKeyInCookie: 'Save Key for this Session for 7 days',
     insertYourKey: 'Insert your wallet key',
     pleaseInsertYourWalletKey: 'Please drag your wallet application into this box to complete the action.',
-    pleaseLogInFirst: 'Please log in first'
+    pleaseLogInFirst: 'Please login first'
   },
   pageTitle: {
     myProfile: 'My Profile',
@@ -187,7 +191,8 @@ export default {
     status: 'Uploading status',
     media: 'Uploading media',
     audio: 'Uploading audio',
-    file: 'Uploading file'
+    file: 'Uploading file',
+    encrypting: '加密中'
   },
   flowCard: {
     loadMore: 'Load More',
