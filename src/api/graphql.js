@@ -3,8 +3,6 @@ import Arweave from 'arweave'
 
 import localforage from 'localforage'
 
-import decode from '../util/decode'
-
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
@@ -74,7 +72,7 @@ export default {
         const data = {
           ...detail
         }
-        data.data = decode.uint8ArrayToString(detail.data)
+        data.data = Buffer.from(detail.data).toString()
         await localforage.setItem(keyForCache, JSON.stringify(data))
         resolve(detail)
       }).catch(err => {
@@ -141,6 +139,7 @@ export default {
         let detail
         try {
           detail = await this.getTransactionDetail(value.node.id)
+          detail.data = Buffer.from(detail.data).toString('utf-8')
         } catch (err) {
           if (err.type !== 'TX_PENDING') throw new Error(err)
         }
@@ -190,6 +189,7 @@ export default {
         let detail
         try {
           detail = await this.getTransactionDetail(value.node.id)
+          detail.data = Buffer.from(detail.data).toString()
         } catch (err) {
           if (err.type !== 'TX_PENDING') throw new Error(err)
         }
