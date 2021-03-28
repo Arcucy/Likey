@@ -35,7 +35,7 @@ export default {
     dynamicEncryptFailed: 'Status encryption failed',
     dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
     shouldnotSponsorYourSelf: 'Can\'t sponsor or donate yourself',
-    youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address'
+    youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address',
     getStatusDetails: 'Unable to get status details'
   },
   app: {
