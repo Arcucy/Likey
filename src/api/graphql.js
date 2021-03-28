@@ -1,6 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request'
 import Arweave from 'arweave'
 
+import localforage from 'localforage'
+
 import decode from '../util/decode'
 
 const arweave = Arweave.init({
@@ -48,11 +50,32 @@ export default {
   /**
    * Get transaction detail entirely based on given txid
    * 根据给定的 txid (交易ID) 获取完整的交易明细
+   * !!获取到的data字段已在这一步完成解码，无需再次解码!!
    * @param {String} txid     - 交易编号
    */
-  getTransactionDetail (txid) {
+  async getTransactionDetail (txid) {
+    // 缓存键结构 transaction:$timestamp:$txid
+    const key = (await localforage.keys()).find((key) => key.endsWith(txid))
+    if (key) {
+      const timeNow = new Date().getTime()
+      const cacheTimeStamp = parseInt(key.substring(key.indexOf(':') + 1, key.lastIndexOf(':')))
+      if (timeNow - cacheTimeStamp < 1000 * 60 * 60 * 24 * 7) {
+        // 注释掉下面这行即可禁用缓存
+        return JSON.parse(await localforage.getItem(key))
+      } else {
+        await localforage.removeItem(key)
+      }
+    }
     return new Promise((resolve, reject) => {
-      arweave.transactions.get(txid).then(detail => {
+      arweave.transactions.get(txid).then(async (detail) => {
+        // 当获取成功时存入缓存
+        const timestamp = new Date().getTime()
+        const keyForCache = `transaction:${timestamp}:${txid}`
+        const data = {
+          ...detail
+        }
+        data.data = decode.uint8ArrayToString(detail.data)
+        await localforage.setItem(keyForCache, JSON.stringify(data))
         resolve(detail)
       }).catch(err => {
         reject(err)
@@ -122,8 +145,7 @@ export default {
           if (err.type !== 'TX_PENDING') throw new Error(err)
         }
         if (!detail) return { type: 'Guest', data: 'Guest' }
-        // 解码并获取 data
-        const data = decode.uint8ArrayToString(detail.data) || 'Guest'
+        const data = detail.data || 'Guest'
         return { type: 'User', data }
       }
     }
@@ -172,9 +194,7 @@ export default {
           if (err.type !== 'TX_PENDING') throw new Error(err)
         }
         if (!detail) return ''
-        // 解码并获取 data
-        const data = decode.uint8ArrayToString(detail.data)
-        return data
+        return detail.data
       }
     }
     return ''

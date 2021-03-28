@@ -1,18 +1,21 @@
 <template>
-  <div id="app" v-if="routerAlive" class="light-theme">
-    <Layout>
+  <div id="app" class="light-theme">
+    <Layout v-if="routerAlive">
       <router-view />
     </Layout>
+    <UploadScheduler />
   </div>
 </template>
 
 <script>
 import Layout from '@/components/Layout'
+import UploadScheduler from '@/components/UploadScheduler'
 
 export default {
   name: 'App',
   components: {
-    Layout
+    Layout,
+    UploadScheduler
   },
   provide () {
     return {
