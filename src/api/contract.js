@@ -13,7 +13,7 @@ const PST_HOLDER_TIP = '0.15'
 const DEVELOPER_TIP = '0.05'
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = false
+const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -331,7 +331,11 @@ export default {
    * @param {*} quantity    - 赞助金额，以 Winston 为单位，写入数据前请根据兑换比率自行换算，进入合约后才会按照兑换比率换算
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
-  async sponsorAdded (jwk, contract, quantity, callback) {
+  async sponsorAdded (jwk, contract, quantity, data, callback) {
+    if (!data) {
+      return
+    }
+    console.log(data)
     try {
       let status = 'onSponsorAddedStarted'
       callback(status, '')
@@ -340,8 +344,11 @@ export default {
 
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
       const tags = [
-        { name: 'Purchase-Type', value: 'Likey-Purchase' },
+        { name: 'Purchase-Type', value: 'Likey-Donation' },
+        { name: 'Purchase-Number', value: data.number || '1' },
         { name: 'Likey-Solution', value: 'Sponsor-Creator' },
+        { name: 'Solution-Title', value: data.title || 'Solution' },
+        { name: 'Solution-Value', value: data.value || '1' },
         { name: 'App-Name', value: process.env.VUE_APP_APP_NAME }
       ]
 
@@ -369,7 +376,10 @@ export default {
    * @param {*} quantity    - 打赏金额，单位为 Winston
    * @returns               - 返回变更后数据，如果不在测试模式还会返回 data 字段，值为写入数据的 ID
    */
-  async donationAdded (jwk, contract, statusId, quantity, callback) {
+  async donationAdded (jwk, contract, statusId, quantity, data, callback) {
+    if (!data) {
+      return
+    }
     try {
       let status = 'onDonationAddedStarted'
       callback(status, '')
@@ -379,7 +389,10 @@ export default {
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
       const tags = [
         { name: 'Purchase-Type', value: 'Likey-Donation' },
+        { name: 'Purchase-Number', value: data.number || '1' },
         { name: 'Likey-Solution', value: 'Status-Creator' },
+        { name: 'Solution-Title', value: data.title || 'Solution' },
+        { name: 'Solution-Value', value: data.value || '1' },
         { name: 'App-Name', value: process.env.VUE_APP_APP_NAME }
       ]
 

@@ -222,6 +222,11 @@ export default {
       this.paymentData = await this.$api.contract.distributeTokens(this.contract, value, undefined, false)
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
+      this.paymentData.item = {
+        title: item.title,
+        value: item.value,
+        number: '1'
+      }
 
       this.showReceipt = true
     },
@@ -247,6 +252,11 @@ export default {
       this.paymentData = await this.$api.contract.distributeTokens(this.contract, paymentValue, undefined, false)
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
+      this.paymentData.item = {
+        title: 'Custom',
+        value: '1',
+        number: '1'
+      }
 
       this.showReceipt = true
     },
@@ -285,11 +295,11 @@ export default {
       switch (this.paymentType) {
         case 0:
           // 执行合约
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.myAddress, this.paymentData.total, callback)
+          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
           this.loading = false
           break
         case 1:
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.myAddress, this.paymentData.total, callback)
+          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
           this.loading = false
           break
       }
