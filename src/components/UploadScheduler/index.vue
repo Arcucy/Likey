@@ -375,11 +375,18 @@ export default {
 
       this.setUploadingState(false)
       this.removeUploaderQueue(0)
-      this.$message.success(this.$t('success.statusPublished'))
     },
     encryptError (err) {
-      console.error('Status Upload Failed:', err)
-      this.$message.error(this.$t('failure.dynamicEncryptFailed'))
+      console.error('Status Encryption Failed:', err)
+
+      this.$notify({
+        title: this.$t('failure.dynamicEncryptFailed'),
+        dangerouslyUseHTMLString: true,
+        message: this.$t('failure.dynamicEncryptFailed'),
+        type: 'error',
+        duration: Number(20000)
+      })
+
       this.setUploadingState(false)
       this.removeUploaderQueue(0)
     }

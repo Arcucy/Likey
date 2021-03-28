@@ -253,7 +253,7 @@ export default {
         // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
         pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
 
-        if (confirm) {
+        if (confirm && !TEST_MODE) {
           await arweave.transactions.sign(pstTransaction, jwk)
           const txStatus = await arweave.transactions.post(pstTransaction)
 
@@ -293,7 +293,7 @@ export default {
         // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
         developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
 
-        if (confirm) {
+        if (confirm && !TEST_MODE) {
           await arweave.transactions.sign(developerTransaction, jwk)
           const txStatus = await arweave.transactions.post(developerTransaction)
 

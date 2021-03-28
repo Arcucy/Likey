@@ -11,12 +11,17 @@
   --secondary-light: #253e49;
   --secondary-dark: #253e49;
   --light: #c9c9c9;
-  --dark: #cccccc;
+  --dark: #a5a5a5;
   --gray1: #727272;
+  --gray2: #444444;
+  --gray3: #838383;
+  --gray4: #9b9b9b;
+  --gray5: #a1a1a1;
+  /* --gray1: #727272;
   --gray2: #444444;
   --gray3: #2e2e2e;
   --gray4: #242424;
-  --gray5: #141414;
+  --gray5: #141414; */
 }
 
 /* light-theme 亮色主题  */
@@ -40,7 +45,7 @@
 
 /* pink-theme 粉色主题  */
 .pink-theme {
-  --background: #f4f4f4;
+  --background: #ffffff;
   --background-dark: #292F36;
   --primary: #f05993;
   --primary-light: #feeef4;

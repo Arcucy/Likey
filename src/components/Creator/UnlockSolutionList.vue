@@ -83,7 +83,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PaymentKeyReader from '@/components/Common/PaymentKeyReader'
 import SolutionPurchaseReceipt from '@/components/Common/SolutionPurchaseReceipt'
@@ -124,10 +124,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isLoggedIn']),
     ...mapState({
       creators: state => state.contract.creators,
       creatorPst: state => state.contract.creatorPst,
-      themeName: state => state.app.themeName
+      themeName: state => state.app.themeName,
+      myAddress: state => state.user.myInfo.address
     }),
     creator () {
       return this.creators ? this.creators[this.address] : null
@@ -200,6 +202,15 @@ export default {
     },
     /** 购买解锁方案 */
     async buyUnlockSolution (item, index) {
+      if (!this.isLoggedIn) {
+        this.$message.warning(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+      if (this.address === this.myAddress) {
+        this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+        return
+      }
+
       this.showReceipt = false
       this.loading = true
       this.paymentType = 0
@@ -216,6 +227,15 @@ export default {
     },
     /** 购买自定义方案 */
     async buyCustomSolution (value) {
+      if (!this.isLoggedIn) {
+        this.$message.warning(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+      if (this.address === this.myAddress) {
+        this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+        return
+      }
+
       this.showReceipt = false
       this.loading = true
       this.paymentType = 1
@@ -237,6 +257,21 @@ export default {
     },
     /** 支付金额 */
     async payOrder (jwk) {
+      if (!this.isLoggedIn) {
+        this.$message.warning(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+
+      const myWalletAddress = await this.$api.ArweaveNative.wallets.getAddress(jwk)
+      if (myWalletAddress === this.address) {
+        this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+        return
+      }
+      if (myWalletAddress !== this.myAddress) {
+        this.$message.warning(this.$t('failure.youCanOnlyPayForYourSelf'))
+        return
+      }
+
       this.showKeyReader = false
       const callback = (event, id) => {
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
@@ -250,11 +285,11 @@ export default {
       switch (this.paymentType) {
         case 0:
           // 执行合约
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, callback)
+          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.myAddress, this.paymentData.total, callback)
           this.loading = false
           break
         case 1:
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, callback)
+          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.myAddress, this.paymentData.total, callback)
           this.loading = false
           break
       }
@@ -332,6 +367,7 @@ export default {
   flex-direction: column;
 }
 .solution {
+  color: @dark;
   overflow: hidden;
   background: @background;
   box-shadow: 0 0 2px 0 #0000001a;

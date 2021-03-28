@@ -202,7 +202,7 @@ export default {
         display: flex;
         justify-content: flex-end;
         padding: 0px 20px;
-
+        box-sizing: content-box;
         &-icon {
           width: fit-content;
           font-size: 16px;
