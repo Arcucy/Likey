@@ -7450,7 +7450,7 @@
     padding: 0 20px;
     margin: 0;
     font-size: 14px;
-    color: #EBEEF5;
+    color: #cecece;
     cursor: pointer;
     outline: none; }
     .el-dropdown-menu__item:not(.is-disabled):hover, .el-dropdown-menu__item:focus {
@@ -33896,7 +33896,7 @@
 .el-loading-mask {
   position: absolute;
   z-index: 2000;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(68, 68, 68, 0.9);
   margin: 0;
   top: 0;
   right: 0;
