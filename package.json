@@ -24,6 +24,7 @@
     "hls.js": "^0.14.17",
     "js-cookie": "^2.2.1",
     "js-crypto-rsa": "^1.0.0",
+    "moment": "^2.29.1",
     "smartweave": "^0.4.27",
     "svgo": "^1.3.2",
     "vue": "^2.6.11",

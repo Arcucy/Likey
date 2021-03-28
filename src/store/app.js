@@ -3,7 +3,7 @@ export default {
   namespaced: false,
 
   state: {
-    appLang: 'en',
+    appLang: 'en-US',
     themeName: ''
   },
   getters: {

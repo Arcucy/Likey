@@ -43,6 +43,7 @@ export default {
       this.setLangCodeFromBrowser()
       lang = this.getStoredLangCode()
     }
+    this.setAppLang(lang)
     switch (lang) {
       case 'zh-CN':
         this.$i18n.locale = 'zh-CN'
@@ -79,7 +80,6 @@ export default {
     /** getStoredLangCode 读取历史存储过的语言 */
     getStoredLangCode () {
       const storedLang = localStore.getItem('locale_lang')
-      this.setAppLang(storedLang)
       return storedLang
     },
     /** setLangCodeFromBrowser 从浏览器内读取 localStorage 并设定语言 */
