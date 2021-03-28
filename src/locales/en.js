@@ -36,6 +36,7 @@ export default {
     dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
     shouldnotSponsorYourSelf: 'Can\'t sponsor or donate yourself',
     youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address'
+    getStatusDetails: 'Unable to get status details'
   },
   app: {
     loading: 'Loading'
@@ -192,5 +193,12 @@ export default {
     audio: 'Uploading audio',
     file: 'Uploading file',
     encrypting: '加密中'
+  },
+  flowCard: {
+    loadMore: 'Load More',
+    numPictures: '{0} Pictures',
+    audio: 'Audio',
+    file: 'File',
+    noStatusYet: 'No status yet'
   }
 }

@@ -14,6 +14,9 @@ const arweave = Arweave.init({
 
 const graph = new GraphQLClient(process.env.VUE_APP_ARWEAVE_GRAPHQL + '/graphql', { headers: {} })
 
+/** 支持的架构版本，在 env 文件中配置，用逗号分隔每个版本号 */
+const SCHEMA_VERSION_SUPPORTED = process.env.VUE_APP_SCHEMA_VERSION_SUPPORTED.split(',').map(item => item.trim()).filter(item => item)
+
 export default {
   /**
    * Get user address based on key file content input
@@ -186,5 +189,64 @@ export default {
       }
     }
     return ''
+  },
+
+  /**
+   * 根据用户地址获取动态列表
+   * @param {String | String[]} address 查询的用户地址，可以传入单个地址或地址列表
+   * @param {String} after 获取指定的 cursor 之后的数据
+   * @param {Number} first 一次获取几条数据，默认获取 10 条
+   * @param {Boolean} filterNoBlock 不返回没有区块信息的交易，没有区块信息的交易将无法通过 transactions.get 获取。
+   */
+  async getUserStatusByAddress (address, after = '', first = 10, filterNoBlock = false) {
+    const query = gql`
+      query getStatus(
+        $appName: String!,
+        $schemaVersion: [String!]!,
+        $addressList: [String!],
+        $first: Int,
+        $after: String,
+      ) {
+        transactions(
+          first: $first
+          after: $after
+          owners: $addressList
+          tags: [
+            { name: "App-Name"        values: [$appName] },
+            { name: "Schema-Version"  values: $schemaVersion },
+            { name: "Type"            values: ["status"] }
+          ]
+        ) {
+          pageInfo { hasNextPage }
+          edges {
+            cursor
+            node {
+              id
+              owner { address }
+              tags { name value }
+              block { timestamp }
+            }
+        }
+        }
+      }
+    `
+    const addressList = typeof address === 'string' ? [address] : [...address]
+
+    const res = await graph.request(query, {
+      appName: process.env.VUE_APP_APP_NAME,
+      schemaVersion: SCHEMA_VERSION_SUPPORTED,
+      addressList,
+      after: after || '',
+      first: first || 10
+    })
+
+    if (filterNoBlock) {
+      const edges = res.transactions.edges.filter(item => {
+        return item.node.block && item.node.block.timestamp
+      })
+      res.transactions.edges = edges
+    }
+
+    return res
   }
 }

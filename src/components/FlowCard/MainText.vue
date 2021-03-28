@@ -11,7 +11,7 @@ export default {
     // 卡片数据
     card: {
       type: Object,
-      required: true
+      default: null
     }
   },
   computed: {

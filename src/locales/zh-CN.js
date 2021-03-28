@@ -36,6 +36,7 @@ export default {
     dynamicEncryptFailedMessage: '动态加密失败，出现了重大严重错误，如果屡次出现请反馈指开发者',
     shouldnotSponsorYourSelf: '不能自己赞助以及打赏自己',
     youCanOnlyPayForYourSelf: '你只能使用与你当前登录地址相同的钱包进行支付'
+    getStatusDetails: '无法获取动态详情'
   },
   app: {
     loading: '加载中'
@@ -192,5 +193,12 @@ export default {
     audio: '上传音频中',
     file: '上传文件中',
     encrypting: '加密中'
+  },
+  flowCard: {
+    loadMore: '加载全文',
+    numPictures: '{0} 张图片',
+    audio: '音频',
+    file: '附件',
+    noStatusYet: '暂无动态'
   }
 }

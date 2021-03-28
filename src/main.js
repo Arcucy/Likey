@@ -8,6 +8,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import VueClipboards from 'vue-clipboard2'
 import i18n from './i18n'
 import Aplayer from 'vue-aplayer'
+import moment from 'moment'
 
 import '@/icons'
 import API from '../src/api/api'
@@ -61,6 +62,9 @@ Object.keys(Filters).forEach(key => {
 Vue.config.productionTip = false
 Vue.prototype.$api = API
 Vue.prototype.$switchElementTheme = loadTheme
+
+moment.locale('en-US')
+Vue.prototype.$moment = moment
 
 Vue.use(VueClipboards)
 Vue.component('aplayer', Aplayer)
