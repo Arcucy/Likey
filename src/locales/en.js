@@ -31,7 +31,8 @@ export default {
     sponsorTxFailed: 'Sponsor Failed',
     txFailed: 'Transaction Failed',
     txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
-    dynamicUploadFailed: 'Status upload failed'
+    dynamicUploadFailed: 'Status upload failed',
+    getStatusDetails: 'Unable to get status details'
   },
   app: {
     loading: 'Loading'
@@ -187,5 +188,12 @@ export default {
     media: 'Uploading media',
     audio: 'Uploading audio',
     file: 'Uploading file'
+  },
+  flowCard: {
+    loadMore: 'Load More',
+    numPictures: '{0} Pictures',
+    audio: 'Audio',
+    file: 'File',
+    noStatusYet: 'No status yet'
   }
 }

@@ -31,7 +31,8 @@ export default {
     sponsorTxFailed: '赞助失败',
     txFailed: '交易失败',
     txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
-    dynamicUploadFailed: '动态上传失败，请检查网络后重试'
+    dynamicUploadFailed: '动态上传失败，请检查网络后重试',
+    getStatusDetails: '无法获取动态详情'
   },
   app: {
     loading: '加载中'
@@ -187,5 +188,12 @@ export default {
     media: '上传媒体中',
     audio: '上传音频中',
     file: '上传文件中'
+  },
+  flowCard: {
+    loadMore: '加载全文',
+    numPictures: '{0} 张图片',
+    audio: '音频',
+    file: '附件',
+    noStatusYet: '暂无动态'
   }
 }
