@@ -2,6 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request'
 import Arweave from 'arweave'
 
 import localforage from 'localforage'
+import { cache } from '@/util/cache'
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -52,28 +53,15 @@ export default {
    * @param {String} txid     - 交易编号
    */
   async getTransactionDetail (txid) {
-    // 缓存键结构 transaction:$timestamp:$txid
-    const key = (await localforage.keys()).find((key) => key.endsWith(txid))
+    // 查询是否已经缓存
+    const key = await cache.getKeyByTxid(txid)
     if (key) {
-      const timeNow = new Date().getTime()
-      const cacheTimeStamp = parseInt(key.substring(key.indexOf(':') + 1, key.lastIndexOf(':')))
-      if (timeNow - cacheTimeStamp < 1000 * 60 * 60 * 24 * 7) {
-        // 注释掉下面这行即可禁用缓存
-        return JSON.parse(await localforage.getItem(key))
-      } else {
-        await localforage.removeItem(key)
-      }
+      return JSON.parse(await localforage.getItem(key))
     }
     return new Promise((resolve, reject) => {
       arweave.transactions.get(txid).then(async (detail) => {
         // 当获取成功时存入缓存
-        const timestamp = new Date().getTime()
-        const keyForCache = `transaction:${timestamp}:${txid}`
-        const data = {
-          ...detail
-        }
-        data.data = Buffer.from(detail.data).toString()
-        await localforage.setItem(keyForCache, JSON.stringify(data))
+        await cache.cacheTheTransaction(txid, detail)
         resolve(detail)
       }).catch(err => {
         reject(err)
