@@ -8,16 +8,25 @@
             <div class="home-timeline">
               <el-row>
                 <el-col :span="4">
-                  <span class="home-title">最新动态</span>
+                  <span class="home-title">
+                    {{ $t('home.tabFlow') }}
+                  </span>
                 </el-col>
                 <el-col :span="4">
-                  <span class="home-title" :class="showingAppreciate ? '' : 'home-title-not-active'">我赞赏的</span>
+                  <span class="home-title" :class="showingAppreciate ? '' : 'home-title-not-active'">
+                    {{ $t('home.tabAppreciated') }}
+                  </span>
                 </el-col>
               </el-row>
+              <div class="card flow-card" v-if="flow.length === 0">
+                <div v-loading="true">
+                  {{ $t('home.flowLoading') }}
+                </div>
+              </div>
               <FlowCard
-                v-for="(flow, index) in flow"
-                :user="flow.user"
-                :brief="flow"
+                v-for="(data, index) in flow"
+                :user="data.user"
+                :brief="data"
                 :key="index"
                 class="flow-card"
               />
@@ -26,14 +35,21 @@
           <!--分栏：发现创作者-->
           <el-col :span="10">
             <div class="home-discovery">
-              <span class="home-title">发现创作者</span>
+              <span class="home-title">
+                {{ $t('home.findMoreCreators') }}
+              </span>
+              <div class="card flow-card" v-if="shownCreators.length === 0">
+                <div v-loading="true">
+                  {{ $t('home.creatorsLoading') }}
+                </div>
+              </div>
               <CreatorCard v-for="(address, index) in shownCreators" :address="address" :key="index" />
               <div class="show-more-btn">
                 <span
                   @click="showMore ++"
                   v-if="creatorsAddress.length !== shownCreators.length"
                   class="show-more-btn-text"
-                >显示更多</span>
+                >{{ $t('home.showMore') }}</span>
               </div>
             </div>
           </el-col>

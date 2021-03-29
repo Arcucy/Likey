@@ -200,5 +200,14 @@ export default {
     audio: 'Audio',
     file: 'File',
     noStatusYet: 'No status yet'
+  },
+  home: {
+    // 部分翻译存疑
+    tabFlow: 'Flow',
+    tabAppreciated: 'Appreciated',
+    flowLoading: 'Flow loading...',
+    creatorsLoading: 'Creators loading...',
+    showMoreCreators: 'Show more',
+    findMoreCreators: 'Find more creators'
   }
 }
