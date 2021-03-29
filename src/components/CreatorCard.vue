@@ -1,7 +1,7 @@
 <template>
-  <a :href="'/#/@' + creator.shortname">
+  <a :href="loading ? 'javascript:void(0)' : '/#/@' + creator.shortname" :class="loading ? 'card-loading' : ''">
     <div class="creator-card" v-loading="loading">
-      <avatar class="creator-card-avatar" size="48px" :src="avatar" />
+      <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
       <div style="display: inline-block" class="creator-card-info">
         <span class="creator-card-info-name">{{ id }}</span><br>
         <span class="creator-card-info-bio">{{ creator.intro }}</span>
@@ -16,7 +16,7 @@ import { mapState } from 'vuex'
 
 export default {
   components: {
-    avatar: Avatar
+    Avatar
   },
   props: {
     address: {
@@ -76,6 +76,10 @@ a {
       font-weight: bold;
     }
   }
+}
+
+.card-loading {
+  cursor: not-allowed;
 }
 
 .el-loading-mask {
