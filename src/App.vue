@@ -91,6 +91,14 @@ textarea {
   width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  // 避免 el 的加载遮罩 挡住页面顶部的悬浮导航栏
+  .el-loading-mask {
+    z-index: 98 !important;
+    background: @background;
+    filter: Alpha(opacity=90);
+    opacity:0.9;
+  }
 }
 
 .transaction-message {

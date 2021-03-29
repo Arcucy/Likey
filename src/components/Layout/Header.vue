@@ -309,11 +309,19 @@ export default {
 
 <style lang="less" scoped>
 header {
-  box-shadow: 0px 8px 15px -5px @gray1;
+  box-shadow: 0 0 2px 0 #0000001a;
+  border-bottom: 1px solid #f1f1f1;
+  box-sizing: border-box;
   color: @dark;
   background-color: @background;
   display: flex;
   justify-content: center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99;
 
   .header {
     width: 100%;
