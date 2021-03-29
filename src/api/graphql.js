@@ -215,11 +215,53 @@ export default {
     `
     // 使用 GraphQL 获取 Ar 链上的交易
     const res = await graph.request(query, { address })
-    const matched = []
+    const matched = { sponsors: [], donations: [] }
     for (const tx of res.transactions.edges) {
-      for (const tag of Object.entries(tx.node.tags)) {
-        if (tag[1].name === 'Purchase-Type' && (tag[1].value === 'Likey-Donation' || tag[1].value === 'Likey-Sponsor')) {
-          matched.push(tx.node)
+      for (const tag of tx.node.tags) {
+        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
+          matched.sponsors.push(tx.node)
+        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
+          matched.donations.push(tx.node)
+        }
+      }
+    }
+    return matched
+  },
+  async getAllPurchases (address) {
+    const query = gql`
+      query getAllPurchases($address: String!) {
+        transactions (
+          owners: [$address]
+        ) {
+          edges {
+            node {
+              id
+              recipient
+              quantity {
+                ar
+                winston
+              }
+              tags {
+                name
+                value
+              }
+              block {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address })
+    const matched = { sponsors: [], donations: [] }
+    for (const tx of res.transactions.edges) {
+      for (const tag of tx.node.tags) {
+        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
+          matched.sponsors.push(tx.node)
+        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
+          matched.donations.push(tx.node)
         }
       }
     }

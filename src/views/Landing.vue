@@ -56,7 +56,6 @@ export default {
     max-width: 1200px;
 
     .canvas-container {
-      margin: 60px 0px 60px 0px;
       display: flex;
       align-items: center;
       column-gap: 50px;

@@ -281,8 +281,8 @@ export default {
             status = 'onDistributionPosted'
             callback(status, pstTransaction.id)
 
-            // 从总额中去除被减去的部分
-            quantityBig = quantityBig.minus(pstHolderQuantity)
+            // 分润的金额
+            quantityBig = quantityBig.plus(pstHolderQuantity)
           }
         } catch (err) {
           status = 'onDistributionCatchError'
@@ -327,8 +327,8 @@ export default {
             status = 'onDeveloperPosted'
             callback(status, developerTransaction.id)
 
-            // 从总额中去除被减去的部分
-            quantityBig = quantityBig.minus(developerQuantity)
+            // 分润的金额
+            quantityBig = quantityBig.plus(developerQuantity)
           }
         } catch (err) {
           status = 'onDeveloperCatchError'
@@ -372,7 +372,7 @@ export default {
         { name: 'Likey-Solution', value: 'Sponsor-Creator' },
         { name: 'Solution-Title', value: data.title || 'Solution' },
         { name: 'Solution-Value', value: data.value || '1' },
-        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME },
+        { name: 'App-Base-Name', value: process.env.VUE_APP_APP_NAME },
         { name: 'Unix-Time', value: Date.now() }
       ]
 
@@ -417,7 +417,7 @@ export default {
         { name: 'Likey-Solution', value: 'Status-Creator' },
         { name: 'Solution-Title', value: data.title || 'Solution' },
         { name: 'Solution-Value', value: data.value || '1' },
-        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME },
+        { name: 'App-Base-Name', value: process.env.VUE_APP_APP_NAME },
         { name: 'Unix-Time', value: Date.now() }
       ]
 

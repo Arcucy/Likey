@@ -56,6 +56,7 @@ export default {
   },
   pageTitle: {
     myProfile: 'My Profile',
+    myOrder: 'My Orders',
     home: 'Home',
     themesTest: 'Themes Test'
   },
@@ -191,6 +192,11 @@ export default {
     media: 'Uploading media',
     audio: 'Uploading audio',
     file: 'Uploading file',
-    encrypting: '加密中'
+    encrypting: 'Encrypting'
+  },
+  orderTab: {
+    allPurchases: 'All Purchases',
+    sponsors: 'Sponsors',
+    donations: 'Donations'
   }
 }

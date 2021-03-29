@@ -56,6 +56,7 @@ export default {
   },
   pageTitle: {
     myProfile: '我的资料',
+    myOrder: '我的订单',
     home: '主页',
     themesTest: '主题测试'
   },
@@ -192,5 +193,10 @@ export default {
     audio: '上传音频中',
     file: '上传文件中',
     encrypting: '加密中'
+  },
+  orderTab: {
+    allPurchases: '全部购买',
+    sponsors: '赞助',
+    donations: '打赏'
   }
 }

@@ -7,6 +7,9 @@
       <router-link :to="myProfileUrl">
         <el-dropdown-item>{{ myInfo.username }}</el-dropdown-item>
       </router-link>
+      <router-link :to="{ name: 'Order' }">
+        <el-dropdown-item>{{ $t('pageTitle.myOrder') }}</el-dropdown-item>
+      </router-link>
       <div @click="logout">
         <el-dropdown-item>{{ $t('login.signOut') }}</el-dropdown-item>
       </div>

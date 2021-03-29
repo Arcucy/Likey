@@ -94,8 +94,11 @@ export default {
   watch: {
   },
   async mounted () {
-    const count = await this.$api.gql.getAllSponsorsAndDonations(this.creator.ticker.contract)
-    this.sponsorAndDonationCount = count ? count.length : '0'
+    const sdCount = await this.$api.gql.getAllSponsorsAndDonations(this.creator.ticker.contract)
+    let count = 0
+    count += sdCount.sponsors ? sdCount.sponsors.length : 0
+    count += sdCount.donations ? sdCount.donations.length : 0
+    this.sponsorAndDonationCount = count
   },
   methods: {
   }
