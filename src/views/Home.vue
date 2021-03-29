@@ -6,16 +6,34 @@
           <!--分栏：动态-->
           <el-col :span="14">
             <div class="home-timeline">
-              动态
+              <el-row>
+                <el-col :span="4">
+                  <span class="home-title">最新动态</span>
+                </el-col>
+                <el-col :span="4">
+                  <span class="home-title" :class="showingAppreciate ? '' : 'home-title-not-active'">我赞赏的</span>
+                </el-col>
+              </el-row>
+              <FlowCard
+                v-for="(flow, index) in flow"
+                :user="flow.user"
+                :brief="flow"
+                :key="index"
+                class="flow-card"
+              />
             </div>
           </el-col>
           <!--分栏：发现创作者-->
           <el-col :span="10">
             <div class="home-discovery">
-              <span class="home-discovery-title">发现创作者</span>
-              <creator-card v-for="(address, index) in shownCreators" :address="address" :key="index" />
+              <span class="home-title">发现创作者</span>
+              <CreatorCard v-for="(address, index) in shownCreators" :address="address" :key="index" />
               <div class="show-more-btn">
-                <span @click="showMore ++" v-if="creators.length !== shownCreators.length" class="show-more-btn-text">显示更多</span>
+                <span
+                  @click="showMore ++"
+                  v-if="creatorsAddress.length !== shownCreators.length"
+                  class="show-more-btn-text"
+                >显示更多</span>
               </div>
             </div>
           </el-col>
@@ -27,30 +45,95 @@
 
 <script>
 import CreatorCard from '@/components/CreatorCard'
-import { mapMutations, mapState } from 'vuex'
+import FlowCard from '@/components/FlowCard'
+import { mapActions, mapMutations, mapState } from 'vuex'
+import API from '@/api/api'
 
 export default {
   name: 'Home',
   components: {
-    'creator-card': CreatorCard
+    CreatorCard,
+    FlowCard
   },
   data () {
     return {
       // 记录用户点了多少次展开
-      showMore: 1
+      showMore: 1,
+      showingAppreciate: false,
+      // 动态列表
+      flow: []
     }
   },
   computed: {
     ...mapState({
-      creators: state => Object.keys(state.contract.creators),
-      shownCreators () {
-        return this.creators.slice(0, this.showMore * 5)
-      }
-    })
+      creatorsAddress: state => Object.keys(state.contract.creators),
+      creators: state => state.contract.creators
+    }),
+    shownCreators () {
+      return this.creatorsAddress.slice(0, this.showMore * 5)
+    }
+  },
+  watch: {
+    creatorsAddress: {
+      async handler (val) {
+        this.flow = await this.getUserStatus()
+        console.log(this.flow)
+      },
+      immediate: true
+    }
   },
   methods: {
     // TODO:在每次提交前记得删掉这个mutations的引用
-    ...mapMutations(['mTestCreatorsAdd'])
+    ...mapMutations(['mTestCreatorsAdd']),
+    ...mapActions(['getCreatorInfo']),
+    /** 获取用户动态列表 */
+    async getUserStatusByAddress (address) {
+      const res = await this.$api.gql.getUserStatusByAddress(address)
+      console.log('flow:', res.transactions.edges)
+      return res.transactions.edges
+    },
+    /** 获取所有用户动态列表 */
+    async getUserStatus () {
+      const flowCards = []
+      for (const address of this.creatorsAddress) {
+        const flow = await this.getUserStatusByAddress(address)
+        const creatorInfo = this.creators[address]
+        const id = (await API.gql.getIdByAddress(address)).data
+        for (const f of flow) {
+          f.user = {
+            shortname: creatorInfo.shortname,
+            username: id
+          }
+          flowCards.push(f)
+        }
+      }
+      // 对动态列表进行排序
+      return this.sortTheFlow(flowCards)
+    },
+    /** 获取动态的Tags */
+    getTags (flow) {
+      const tags = flow.node.tags
+      const ret = {}
+      tags.forEach(item => { ret[item.name] = item.value })
+      return ret
+    },
+    /** 获取动态的时间戳 */
+    getTimeStamp (flow) {
+      const tags = this.getTags(flow)
+      return tags['Unix-Time']
+    },
+    sortTheFlow (flow) {
+      for (let i = 0; i < flow.length - 1; i++) {
+        for (let j = 0; j < flow.length - 1 - i; j++) {
+          if (this.getTimeStamp(flow[j]) < this.getTimeStamp(flow[j + 1])) {
+            const temp = flow[j]
+            flow[j] = flow[j + 1]
+            flow[j + 1] = temp
+          }
+        }
+      }
+      return flow
+    }
   }
 }
 </script>
@@ -81,9 +164,15 @@ export default {
 }
 
 .home-discovery {
-  &-title {
-    font-size: 18px;
-    font-weight: bold;
+  // TODO
+}
+
+.home-title {
+  font-size: 18px;
+  font-weight: bold;
+
+  &-not-active {
+    color: gray;
   }
 }
 
@@ -91,13 +180,19 @@ export default {
   width: 100%;
   text-align: center;
   padding: 10px;
+
   &-text {
     transition: all 200ms;
     font-weight: bold;
     color: @primary;
+
     &:hover {
       color: @secondary;
     }
   }
+}
+
+.flow-card {
+  margin-top: 10px;
 }
 </style>
