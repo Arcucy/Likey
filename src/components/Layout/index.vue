@@ -1,9 +1,9 @@
 <template>
   <div class="layout">
-    <Header />
     <div class="slot-shell">
       <slot />
     </div>
+    <Header />
     <Footer />
   </div>
 </template>
@@ -27,6 +27,7 @@ export default {
   display: flex;
   flex-direction: column;
   background: @gray1;
+  padding-top: 60px;
 
   .slot-shell {
     box-sizing: border-box;

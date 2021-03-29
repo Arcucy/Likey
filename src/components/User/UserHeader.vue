@@ -201,8 +201,7 @@ export default {
         width: 100%;
         display: flex;
         justify-content: flex-end;
-        padding: 0px 20px;
-        box-sizing: content-box;
+        padding: 0px 10px;
         &-icon {
           width: fit-content;
           font-size: 16px;

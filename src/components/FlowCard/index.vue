@@ -40,8 +40,14 @@
             {{ createTime }}
           </p>
         </div>
+        <!-- 标题 -->
+        <h4 class="cardunit-r-title">
+          {{ title }}
+        </h4>
+        <Summary :preview="preview" @load-more="loadMore" :loading="detailsLoading" />
         <!-- 正文 -->
         <mainText
+          v-if="card"
           class="cardunit-r-content"
           :card="card"
         />
@@ -92,59 +98,105 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import * as momentFun from '@/util/momentFun'
+import decode from '@/util/decode'
+
 import Avatar from '@/components/User/Avatar'
 import mainText from './MainText'
 import photoAlbum from './PhotoAlbum'
-
+import Summary from './Summary'
 export default {
   components: {
     Avatar,
     mainText,
-    photoAlbum
+    photoAlbum,
+    Summary
   },
   props: {
     // 卡片数据
-    data: {
+    brief: {
       type: Object,
       required: true
+    },
+    user: {
+      type: Object,
+      default: () => {
+        return {
+          username: '',
+          avatar: '',
+          address: '',
+          shortname: ''
+        }
+      }
+    },
+    noLoadUser: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       showHiddenContent: false,
       likeIt: false,
-      likeLoading: false
+      likeLoading: false,
+      avatar: '',
+      details: null,
+      detailsLoading: false
     }
   },
   computed: {
+    ...mapState({
+      appLang: state => state.app.appLang
+    }),
     likeIconClass () {
       return {
         'like-touch': !this.likeLoading,
         active: !!this.flows.idonated
       }
     },
+    preview () {
+      const tags = this.getTags(this.brief.node.tags)
+      console.log('tags:', tags)
+
+      return {
+        id: this.brief.node.id,
+        cursor: this.brief.cursor,
+        creator: this.brief.node.owner.address,
+        timestamp: tags['Unix-Time'],
+        schemaVersion: tags['Schema-Version'],
+        title: tags.Title,
+        summary: tags.Summary,
+        extra: this.strToObj(tags.Extra),
+        lockContract: tags['Lock-Contract'] || '',
+        lockValue: tags['Lock-Value'] || 0
+      }
+    },
+    card () {
+      return null
+    },
+    avatarImg () {
+      return this.noLoadUser ? this.user.avatar : this.avatar
+    },
     isTop () {
       return false
     },
     shortname () {
-      return 'shortname'
-    },
-    card () {
-      return this.data
-    },
-    avatarImg () {
-      return ''
+      return this.user.shortname
     },
     nickname () {
-      return 'nickname'
+      return this.user.username
     },
     createTime () {
-      // if (!this.card) return ''
-      // const time = this.moment(this.card.create_time)
-      // if (!this.$utils.isNDaysAgo(2, time)) return time.fromNow()
-      // else if (!this.$utils.isNDaysAgo(365, time)) return time.format('MMMDo')
-      // return time.format('YYYY MMMDo')
-      return '16小时前'
+      const time = this.$moment(Number(this.preview.timestamp)).locale(this.appLang)
+      if (!momentFun.isNDaysAgo(2, time)) return time.fromNow()
+      else if (!momentFun.isNDaysAgo(365, time)) return time.format('MMMDo')
+      return time.format('YYYY MMMDo')
+    },
+    title () {
+      if (this.card) return this.card.title
+      return this.preview.title
     },
     media () {
       return []
@@ -158,7 +210,44 @@ export default {
       }
     }
   },
+  watch: {
+    brief: {
+      handler (val) {
+        if (!this.noLoadUser && val) {
+          this.getAvatar()
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
+    /** 获取头像 */
+    async getAvatar () {
+      try {
+        const address = this.brief.node.owner.address
+        const data = await this.$api.gql.getAvatarByAddress(address)
+        this.avatar = data
+      } catch (err) {
+        this.$message.error(this.$t('failure.gettingAvatarTimeout'))
+        console.error('getAvatar error: ', err)
+      }
+    },
+    /** 加载更多 */
+    async loadMore () {
+      if (this.detailsLoading) return
+      this.detailsLoading = true
+      console.log('开始获取动态详情')
+      try {
+        const transaction = await this.$api.gql.getTransactionDetail(this.preview.id)
+        const data = JSON.parse(decode.uint8ArrayToString(transaction.data))
+        this.details = data
+        console.log('动态详情：', this.details)
+      } catch (err) {
+        this.$message.error(this.$t('failure.getStatusDetails'))
+        console.error('loadMore error: ', err)
+      }
+      this.detailsLoading = false
+    },
     /** 推荐 */
     async likeClick () {
       console.log('推荐')
@@ -182,6 +271,19 @@ export default {
           this.$message({ showClose: true, message: this.$t('error.copy'), type: 'error' })
         }
       )
+    },
+    getTags (tags) {
+      const ret = {}
+      tags.forEach(item => { ret[item.name] = item.value })
+      return ret
+    },
+    strToObj (str) {
+      try {
+        return JSON.parse(str)
+      } catch (err) {
+        console.error(err)
+        return null
+      }
     }
   }
 }
@@ -316,6 +418,19 @@ span {
       }
     }
 
+    &-title {
+      color: @dark;
+      font-size: 22px;
+      font-weight: 700;
+      padding: 0;
+      margin: 0 0 5px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      word-break: break-all;
+    }
+
     &-content {
       color: @dark;
       font-size: 15px;
@@ -402,6 +517,14 @@ span {
         }
       }
     }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .cardunit-bg {
+    margin-bottom: 1px;
+    border-radius: 0;
+    padding: 20px 16px;
   }
 }
 </style>

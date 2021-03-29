@@ -150,4 +150,11 @@ export default {
     }
   }
 }
+
+@media screen and (max-width: 640px) {
+  .sponsor {
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+}
 </style>

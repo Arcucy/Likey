@@ -483,4 +483,28 @@ export default {
     }
   }
 }
+
+@media screen and (max-width: 640px) {
+  .solutions {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: nowrap;
+    flex-direction: row;
+  }
+
+  .solution {
+    border-radius: 6px;
+    padding: 20px 16px;
+    width: 100%;
+    min-width: 87%;
+    display: flex;
+    flex-direction: column;
+    margin: 0 5px;
+    &-desp {
+      flex: 1;
+    }
+  }
+}
 </style>

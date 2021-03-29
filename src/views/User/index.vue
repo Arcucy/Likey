@@ -5,8 +5,20 @@
         <div class="col-header">
           <h3>{{ $t('userProfile.flow') }}</h3>
         </div>
-        <InputBox :address="address" />
-        <FlowCard :data="{}" />
+        <InputBox v-if="isMe(address)" :address="address" />
+        <FlowCard
+          v-for="(data, index) of flow"
+          class="flow-card"
+          :key="index"
+          :brief="data"
+          :user="user"
+          no-load-user
+        />
+        <div v-if="!flow || !flow.length || flowLoading" class="no-data" v-loading="flowLoading">
+          <p v-if="!flowLoading">
+            {{ $t('flowCard.noStatusYet') }}
+          </p>
+        </div>
       </div>
       <div class="col-3">
         <div class="col-header">
@@ -77,7 +89,9 @@ export default {
           contract: ''
         },
         items: []
-      }
+      },
+      flow: [],
+      flowLoading: false
     }
   },
   computed: {
@@ -96,12 +110,21 @@ export default {
     },
     isCreator () {
       return Boolean(this.creatorInfo.shortname)
+    },
+    user () {
+      return {
+        ...this.basicInfo,
+        ...this.creatorInfo
+      }
     }
   },
   watch: {
     address: {
       handler (val) {
-        if (val) this.initCreatorInfo(val)
+        if (val) {
+          this.initCreatorInfo(val)
+          this.getUserStatus(val)
+        }
       },
       immediate: true
     }
@@ -124,6 +147,14 @@ export default {
     async initContractInfo () {
       await this.getPstContract(this.creatorInfo.ticker.contract)
       this.creatorLoading = false
+    },
+    /** 获取用户动态列表 */
+    async getUserStatus (address) {
+      this.flowLoading = true
+      const res = await this.$api.gql.getUserStatusByAddress(address)
+      this.flow = res.transactions.edges
+      console.log('flow:', this.flow)
+      this.flowLoading = false
     }
   }
 }
@@ -131,7 +162,7 @@ export default {
 
 <style lang="less" scoped>
 .user-profile {
-  margin: 0 10px 60px;
+  margin: 0 0 60px;
 }
 
 .no-creator {
@@ -167,7 +198,7 @@ export default {
 }
 
 .row {
-  max-width: 1200px;
+  max-width: 1220px;
   width: 100%;
   margin: 20px auto 0;
   padding-bottom: 40px;
@@ -197,6 +228,50 @@ export default {
   h3 {
     margin: 0;
     padding: 0;
+  }
+}
+
+.flow-card {
+  margin-bottom: 20px;
+}
+
+.no-data {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    color: @gray3;
+  }
+}
+
+@media screen and (max-width: 799px) {
+  .row {
+    display: flex;
+    flex-direction: column-reverse;
+    .col-6, .col-3 {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .row {
+    .col-6, .col-3 {
+      padding: 0;
+      margin-bottom: 20px;
+    }
+  }
+  .col-header {
+    padding: 0 16px;
+  }
+  .flow-card {
+    margin-bottom: 1px;
   }
 }
 </style>
