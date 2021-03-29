@@ -519,4 +519,12 @@ span {
     }
   }
 }
+
+@media screen and (max-width: 640px) {
+  .cardunit-bg {
+    margin-bottom: 1px;
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+}
 </style>

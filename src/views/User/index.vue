@@ -153,7 +153,7 @@ export default {
 
 <style lang="less" scoped>
 .user-profile {
-  margin: 0 10px 60px;
+  margin: 0 0 60px;
 }
 
 .no-creator {
@@ -189,7 +189,7 @@ export default {
 }
 
 .row {
-  max-width: 1200px;
+  max-width: 1220px;
   width: 100%;
   margin: 20px auto 0;
   padding-bottom: 40px;
@@ -238,6 +238,31 @@ export default {
     padding: 0;
     font-size: 14px;
     color: @gray3;
+  }
+}
+
+@media screen and (max-width: 799px) {
+  .row {
+    display: flex;
+    flex-direction: column-reverse;
+    .col-6, .col-3 {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .row {
+    .col-6, .col-3 {
+      padding: 0;
+      margin-bottom: 20px;
+    }
+  }
+  .col-header {
+    padding: 0 16px;
+  }
+  .flow-card {
+    margin-bottom: 1px;
   }
 }
 </style>
