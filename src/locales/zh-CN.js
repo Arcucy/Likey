@@ -199,6 +199,10 @@ export default {
     numPictures: '{0} 张图片',
     audio: '音频',
     file: '附件',
-    noStatusYet: '暂无动态'
+    noStatusYet: '暂无动态',
+    ownNUnlock: '持有 {0} {1}/解锁',
+    needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
+    unlocked: '已解锁',
+    displayContent: '显示内容'
   }
 }

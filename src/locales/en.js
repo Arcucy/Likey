@@ -199,6 +199,10 @@ export default {
     numPictures: '{0} Pictures',
     audio: 'Audio',
     file: 'File',
-    noStatusYet: 'No status yet'
+    noStatusYet: 'No status yet',
+    ownNUnlock: 'Own {0} {1}/Unlock',
+    needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
+    unlocked: 'Unlocked',
+    displayContent: 'Show Content'
   }
 }
