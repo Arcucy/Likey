@@ -237,10 +237,11 @@ export default {
     if (!confirm) {
       jwk = await arweave.wallets.generate()
     }
+    const paymentAddress = await arweave.wallets.getAddress(jwk)
 
     let quantityBig = new BigNumber(quantity)
-    const pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
-    const developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(12))
+    let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
+    let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(12))
 
     let selected = ''
     let reward = new BigNumber('0')
@@ -250,85 +251,91 @@ export default {
     if (pstState.balances && Object.keys(pstState.balances).length > 0 && pstHolderQuantity.toString() >= 1) {
       // 获得被选中的小幸运
       selected = this.selectWeightedPstHolder(pstState.balances)
+      if (paymentAddress === selected) {
+        pstHolderQuantity = new BigNumber('0')
+      } else {
+        try {
+          const pstTransaction = await arweave.createTransaction({
+            target: selected,
+            quantity: pstHolderQuantity.toString()
+          }, jwk)
 
-      try {
-        const pstTransaction = await arweave.createTransaction({
-          target: selected,
-          quantity: pstHolderQuantity.toString()
-        }, jwk)
+          reward = reward.plus(pstTransaction.reward)
 
-        reward = reward.plus(pstTransaction.reward)
+          pstTransaction.addTag('App-Name', process.env.VUE_APP_APP_NAME)
+          pstTransaction.addTag('Unix-Time', Date.now())
+          // 如果是分发给 PST 持有者，即使用 Likey-Purchase-Holder
+          pstTransaction.addTag('Purchase-Type', 'Likey-Purchase-Holder')
+          // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
+          pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
 
-        pstTransaction.addTag('App-Name', process.env.VUE_APP_APP_NAME)
-        // 如果是分发给 PST 持有者，即使用 Likey-Purchase-Holder
-        pstTransaction.addTag('Purchase-Type', 'Likey-Purchase-Holder')
-        // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
-        pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
+          if (confirm && !TEST_MODE) {
+            await arweave.transactions.sign(pstTransaction, jwk)
+            const txStatus = await arweave.transactions.post(pstTransaction)
 
-        pstTransaction.addTag('Unix-Time', Date.now())
-
-        if (confirm && !TEST_MODE) {
-          await arweave.transactions.sign(pstTransaction, jwk)
-          const txStatus = await arweave.transactions.post(pstTransaction)
-
-          if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
-            status = 'onDistributionError'
+            if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
+              status = 'onDistributionError'
+              callback(status, pstTransaction.id)
+              throw new Error('Send PST Distribution Failed')
+            }
+            status = 'onDistributionPosted'
             callback(status, pstTransaction.id)
-            throw new Error('Send PST Distribution Failed')
-          }
-          status = 'onDistributionPosted'
-          callback(status, pstTransaction.id)
 
-          // 从总额中去除被减去的部分
-          quantityBig = quantityBig.minus(pstHolderQuantity)
+            // 从总额中去除被减去的部分
+            quantityBig = quantityBig.minus(pstHolderQuantity)
+          }
+        } catch (err) {
+          status = 'onDistributionCatchError'
+          callback(status, '')
+          console.error(err)
+          throw err
         }
-      } catch (err) {
-        status = 'onDistributionCatchError'
-        callback(status, '')
-        console.error(err)
-        throw err
       }
     }
 
     status = 'onDeveloper'
     callback(status, '')
     if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1) {
-      try {
-        const developerTransaction = await arweave.createTransaction({
-          target: DEVELOPER,
-          quantity: developerQuantity.toString()
-        }, jwk)
+      if (paymentAddress === selected) {
+        developerQuantity = new BigNumber('0')
+      } else {
+        try {
+          const developerTransaction = await arweave.createTransaction({
+            target: DEVELOPER,
+            quantity: developerQuantity.toString()
+          }, jwk)
 
-        reward = reward.plus(developerTransaction.reward)
+          reward = reward.plus(developerTransaction.reward)
 
-        developerTransaction.addTag('App-Name', process.env.VUE_APP_APP_NAME)
-        // 如果是分发给开发者，即使用 Likey-Purchase-Developer
-        developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
-        // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
-        developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
+          developerTransaction.addTag('App-Name', process.env.VUE_APP_APP_NAME)
+          // 如果是分发给开发者，即使用 Likey-Purchase-Developer
+          developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
+          // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
+          developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
 
-        developerTransaction.addTag('Unix-Time', Date.now())
+          developerTransaction.addTag('Unix-Time', Date.now())
 
-        if (confirm && !TEST_MODE) {
-          await arweave.transactions.sign(developerTransaction, jwk)
-          const txStatus = await arweave.transactions.post(developerTransaction)
+          if (confirm && !TEST_MODE) {
+            await arweave.transactions.sign(developerTransaction, jwk)
+            const txStatus = await arweave.transactions.post(developerTransaction)
 
-          if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
-            status = 'onDeveloperError'
+            if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
+              status = 'onDeveloperError'
+              callback(status, developerTransaction.id)
+              throw new Error('Send Developer Tip Failed')
+            }
+            status = 'onDeveloperPosted'
             callback(status, developerTransaction.id)
-            throw new Error('Send Developer Tip Failed')
-          }
-          status = 'onDeveloperPosted'
-          callback(status, developerTransaction.id)
 
-          // 从总额中去除被减去的部分
-          quantityBig = quantityBig.minus(developerQuantity)
+            // 从总额中去除被减去的部分
+            quantityBig = quantityBig.minus(developerQuantity)
+          }
+        } catch (err) {
+          status = 'onDeveloperCatchError'
+          callback(status, '')
+          console.error(err)
+          throw err
         }
-      } catch (err) {
-        status = 'onDeveloperCatchError'
-        callback(status, '')
-        console.error(err)
-        throw err
       }
     }
 
