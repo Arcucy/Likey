@@ -204,5 +204,13 @@ export default {
     needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
     unlocked: '已解锁',
     displayContent: '显示内容'
+  },
+  home: {
+    tabFlow: '最新动态',
+    tabAppreciated: '我赞赏的',
+    flowLoading: '正在加载动态',
+    creatorsLoading: '正在加载创作者',
+    showMoreCreators: '显示更多',
+    findMoreCreators: '发现创作者'
   }
 }

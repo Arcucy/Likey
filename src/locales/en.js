@@ -204,5 +204,14 @@ export default {
     needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
     unlocked: 'Unlocked',
     displayContent: 'Show Content'
+  },
+  home: {
+    // 部分翻译存疑
+    tabFlow: 'Flow',
+    tabAppreciated: 'Appreciated',
+    flowLoading: 'Flow loading...',
+    creatorsLoading: 'Creators loading...',
+    showMoreCreators: 'Show more',
+    findMoreCreators: 'Find more creators'
   }
 }
