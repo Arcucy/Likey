@@ -1,11 +1,11 @@
 export default {
   success: {
     success: 'Success',
-    login: 'Login successful',
-    copy: 'Copy successfully',
-    created: 'Created successfully',
-    profitSharingTxSuccess: 'Successfully Profit Share to PST Holder',
-    developerTipTxSuccess: 'Successfully Profit Share to Developer',
+    login: 'Logged in',
+    copy: 'Copied',
+    created: 'Created',
+    profitSharingTxSuccess: 'Shared profit with PST Holder',
+    developerTipTxSuccess: 'Shared profit with Developer',
     sponsorTxSuccess: 'Sponsor Successful',
     txSuccess: 'Transaction Successful',
     statusPublished: 'Status published successfully'
@@ -13,12 +13,12 @@ export default {
   failure: {
     login: 'Login failed',
     fileFormatError: 'File format error',
-    gettingAvatarTimeout: 'Error getting avatar',
+    gettingAvatarTimeout: 'Error fetching avatar',
     getUsername: 'Failed to get username',
     getAddress: 'Failed to get address',
     copy: 'Copy failed',
     connectionTimedOut: 'Connection timed out, please check your connection and try again.',
-    unknownErrorCausedLoadingFailure: 'Unknown error caused loading failure',
+    unknownErrorCausedLoadingFailure: 'Failed to load due to unknown error',
     noPermissionToAccessPage: 'You do not have permission to access this page',
     failedToObtainContractStatus: 'Failed to obtain contract status',
     saveFailed: 'Save failed',
@@ -26,16 +26,16 @@ export default {
     autoCompressionFail: 'Image compression failed',
     imgVeryBIg: 'Image too large',
     unableToGetFile: 'Unable to get file',
-    profitSharingTxFailed: 'Failed to Profit Share to PST Holder',
+    profitSharingTxFailed: 'Failed to share profit with PST Holder',
     developerTipTxFailed: 'Failed to Profit Share to Developer',
     sponsorTxFailed: 'Sponsor Failed',
     txFailed: 'Transaction Failed',
-    txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
+    txFailMessage: 'There may be a network problem or the Arweave gateway is out, please try again later',
     dynamicUploadFailed: 'Status upload failed',
     dynamicEncryptFailed: 'Status encryption failed',
-    dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
+    dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is occurring a lot',
     shouldnotSponsorYourSelf: 'Can\'t sponsor or donate yourself',
-    youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address',
+    youCanOnlyPayForYourSelf: 'You can only pay with the wallet with the same address as your current login address',
     getStatusDetails: 'Unable to get status details'
   },
   app: {
@@ -50,8 +50,8 @@ export default {
     login: 'Login',
     signOut: 'Sign Out',
     connectionTimeout: 'Connection time out while logging in, please check your connection and try again.',
-    saveYourKeyInCookie: 'Save Key for this Session for 7 days',
-    insertYourKey: 'Insert your wallet key',
+    saveYourKeyInCookie: 'Keep logged in for 7 days',
+    insertYourKey: 'Choose your wallet key',
     pleaseInsertYourWalletKey: 'Please drag your wallet application into this box to complete the action.',
     pleaseLogInFirst: 'Please login first'
   },
@@ -62,7 +62,7 @@ export default {
   },
   footer: {
     arcucyProducts: 'Arcucy Products',
-    followUsStatement: 'Follow us on above wesite to get the newest updates!'
+    followUsStatement: 'Follow us on the wesite above to see what\'s new!'
   },
   becomeACreatorBtn: 'Start Creating',
   userProfile: {
@@ -78,14 +78,14 @@ export default {
     creatorSetting: 'Creator Settings',
     tokenSettings: 'Token Settings',
     avatar: 'Avatar',
-    avatarSettingDesp: 'Our avatar service comes from another Dapp, if you need to modify it, please go to',
+    avatarSettingDesp: 'Our avatar service comes from another Dapp, if you wish to change it, please go to',
     username: 'Username',
-    usernameSettingDesp: 'Our username service comes from another Dapp, if you need to modify it, please go to',
+    usernameSettingDesp: 'Our username service comes from another Dapp, if you wish to change it, please go to',
     profileAddress: 'Profile Address',
-    canNotBeModified: 'Cannot be modified after submission',
-    profileAddressPlaceholder: 'Fill in a custom combination of numbers and letters, more than 5 characters',
+    canNotBeModified: 'Cannot be changed after submission',
+    profileAddressPlaceholder: 'Fill in a custom combination of numbers and letters, with more than 5 characters',
     introduction: 'Introduction',
-    introductionPlaceholder: 'Introduce your creation in one sentence',
+    introductionPlaceholder: 'Introduce your creation in a few words',
     creationCategory: 'Creation Category',
     creationCategoryPlaceholder: 'Choose a category',
     creationScale: 'Creation Scale',
@@ -128,7 +128,7 @@ export default {
     theLengthOfThisTickerSymbolIsTooLong: 'Ticker symbol exceeds the length limit',
     solutionEditingHasNotCompletedYet: 'solution editing hasn\'t completed yet',
     pleaseReturnToThePreviousStepToFillInTheCreatorForm: 'Please return to the previous step to fill in the creator form',
-    createSuccessfulAlertContent: 'Congratulations! You just became a creator! Your information will be available after the block been mined, this usually takes minutes to complete.',
+    createSuccessfulAlertContent: 'Congratulations! You\'ve just became a creator! Your information will be available after the block been mined, this usually takes minutes to complete.',
     submittingPleaseDoNotCloseThePage: 'Submitting, please do not close the page'
   },
   creationCategoryOptions: {
@@ -157,7 +157,7 @@ export default {
     other: 'Other'
   },
   statusInput: {
-    titlePlaceholder: '标题',
+    titlePlaceholder: 'Title',
     contentPlaceholder: '正文，输入你想要发表的动态吧～',
     push: 'Push',
     download: 'Download',
@@ -192,7 +192,7 @@ export default {
     media: 'Uploading media',
     audio: 'Uploading audio',
     file: 'Uploading file',
-    encrypting: '加密中'
+    encrypting: 'Encrypting'
   },
   flowCard: {
     loadMore: 'Load More',
