@@ -372,4 +372,12 @@ export default {
     min-width: 80px;
   }
 }
+
+@media screen and (max-width: 640px) {
+  .inputbox {
+    margin-bottom: 20px;
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+}
 </style>

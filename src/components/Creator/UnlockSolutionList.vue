@@ -473,4 +473,12 @@ export default {
     }
   }
 }
+
+@media screen and (max-width: 640px) {
+  .solution {
+    margin-bottom: 1px;
+    border-radius: 0;
+    padding: 20px 16px;
+  }
+}
 </style>
