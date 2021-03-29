@@ -1,4 +1,5 @@
 import localforage from 'localforage'
+import Api from '../api/api'
 
 export const cache = {
   /**
@@ -23,15 +24,22 @@ export const cache = {
   /**
    * 将这笔交易信息缓存到本地
    * @param txid 交易id
-   * @param detail 交易信息
+   * @param transaction 交易信息
    */
-  async cacheTheTransaction (txid, detail) {
+  async cacheTheTransaction (txid, transaction) {
+    const tags = Api.gql.getTagsByTransaction(transaction)
+    const type = tags.Type
+    if (type !== 'status') {
+      return
+    }
     const timestamp = new Date().getTime()
     const keyForCache = `transaction:${timestamp}:${txid}`
     const data = {
-      ...detail
+      ...transaction,
+      isCached: true
     }
-    data.data = Buffer.from(detail.data).toString()
+    data.tags = Api.gql.getTagsByTransaction(transaction)
+    data.data = Buffer.from(transaction.data).toString()
     await localforage.setItem(keyForCache, JSON.stringify(data))
   }
 }

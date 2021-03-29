@@ -1,8 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request'
 import Arweave from 'arweave'
-
-import localforage from 'localforage'
-import { cache } from '@/util/cache'
+// TODO:缓存问题解决后请取消注释
+// import localforage from 'localforage'
+// import { cache } from '@/util/cache'
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -56,15 +56,16 @@ export default {
    * @param {String} txid     - 交易编号
    */
   async getTransactionDetail (txid) {
+    // TODO:缓存问题解决后请取消注释
     // 查询是否已经缓存
-    const key = await cache.getKeyByTxid(txid)
-    if (key) {
-      return JSON.parse(await localforage.getItem(key))
-    }
+    // const key = await cache.getKeyByTxid(txid)
+    // if (key) {
+    // return JSON.parse(await localforage.getItem(key))
+    // }
     return new Promise((resolve, reject) => {
       arweave.transactions.get(txid).then(async (detail) => {
         // 当获取成功时存入缓存
-        await cache.cacheTheTransaction(txid, detail)
+        // await cache.cacheTheTransaction(txid, detail)
         resolve(detail)
       }).catch(err => {
         reject(err)
