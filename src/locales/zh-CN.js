@@ -200,5 +200,13 @@ export default {
     audio: '音频',
     file: '附件',
     noStatusYet: '暂无动态'
+  },
+  home: {
+    tabFlow: '最新动态',
+    tabAppreciated: '我赞赏的',
+    flowLoading: '正在加载动态',
+    creatorsLoading: '正在加载创作者',
+    showMoreCreators: '显示更多',
+    findMoreCreators: '发现创作者'
   }
 }
