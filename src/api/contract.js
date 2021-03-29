@@ -2,7 +2,6 @@
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
-import Axios from 'axios'
 import BigNumber from 'bignumber.js'
 
 // PST 合约 zNR-5J9CJERI2s4rFnvCHOo85GY3L66prbFygB-5hFg
@@ -13,7 +12,7 @@ const PST_HOLDER_TIP = '0.15'
 const DEVELOPER_TIP = '0.05'
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
+const TEST_MODE = false
 console.log('Is it test mode? :', TEST_MODE)
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -158,9 +157,15 @@ export default {
     LikeyPst.ratio = ticker.ratio || '1:1'
     LikeyPst.admins = [address]
     LikeyPst.owner = address
-    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst))
-    const fee = await Axios.get(`https://${process.env.VUE_APP_ARWEAVE_NODE}/price/${Number(tx.data_size)}`)
-    return { id: tx.id, fee }
+
+    const tags = [
+      { name: 'PST-Type', value: 'Likey-Creator' },
+      { name: 'App-Name', value: process.env.VUE_APP_APP_NAME },
+      { name: 'Unix-Time', value: Date.now() }
+    ]
+
+    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst), tags)
+    return { id: tx.id, fee: tx.reward }
   },
   /**
    * createCreatorPstContract 创建创作者 PST 合约
@@ -178,7 +183,14 @@ export default {
     LikeyPst.ratio = ticker.ratio || '1:1'
     LikeyPst.admins = [address]
     LikeyPst.owner = address
-    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst))
+
+    const tags = [
+      { name: 'PST-Type', value: 'Likey-Creator' },
+      { name: 'App-Name', value: process.env.VUE_APP_APP_NAME },
+      { name: 'Unix-Time', value: Date.now() }
+    ]
+
+    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst), tags)
     return contractId
   },
   /** 创建创作者 */
@@ -253,6 +265,8 @@ export default {
         // 如果是分发给 PST 持有者，并且是赞助形式，即使用 Sponsor-Holder
         pstTransaction.addTag('Likey-Solution', 'Sponsor-Holder')
 
+        pstTransaction.addTag('Unix-Time', Date.now())
+
         if (confirm && !TEST_MODE) {
           await arweave.transactions.sign(pstTransaction, jwk)
           const txStatus = await arweave.transactions.post(pstTransaction)
@@ -292,6 +306,8 @@ export default {
         developerTransaction.addTag('Purchase-Type', 'Likey-Purchase-Developer')
         // 如果是分发给开发者，并且是赞助形式，即使用 Sponsor-Developer
         developerTransaction.addTag('Likey-Solution', 'Sponsor-Developer')
+
+        developerTransaction.addTag('Unix-Time', Date.now())
 
         if (confirm && !TEST_MODE) {
           await arweave.transactions.sign(developerTransaction, jwk)
@@ -344,12 +360,13 @@ export default {
 
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
       const tags = [
-        { name: 'Purchase-Type', value: 'Likey-Donation' },
+        { name: 'Purchase-Type', value: 'Likey-Sponsor' },
         { name: 'Purchase-Number', value: data.number || '1' },
         { name: 'Likey-Solution', value: 'Sponsor-Creator' },
         { name: 'Solution-Title', value: data.title || 'Solution' },
         { name: 'Solution-Value', value: data.value || '1' },
-        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME }
+        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME },
+        { name: 'Unix-Time', value: Date.now() }
       ]
 
       try {
@@ -393,7 +410,8 @@ export default {
         { name: 'Likey-Solution', value: 'Status-Creator' },
         { name: 'Solution-Title', value: data.title || 'Solution' },
         { name: 'Solution-Value', value: data.value || '1' },
-        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME }
+        { name: 'App-Name', value: process.env.VUE_APP_APP_NAME },
+        { name: 'Unix-Time', value: Date.now() }
       ]
 
       try {

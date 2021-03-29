@@ -19,7 +19,7 @@
       </div>
       <div class="sponsor-data-item">
         <h4>
-          {{ contract.totalSupply || 0 }}
+          {{ (contract.totalSupply || 0) | winstonToAr }}
         </h4>
         <p>
           {{ $t('sponsor.totalSupply') }}
@@ -27,7 +27,7 @@
       </div>
       <div class="sponsor-data-item">
         <h4>
-          100
+          {{ sponsorAndDonationCount }}
         </h4>
         <p>
           {{ $t('sponsor.donationAndSponsorCount') }}
@@ -47,11 +47,32 @@ export default {
     address: {
       type: String,
       default: ''
+    },
+    contract: {
+      type: Object,
+      default: () => {
+        return {
+          name: '',
+          ticker: '',
+          owner: '',
+          admins: [],
+          divisibility: 1000000000000,
+          ratio: '1:0.001',
+          balances: {},
+          holders: '0',
+          totalSupply: '0',
+          donations: [],
+          attributes: [],
+          settings: [],
+          version: '1.0.5'
+        }
+      }
     }
   },
   data () {
     return {
-      contractState: {}
+      ratio: '',
+      sponsorAndDonationCount: '0'
     }
   },
   computed: {
@@ -68,20 +89,15 @@ export default {
     name () {
       if (!this.creator) return ''
       return this.creator.ticker.name
-    },
-    contract () {
-      if (!this.creator) return ''
-      return this.contractState
     }
   },
   watch: {
   },
-  mounted () {
+  async mounted () {
+    const count = await this.$api.gql.getAllSponsorsAndDonations(this.creator.ticker.contract)
+    this.sponsorAndDonationCount = count ? count.length : '0'
   },
   methods: {
-    async initContractInfo () {
-      this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
-    }
   }
 }
 </script>

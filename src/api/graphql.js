@@ -186,5 +186,43 @@ export default {
       }
     }
     return ''
+  },
+  async getAllSponsorsAndDonations (address) {
+    const query = gql`
+      query getAllSponsors($address: String!) {
+        transactions (
+          tags: [
+            {
+              name: "Contract",
+              values: [$address]
+            }
+          ]
+        ) {
+          edges {
+            node {
+              id
+              tags {
+                name
+                value
+              }
+              block {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address })
+    const matched = []
+    for (const tx of res.transactions.edges) {
+      for (const tag of Object.entries(tx.node.tags)) {
+        if (tag[1].name === 'Purchase-Type' && (tag[1].value === 'Likey-Donation' || tag[1].value === 'Likey-Sponsor')) {
+          matched.push(tx.node)
+        }
+      }
+    }
+    return matched
   }
 }
