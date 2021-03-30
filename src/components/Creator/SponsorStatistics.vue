@@ -1,11 +1,19 @@
 <template>
-  <div class="sponsor">
+  <div class="sponsor" v-loading="loading">
     <div class="sponsor-intro">
       <h4>
         {{ ticker }}
       </h4>
       <p>
         {{ name }}
+      </p>
+    </div>
+    <div class="sponsor-balance">
+      <h4>
+        {{ myBalance | winstonToAr }}
+      </h4>
+      <p>
+        {{ $t('sponsor.myBalance') }}
       </p>
     </div>
     <div class="sponsor-data">
@@ -19,7 +27,7 @@
       </div>
       <div class="sponsor-data-item">
         <h4>
-          {{ contract.totalSupply || 0 }}
+          {{ (contract.totalSupply || 0) | winstonToAr }}
         </h4>
         <p>
           {{ $t('sponsor.totalSupply') }}
@@ -27,7 +35,7 @@
       </div>
       <div class="sponsor-data-item">
         <h4>
-          100
+          {{ sponsorAndDonationCount }}
         </h4>
         <p>
           {{ $t('sponsor.donationAndSponsorCount') }}
@@ -38,7 +46,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
@@ -51,12 +59,43 @@ export default {
   },
   data () {
     return {
-      contractState: {}
+      loading: false,
+      ratio: '',
+      sponsorAndDonationCount: '0',
+      creatorInfo: {
+        shortname: '',
+        intro: '',
+        category: '',
+        scale: '',
+        ticker: {
+          name: '',
+          ticker: '',
+          contract: ''
+        },
+        items: []
+      },
+      contract: {
+        name: '',
+        ticker: '',
+        owner: '',
+        admins: [],
+        divisibility: 1000000000000,
+        ratio: '1:0.001',
+        balances: {},
+        holders: '0',
+        totalSupply: '0',
+        donations: [],
+        attributes: [],
+        settings: [],
+        version: '1.0.5'
+      }
     }
   },
   computed: {
     ...mapState({
-      creators: state => state.contract.creators
+      creators: state => state.contract.creators,
+      myAddress: state => state.user.myInfo.address,
+      creatorPst: state => state.contract.creatorPst
     }),
     creator () {
       return this.creators ? this.creators[this.address] : null
@@ -69,19 +108,25 @@ export default {
       if (!this.creator) return ''
       return this.creator.ticker.name
     },
-    contract () {
-      if (!this.creator) return ''
-      return this.contractState
+    myBalance () {
+      if (!this.creator) return '0'
+      return this.contract.balances[this.myAddress]
     }
   },
   watch: {
   },
-  mounted () {
+  async mounted () {
+    this.loading = true
+    this.contract = await this.getPstContract(this.creators[this.address].ticker.contract)
+    const sdCount = await this.$api.gql.getAllSponsorsAndDonations(this.creator.ticker.contract)
+    let count = 0
+    count += sdCount.sponsors ? sdCount.sponsors.length : 0
+    count += sdCount.donations ? sdCount.donations.length : 0
+    this.sponsorAndDonationCount = count
+    this.loading = false
   },
   methods: {
-    async initContractInfo () {
-      this.contractState = await this.$api.contract.readLikeyCreatorPstContract(this.creator.ticker.contract)
-    }
+    ...mapActions(['getPstContract'])
   }
 }
 </script>
@@ -112,6 +157,25 @@ export default {
       margin: 0 0 0;
     }
   }
+
+  &-balance {
+    border-bottom: 1px solid @gray2;
+    padding: 0 0 10px;
+    margin: 0 0 10px;
+
+    h4 {
+      font-size: 20px;
+      color: @dark;
+      margin: 0 0 5px;
+    }
+
+    p {
+      font-size: 15px;
+      color: @dark;
+      margin: 0 0 0;
+    }
+  }
+
   &-data {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));

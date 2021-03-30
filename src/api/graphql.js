@@ -95,6 +95,12 @@ export default {
    * @param {String} type  - 获取的数据类型，默认为 name
    */
   async getIdByAddress (address, type = 'name') {
+    const ls = localStorage || window.localStorage
+    const id = JSON.parse(ls.getItem(`id:${address}`))
+    if (id) {
+      return id
+    }
+
     // GraphQL 查询语句，获取设置 arweave-id 的交易记录
     const query = gql`
       query getId($address: String!, $type: String!) {
@@ -137,6 +143,8 @@ export default {
         }
         if (!detail) return { type: 'Guest', data: 'Guest' }
         const data = detail.data || 'Guest'
+        ls.setItem(`id:${address}`, JSON.stringify({ type: 'User', data }))
+
         return { type: 'User', data }
       }
     }
@@ -191,7 +199,86 @@ export default {
     }
     return ''
   },
-
+  async getAllSponsorsAndDonations (address) {
+    const query = gql`
+      query getAllSponsors($address: String!) {
+        transactions (
+          tags: [
+            {
+              name: "Contract",
+              values: [$address]
+            }
+          ]
+        ) {
+          edges {
+            node {
+              id
+              tags {
+                name
+                value
+              }
+              block {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address })
+    const matched = { sponsors: [], donations: [] }
+    for (const tx of res.transactions.edges) {
+      for (const tag of tx.node.tags) {
+        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
+          matched.sponsors.push(tx.node)
+        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
+          matched.donations.push(tx.node)
+        }
+      }
+    }
+    return matched
+  },
+  async getAllPurchases (address) {
+    const query = gql`
+      query getAllPurchases($address: String!) {
+        transactions (
+          owners: [$address]
+        ) {
+          edges {
+            node {
+              id
+              recipient
+              quantity {
+                ar
+                winston
+              }
+              tags {
+                name
+                value
+              }
+              block {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address })
+    const matched = { sponsors: [], donations: [] }
+    for (const tx of res.transactions.edges) {
+      for (const tag of tx.node.tags) {
+        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
+          matched.sponsors.push(tx.node)
+        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
+          matched.donations.push(tx.node)
+        }
+      }
+    }
+    return matched
+  },
   /**
    * 根据用户地址获取动态列表
    * @param {String | String[]} address 查询的用户地址，可以传入单个地址或地址列表
@@ -237,6 +324,58 @@ export default {
       appName: process.env.VUE_APP_APP_NAME,
       schemaVersion: SCHEMA_VERSION_SUPPORTED,
       addressList,
+      after: after || '',
+      first: first || 10
+    })
+
+    if (filterNoBlock) {
+      const edges = res.transactions.edges.filter(item => {
+        return item.node.block && item.node.block.timestamp
+      })
+      res.transactions.edges = edges
+    }
+
+    return res
+  },
+  /**
+   * 直接获取动态列表
+   * @param {String} after 获取指定的 cursor 之后的数据
+   * @param {Number} first 一次获取几条数据，默认获取 10 条
+   * @param {Boolean} filterNoBlock 不返回没有区块信息的交易，没有区块信息的交易将无法通过 transactions.get 获取。
+   */
+  async getUserStatus (after = '', first = 10, filterNoBlock = false) {
+    const query = gql`
+      query getStatus(
+        $appName: String!,
+        $schemaVersion: [String!]!,
+        $first: Int,
+        $after: String,
+      ) {
+        transactions(
+          first: $first
+          after: $after
+          tags: [
+            { name: "App-Name"        values: [$appName] },
+            { name: "Schema-Version"  values: $schemaVersion },
+            { name: "Type"            values: ["status"] }
+          ]
+        ) {
+          pageInfo { hasNextPage }
+          edges {
+            cursor
+            node {
+              id
+              owner { address }
+              tags { name value }
+              block { timestamp }
+            }
+        }
+        }
+      }
+    `
+    const res = await graph.request(query, {
+      appName: process.env.VUE_APP_APP_NAME,
+      schemaVersion: SCHEMA_VERSION_SUPPORTED,
       after: after || '',
       first: first || 10
     })

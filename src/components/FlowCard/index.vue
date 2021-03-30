@@ -157,6 +157,8 @@ export default {
       likeIt: false,
       likeLoading: false,
       avatar: '',
+      username: '',
+      selfLoadShortname: '',
       details: null,
       detailsLoading: false
     }
@@ -198,10 +200,10 @@ export default {
       return false
     },
     shortname () {
-      return this.user.shortname
+      return this.noLoadUser ? this.user.shortname : this.selfLoadShortname
     },
     nickname () {
-      return this.user.username
+      return this.noLoadUser ? this.user.username : this.username
     },
     createTime () {
       const time = this.$moment(Number(this.preview.timestamp)).locale(this.appLang)
@@ -229,6 +231,8 @@ export default {
     brief: {
       handler (val) {
         if (!this.noLoadUser && val) {
+          this.getShortname()
+          this.getUsername()
           this.getAvatar()
         }
       },
@@ -246,6 +250,23 @@ export default {
         this.$message.error(this.$t('failure.gettingAvatarTimeout'))
         console.error('getAvatar error: ', err)
       }
+    },
+    /** 获取ID */
+    async getUsername () {
+      try {
+        const address = this.brief.node.owner.address
+        const data = await this.$api.gql.getIdByAddress(address)
+        this.username = data.data
+      } catch (err) {
+        this.$message.error(this.$t('failure.getUsername'))
+        console.error('getUsername error: ', err)
+      }
+    },
+    /** 获取短链用的名字 */
+    async getShortname () {
+      const address = this.brief.node.owner.address
+      const data = await this.$store.dispatch('getCreatorInfo', address)
+      this.selfLoadShortname = data.shortname
     },
     /** 加载更多 */
     async loadMore () {

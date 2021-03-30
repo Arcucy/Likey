@@ -58,6 +58,7 @@ export default {
   },
   pageTitle: {
     myProfile: '我的资料',
+    myOrder: '我的订单',
     home: '主页',
     themesTest: '主题测试'
   },
@@ -175,7 +176,8 @@ export default {
     holders: '持仓人数',
     donationAndSponsorCount: '赞赏总数',
     custom: '自定义',
-    customInputDescription: '本方案可自定义 PST 购买数量'
+    customInputDescription: '本方案可自定义 PST 购买数量',
+    myBalance: '已经持有'
   },
   payment: {
     pay: '支 付',
@@ -194,6 +196,13 @@ export default {
     audio: '上传音频中',
     file: '上传文件中',
     encrypting: '加密中'
+  },
+  orderTab: {
+    allPurchases: '全部购买',
+    sponsors: '赞助',
+    donations: '打赏',
+    purchasePST: '购买 PST',
+    onlyDonation: '打赏作者'
   },
   flowCard: {
     loadMore: '加载全文',

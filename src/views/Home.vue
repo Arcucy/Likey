@@ -18,17 +18,19 @@
                   </span>
                 </el-col>
               </el-row>
-              <div class="card flow-card" v-if="flow.length === 0">
-                <div v-loading="true">
-                  {{ $t('home.flowLoading') }}
-                </div>
-              </div>
               <FlowCard
                 v-for="(data, index) in flow"
-                :user="data.user"
                 :brief="data"
                 :key="index"
                 class="flow-card"
+              />
+              <InfiniteScroll
+                class="flow-card"
+                :no-data="!flow || !flow.length"
+                :loading="flowLoading"
+                :distance="200"
+                :disable="!hasNextPage"
+                @load="getUserStatus"
               />
             </div>
           </el-col>
@@ -62,14 +64,16 @@
 <script>
 import CreatorCard from '@/components/CreatorCard'
 import FlowCard from '@/components/FlowCard'
+import InfiniteScroll from '@/components/InfiniteScroll'
+
 import { mapActions, mapMutations, mapState } from 'vuex'
-import API from '@/api/api'
 
 export default {
   name: 'Home',
   components: {
     CreatorCard,
-    FlowCard
+    FlowCard,
+    InfiniteScroll
   },
   data () {
     return {
@@ -77,7 +81,9 @@ export default {
       showMore: 1,
       showingAppreciate: false,
       // 动态列表
-      flow: []
+      flow: [],
+      flowLoading: false,
+      hasNextPage: false
     }
   },
   computed: {
@@ -89,66 +95,18 @@ export default {
       return this.creatorsAddress.slice(0, this.showMore * 5)
     }
   },
-  watch: {
-    creatorsAddress: {
-      async handler (val) {
-        this.flow = await this.getUserStatus()
-        console.log(this.flow)
-      },
-      immediate: true
-    }
-  },
   methods: {
     // TODO:在每次提交前记得删掉这个mutations的引用
     ...mapMutations(['mTestCreatorsAdd']),
     ...mapActions(['getCreatorInfo']),
-    /** 获取用户动态列表 */
-    async getUserStatusByAddress (address) {
-      const res = await this.$api.gql.getUserStatusByAddress(address)
-      console.log('flow:', res.transactions.edges)
-      return res.transactions.edges
-    },
     /** 获取所有用户动态列表 */
     async getUserStatus () {
-      const flowCards = []
-      for (const address of this.creatorsAddress) {
-        const flow = await this.getUserStatusByAddress(address)
-        const creatorInfo = this.creators[address]
-        const id = (await API.gql.getIdByAddress(address)).data
-        for (const f of flow) {
-          f.user = {
-            shortname: creatorInfo.shortname,
-            username: id
-          }
-          flowCards.push(f)
-        }
-      }
-      // 对动态列表进行排序
-      return this.sortTheFlow(flowCards)
-    },
-    /** 获取动态的Tags */
-    getTags (flow) {
-      const tags = flow.node.tags
-      const ret = {}
-      tags.forEach(item => { ret[item.name] = item.value })
-      return ret
-    },
-    /** 获取动态的时间戳 */
-    getTimeStamp (flow) {
-      const tags = this.getTags(flow)
-      return tags['Unix-Time']
-    },
-    sortTheFlow (flow) {
-      for (let i = 0; i < flow.length - 1; i++) {
-        for (let j = 0; j < flow.length - 1 - i; j++) {
-          if (this.getTimeStamp(flow[j]) < this.getTimeStamp(flow[j + 1])) {
-            const temp = flow[j]
-            flow[j] = flow[j + 1]
-            flow[j + 1] = temp
-          }
-        }
-      }
-      return flow
+      if (this.flowLoading) return
+      this.flowLoading = true
+      const res = await this.$api.gql.getUserStatus()
+      this.flow.push(...res.transactions.edges)
+      this.hasNextPage = res.transactions.hasNextPage
+      this.flowLoading = false
     }
   }
 }
