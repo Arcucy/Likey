@@ -149,7 +149,7 @@ export default {
     &-info {
       flex: 1;
       &-user {
-        color: @gray4;
+        color: @dark;
       }
 
       &-item {
@@ -169,7 +169,7 @@ export default {
 
       .address {
         font-size: 14px;
-        color: @dark;
+        color: @gray4;
         text-decoration: none;
 
         &:hover {
