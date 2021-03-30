@@ -1,5 +1,5 @@
 <template>
-  <div class="sponsor">
+  <div class="sponsor" v-loading="loading">
     <div class="sponsor-intro">
       <h4>
         {{ ticker }}
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   components: {
@@ -55,38 +55,47 @@ export default {
     address: {
       type: String,
       default: ''
-    },
-    contract: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          ticker: '',
-          owner: '',
-          admins: [],
-          divisibility: 1000000000000,
-          ratio: '1:0.001',
-          balances: {},
-          holders: '0',
-          totalSupply: '0',
-          donations: [],
-          attributes: [],
-          settings: [],
-          version: '1.0.5'
-        }
-      }
     }
   },
   data () {
     return {
+      loading: false,
       ratio: '',
-      sponsorAndDonationCount: '0'
+      sponsorAndDonationCount: '0',
+      creatorInfo: {
+        shortname: '',
+        intro: '',
+        category: '',
+        scale: '',
+        ticker: {
+          name: '',
+          ticker: '',
+          contract: ''
+        },
+        items: []
+      },
+      contract: {
+        name: '',
+        ticker: '',
+        owner: '',
+        admins: [],
+        divisibility: 1000000000000,
+        ratio: '1:0.001',
+        balances: {},
+        holders: '0',
+        totalSupply: '0',
+        donations: [],
+        attributes: [],
+        settings: [],
+        version: '1.0.5'
+      }
     }
   },
   computed: {
     ...mapState({
       creators: state => state.contract.creators,
-      myAddress: state => state.user.myInfo.address
+      myAddress: state => state.user.myInfo.address,
+      creatorPst: state => state.contract.creatorPst
     }),
     creator () {
       return this.creators ? this.creators[this.address] : null
@@ -107,13 +116,17 @@ export default {
   watch: {
   },
   async mounted () {
+    this.loading = true
+    this.contract = await this.getPstContract(this.creators[this.address].ticker.contract)
     const sdCount = await this.$api.gql.getAllSponsorsAndDonations(this.creator.ticker.contract)
     let count = 0
     count += sdCount.sponsors ? sdCount.sponsors.length : 0
     count += sdCount.donations ? sdCount.donations.length : 0
     this.sponsorAndDonationCount = count
+    this.loading = false
   },
   methods: {
+    ...mapActions(['getPstContract'])
   }
 }
 </script>

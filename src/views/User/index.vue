@@ -26,7 +26,7 @@
         <div class="col-header">
           <h3>{{ $t('userProfile.sponsorship') }}</h3>
         </div>
-        <SponsorStatistics :address="address" :contract="creatorPst[creatorInfo.ticker.contract]" />
+        <SponsorStatistics :address="address" />
         <UnlockSolutionList :address="address" />
       </div>
     </div>
@@ -156,11 +156,6 @@ export default {
         console.error('Failed to obtain creator information', err)
         this.$message.error(this.$t('failure.failedToObtainContractStatus'))
       }
-      await this.initContractInfo()
-    },
-    /** 初始化合约状态 */
-    async initContractInfo () {
-      await this.getPstContract(this.creatorInfo.ticker.contract)
       this.creatorLoading = false
     },
     /** 获取用户动态列表 */
