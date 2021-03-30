@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { getCookie } from '@/util/cookie'
 
@@ -120,13 +120,9 @@ export default {
       immediate: true
     },
     tab (val) {
-      console.log(val)
       this.tabList = []
       this.page = 1
       this.updateQuery('tab', val)
-      if (this.isLoggedIn) {
-        console.log(this.getList(val || this.defaultTab))
-      }
     },
     page (val) {
       this.flash = true
@@ -142,6 +138,7 @@ export default {
     })
   },
   methods: {
+    ...mapActions(['getPstContract']),
     /** 初始化用户订单数据 */
     async initUserData () {
       this.loading = true
@@ -165,6 +162,10 @@ export default {
               })
             })
             arr[i].parsedTag = tags
+
+            arr[i].tickerContract = await this.getPstContract(arr[i].parsedTag.contract)
+            const res = await this.$api.gql.getIdByAddress(arr[i].recipient)
+            arr[i].username = res.data
           }
         }
       }
@@ -259,7 +260,7 @@ export default {
 
   &-pagination {
     margin: 20px 10px 20px;
-    width: 100%;
+    width: calc(100% - 20px);
     display: flex;
     justify-content: center;
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="purchased-item">
+  <div class="purchased-item" v-loading="loading">
     <div class="purchased-item-left">
       <div class="purchased-item-left-type">
         <span class="purchased-item-left-type-title">{{ purchaseType }}</span>
@@ -14,7 +14,11 @@
       </div>
     </div>
     <div class="purchased-item-right">
-      <span class="purchased-item-right-value">{{ purchase.quantity.winston | winstonToAr }} AR</span>
+      <span class="purchased-item-right-spend">-{{ purchase.quantity.winston | winstonToAr }} AR</span>
+      <div class="purchased-item-right-get">
+        <span class="purchased-item-right-get-value">+{{ purchase.parsedTag.solutionvalue }}</span>
+        <span class="purchased-item-right-get-pst"> {{ tickerContract.ticker }}</span>
+      </div>
       <span class="purchased-item-right-time">{{ createTime }}</span>
     </div>
   </div>
@@ -22,7 +26,7 @@
 
 <script>
 import * as momentFun from '@/util/momentFun'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   props: {
@@ -33,7 +37,13 @@ export default {
   },
   data () {
     return {
-      username: ''
+      loading: false,
+      username: '',
+      tickerContract: {
+        name: '',
+        ticker: '',
+        owner: ''
+      }
     }
   },
   computed: {
@@ -57,10 +67,25 @@ export default {
       return time.format('YYYY MMMDo')
     }
   },
-  mounted () {
-    console.log(this.purchase)
+  async mounted () {
+    this.loading = true
+    await this.initHistoryData()
+    this.loading = false
   },
   methods: {
+    ...mapActions(['getPstContract']),
+    /** 初始化卡片 */
+    async initHistoryData () {
+      if (!this.purchase.tickerContract) {
+        this.tickerContract = await this.getPstContract(this.purchase.parsedTag.contract)
+      }
+      this.tickerContract = { ...this.purchase.tickerContract }
+      if (!this.purchase.username) {
+        const res = await this.$api.gql.getIdByAddress(this.purchase.recipient)
+        this.username = res.data
+      }
+      this.username = this.purchase.username
+    },
     /** 复制合约地址 */
     copyAddress (address) {
       this.$copyText(address).then(
@@ -89,19 +114,24 @@ export default {
   box-sizing: border-box;
   border: 1px solid @primary;
   border-radius: 6px;
+  background-color: @background;
 
   &-left {
     display: flex;
     flex-direction: column;
     flex: 1;
+    align-items: stretch;
     row-gap: 5px;
+    height: 100%;
 
     &-type {
       display: flex;
       align-items: center;
       column-gap: 5px;
+      flex: 1;
 
       &-title {
+        font-size: 20px;
         font-weight: 600;
       }
 
@@ -117,12 +147,13 @@ export default {
     }
 
     &-info {
+      flex: 1;
       &-user {
         color: @gray4;
       }
 
       &-item {
-        font-weight: 600;
+        font-weight: 400;
       }
     }
 
@@ -151,12 +182,13 @@ export default {
   &-right {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     text-align: right;
     row-gap: 5px;
 
-    &-value {
-      flex: 1;
+    &-spend {
       font-size: 20px;
+      font-weight: 600;
     }
 
     &-time {

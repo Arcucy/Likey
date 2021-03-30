@@ -95,6 +95,13 @@ export default {
    * @param {String} type  - 获取的数据类型，默认为 name
    */
   async getIdByAddress (address, type = 'name') {
+    const ls = localStorage || window.localStorage
+    const id = JSON.parse(ls.getItem(`id:${address}`))
+    console.log(id)
+    if (id) {
+      return id
+    }
+
     // GraphQL 查询语句，获取设置 arweave-id 的交易记录
     const query = gql`
       query getId($address: String!, $type: String!) {
@@ -137,6 +144,8 @@ export default {
         }
         if (!detail) return { type: 'Guest', data: 'Guest' }
         const data = detail.data || 'Guest'
+        ls.setItem(`id:${address}`, JSON.stringify({ type: 'User', data }))
+
         return { type: 'User', data }
       }
     }
