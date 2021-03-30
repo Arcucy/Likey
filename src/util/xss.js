@@ -1,7 +1,18 @@
 export default {
   /** 转译 HTML 标签的尖括号 */
   escapeHtml (html) {
-    return html.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    const arr = html.split('')
+    for (let i = 0; i < arr.length; i++) {
+      switch (arr[i]) {
+        case '<': arr[i] = '&lt;'; break
+        case '>': arr[i] = '&gt;'; break
+        case '"': arr[i] = '&quot;'; break
+        // case `'${''}`: arr[i] = '&#x27;'; break
+        // case '/': arr[i] = '&#x2F;'; break
+        // case '&': arr[i] = '&amp;'; break
+      }
+    }
+    return arr.join('')
   },
 
   urlAddATag (text) {
