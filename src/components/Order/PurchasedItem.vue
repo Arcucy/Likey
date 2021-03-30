@@ -2,24 +2,33 @@
   <div class="purchased-item" v-loading="loading">
     <div class="purchased-item-left">
       <div class="purchased-item-left-type">
-        <span class="purchased-item-left-type-title">{{ purchaseType }}</span>
-        <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.id)" />
+        <div class="purchased-item-left-type-info">
+          <span class="purchased-item-left-type-info-title">{{ purchaseType }}</span>
+          <div class="purchased-item-left-type-info-tx">
+            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.id)" />
+          </div>
+        </div>
+        <span class="purchased-item-left-type-info-spend">-{{ purchase.quantity.winston | winstonToAr }} AR</span>
       </div>
       <div class="purchased-item-left-info">
         <span class="purchased-item-left-info-item">{{ purchase.parsedTag.solutiontitle || '' }}</span>
+        <div class="purchased-item-left-info-pst">
+          <span class="purchased-item-left-info-pst-value">+{{ purchase.parsedTag.solutionvalue }}</span>
+          <span class="purchased-item-left-info-pst-ticker"> {{ tickerContract.ticker }}</span>
+        </div>
       </div>
       <div class="purchased-item-left-recipient">
-        <span class="mdi mdi-account-arrow-right" />
-        <span class="purchased-item-left-info-user">{{ username + ' - ' }}</span><a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.recipient}`">{{ purchase.recipient }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.recipient)" />
+        <div class="purchased-item-left-recipient-user">
+          <div class="purchased-item-left-recipient-user-info">
+            <span class="mdi mdi-account-arrow-right" />
+            <span class="username">{{ username }}</span>
+          </div>
+          <div class="purchased-item-left-recipient-user-tx">
+            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.recipient}`">{{ purchase.recipient }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.recipient)" />
+          </div>
+        </div>
+        <span class="purchased-item-right-time">{{ createTime }}</span>
       </div>
-    </div>
-    <div class="purchased-item-right">
-      <span class="purchased-item-right-spend">-{{ purchase.quantity.winston | winstonToAr }} AR</span>
-      <div class="purchased-item-right-get">
-        <span class="purchased-item-right-get-value">+{{ purchase.parsedTag.solutionvalue }}</span>
-        <span class="purchased-item-right-get-pst"> {{ tickerContract.ticker }}</span>
-      </div>
-      <span class="purchased-item-right-time">{{ createTime }}</span>
     </div>
   </div>
 </template>
@@ -53,11 +62,11 @@ export default {
     purchaseType () {
       switch (this.purchase.parsedTag.purchasetype) {
         case 'Likey-Sponsor':
-          return this.$t('orderTab.purchasePST')
+          return this.$t('order.purchasePST')
         case 'Likey-Donation':
-          return this.$t('orderTab.onlyDonation')
+          return this.$t('order.onlyDonation')
         default:
-          return this.$t('orderTab.onlyDonation')
+          return this.$t('order.onlyDonation')
       }
     },
     createTime () {
@@ -115,6 +124,7 @@ export default {
   border: 1px solid @primary;
   border-radius: 6px;
   background-color: @background;
+  flex-direction: column;
 
   &-left {
     display: flex;
@@ -128,32 +138,64 @@ export default {
       display: flex;
       align-items: center;
       column-gap: 5px;
-      flex: 1;
 
-      &-title {
-        font-size: 20px;
-        font-weight: 600;
-      }
+       &-info {
+        display: flex;
+        align-items: center;
+        flex:1;
 
-      .address {
-        font-size: 14px;
-        color: @gray4;
-        text-decoration: none;
-
-        &:hover {
-          color: @primary;
+        &-title {
+          font-size: 20px;
+          font-weight: 600;
+          white-space: nowrap;
         }
-      }
+
+        &-tx {
+          display: flex;
+        }
+
+        .address {
+          font-size: 14px;
+          color: @gray4;
+          text-decoration: none;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          overflow: hidden;
+          word-break: break-all;
+          margin-left: 10px;
+
+          &:hover {
+            color: @primary;
+          }
+        }
+
+        .mdi {
+          flex: 1;
+          margin-left: 5px;
+        }
+
+        &-spend {
+          font-size: 20px;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+       }
     }
 
     &-info {
       flex: 1;
-      &-user {
-        color: @dark;
-      }
-
+      display: flex;
       &-item {
+        flex: 1;
         font-weight: 400;
+      }
+      &-pst {
+        display: flex;
+
+        &-ticker {
+          margin-left: 5px;
+        }
       }
     }
 
@@ -162,37 +204,55 @@ export default {
       align-items: center;
       column-gap: 5px;
 
-      .mdi {
-        color: @primary;
-        font-size: 16px;
-      }
+      &-user {
+        display: flex;
+        align-items: center;
+        flex: 1;
 
-      .address {
-        font-size: 14px;
-        color: @gray4;
-        text-decoration: none;
+        &-info {
+          display: flex;
+          flex-direction: row;
 
-        &:hover {
-          color: @primary;
+          .username {
+            margin-left: 5px;
+            color: @dark;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
+            word-break: break-all;
+          }
+
+          .mdi {
+            color: @primary;
+            font-size: 16px;
+          }
+        }
+
+        &-tx {
+          display: flex;
+
+          .address {
+            font-size: 14px;
+            color: @gray4;
+            text-decoration: none;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            overflow: hidden;
+            word-break: break-all;
+            margin-left: 10px;
+
+            &:hover {
+              color: @primary;
+            }
+          }
+
+          .mdi {
+            margin-left: 5px;
+          }
         }
       }
-    }
-  }
-
-  &-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-    row-gap: 5px;
-
-    &-spend {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    &-time {
-      align-self: flex-end;
     }
   }
 }
@@ -210,6 +270,28 @@ export default {
 
   &:active {
     color: @primary-dark;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .purchased-item {
+    flex-direction: column;
+    align-items: flex-start;
+    &-left {
+      &-recipient {
+        flex-direction: column;
+        align-items: flex-start;
+
+        &-user {
+          flex-direction: column;
+          align-items: flex-start;
+
+          .address {
+            margin-left: 0;
+          }
+        }
+      }
+    }
   }
 }
 </style>

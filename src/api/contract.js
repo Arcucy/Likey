@@ -358,14 +358,14 @@ export default {
     if (!data) {
       return
     }
-    console.log(data)
     try {
       let status = 'onSponsorAddedStarted'
       callback(status, '')
       const pstState = await this.readLikeyCreatorPstContract(contract)
+      console.log(pstState)
       const obj = LikeyCreatorPst.sponsorAdded()
 
-      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, false, callback)
       const tags = [
         { name: 'Purchase-Type', value: 'Likey-Sponsor' },
         { name: 'Purchase-Number', value: data.number || '1' },

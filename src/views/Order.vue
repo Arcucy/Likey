@@ -28,7 +28,7 @@
           />
         </div>
         <div class="no-data" v-if="loading || tabList.length === 0">
-          <span>No Data</span>
+          <span>{{ $t('order.nodata') }}</span>
         </div>
       </div>
       <div
@@ -97,6 +97,7 @@ export default {
     }),
     paginatedList () {
       if (this.flash) return []
+      console.log(this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize))
       return this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
     },
     maxPage () {
@@ -123,6 +124,7 @@ export default {
       this.tabList = []
       this.page = 1
       this.updateQuery('tab', val)
+      if (this.isLoggedIn) this.getList(val || this.defaultTab)
     },
     page (val) {
       this.flash = true
@@ -132,9 +134,9 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      this.tabs[0].label = this.$t('orderTab.allPurchases')
-      this.tabs[1].label = this.$t('orderTab.sponsors')
-      this.tabs[2].label = this.$t('orderTab.donations')
+      this.tabs[0].label = this.$t('order.allPurchases')
+      this.tabs[1].label = this.$t('order.sponsors')
+      this.tabs[2].label = this.$t('order.donations')
     })
   },
   methods: {
@@ -144,8 +146,8 @@ export default {
       this.loading = true
       this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
       this.getList(this.tab || this.defaultTab)
-      await this.parseTags(this.purchases)
       this.loading = false
+      await this.parseTags(this.purchases)
     },
     /** 解析标签为属性字段 */
     async parseTags (purchase) {
@@ -254,6 +256,7 @@ export default {
       align-items: center;
       justify-content: center;
       margin-top: 20px;
+      margin-bottom: 50px;
       font-weight: 500;
     }
   }

@@ -197,12 +197,13 @@ export default {
     file: '上传文件中',
     encrypting: '加密中'
   },
-  orderTab: {
+  order: {
     allPurchases: '全部购买',
     sponsors: '赞助',
     donations: '打赏',
     purchasePST: '购买 PST',
-    onlyDonation: '打赏作者'
+    onlyDonation: '打赏作者',
+    nodata: '暂无历史订单数据'
   },
   flowCard: {
     loadMore: '加载全文',

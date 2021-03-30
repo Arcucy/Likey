@@ -197,12 +197,13 @@ export default {
     file: 'Uploading file',
     encrypting: 'Encrypting'
   },
-  orderTab: {
+  order: {
     allPurchases: 'All Purchases',
     sponsors: 'Sponsors',
     donations: 'Donations',
     purchasePST: 'Purchase PST',
-    onlyDonation: 'Donate Creator'
+    onlyDonation: 'Donate Creator',
+    nodata: 'No Order History Yet'
   },
   flowCard: {
     loadMore: 'Load More',
