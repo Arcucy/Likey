@@ -23,7 +23,6 @@
                 :brief="data"
                 :key="index"
                 class="flow-card"
-                :no-load-user="true"
               />
               <InfiniteScroll
                 class="flow-card"
