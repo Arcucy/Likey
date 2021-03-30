@@ -1,9 +1,9 @@
 <template>
   <router-link
     class="cardunit-bg"
-    :to="{}"
+    :to="{ name: 'Status', params: { id: preview.id } }"
   >
-    <!-- 转发标签 -->
+    <!-- 置顶标签 -->
     <div v-if="isTop" class="cardunit-bg-retweeted">
       <div class="cardunit-bg-retweeted-l">
         <svg-icon icon-class="twitter-forward" />
@@ -45,22 +45,22 @@
           {{ title }}
         </h4>
         <Summary
-          v-if="!preview.lockContract"
+          v-if="!preview.lockContract && !details"
           :preview="preview"
           @load-more="loadMore"
           :loading="detailsLoading"
         />
         <Locked
-          v-else
+          v-else-if="!details"
           :preview="preview"
           @load-more="loadMore"
           :loading="detailsLoading"
         />
         <!-- 正文 -->
         <mainText
-          v-if="card"
+          v-if="details"
           class="cardunit-r-content"
-          :card="card"
+          :card="details"
         />
         <!-- 图片 -->
         <a
@@ -173,7 +173,7 @@ export default {
     },
     preview () {
       const tags = this.getTags(this.brief.node.tags)
-      console.log('tags:', tags)
+      console.log('tags:', this.brief.node.id, tags)
 
       return {
         id: this.brief.node.id,
@@ -254,9 +254,8 @@ export default {
       console.log('开始获取动态详情')
       try {
         const transaction = await this.$api.gql.getTransactionDetail(this.preview.id)
-        console.log('获取到了数据,', transaction)
         const data = JSON.parse(decode.uint8ArrayToString(transaction.data))
-        this.decryptText(data)
+        if (data.isLock) data.content = this.decryptText(data.content)
         this.details = data
         console.log('动态详情：', this.details)
       } catch (err) {
@@ -302,11 +301,9 @@ export default {
         return null
       }
     },
-    decryptText (data) {
-      if (data.isLock) {
-        data.content = decryptText(data.content)
-      }
-      return data
+    decryptText (text) {
+      if (text) return decryptText(text)
+      return ''
     }
   }
 }
