@@ -199,7 +199,9 @@ export default {
   orderTab: {
     allPurchases: 'All Purchases',
     sponsors: 'Sponsors',
-    donations: 'Donations'
+    donations: 'Donations',
+    purchasePST: 'Purchase PST',
+    onlyDonation: 'Donate Creator'
   },
   flowCard: {
     loadMore: 'Load More',

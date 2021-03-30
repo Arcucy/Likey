@@ -199,7 +199,9 @@ export default {
   orderTab: {
     allPurchases: '全部购买',
     sponsors: '赞助',
-    donations: '打赏'
+    donations: '打赏',
+    purchasePST: '购买 PST',
+    onlyDonation: '打赏作者'
   },
   flowCard: {
     loadMore: '加载全文',

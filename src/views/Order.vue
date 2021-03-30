@@ -22,12 +22,12 @@
       <div class="my-order-container">
         <div v-if="tabList.length > 0">
           <PurchasedItem
-            v-for="(item, index) of tabList"
+            v-for="(item, index) of paginatedList"
             :key="index"
             :purchase="item"
           />
         </div>
-        <div class="no-data" v-if="tabList.length === 0">
+        <div class="no-data" v-if="loading || tabList.length === 0">
           <span>No Data</span>
         </div>
       </div>
@@ -38,7 +38,11 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="1000"
+          :page-count="maxPage"
+          :page-size="pagesize"
+          :total="tabList.length"
+          :current-page="Number(page)"
+          @current-change="handlePageChange"
         />
       </div>
     </div>
@@ -80,19 +84,29 @@ export default {
         sponsors: [],
         donations: []
       },
-      tabList: []
+      tabList: [],
+      flash: false,
+      page: this.$route.query.page || 1, // 页码
+      pagesize: 2 // 每页数量
     }
   },
   computed: {
     ...mapGetters(['isLoggedIn']),
     ...mapState({
       myAddress: state => state.user.myInfo.address
-    })
+    }),
+    paginatedList () {
+      if (this.flash) return []
+      return this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
+    },
+    maxPage () {
+      return Math.ceil(this.tabList.length / this.pagesize)
+    }
   },
   watch: {
     isLoggedIn: {
-      handler (val) {
-        if (val) this.initUserData()
+      async handler (val) {
+        if (val) await this.initUserData()
         else {
           // 对于没有登录的用户，检查 Cookie 中是否有 key，
           // 如果有的话，等待登录完成，没有则直接退回主页。
@@ -113,6 +127,11 @@ export default {
       if (this.isLoggedIn) {
         console.log(this.getList(val || this.defaultTab))
       }
+    },
+    page (val) {
+      this.flash = true
+      setTimeout(() => { this.flash = false }, 100)
+      this.updateQuery('page', val)
     }
   },
   mounted () {
@@ -123,6 +142,34 @@ export default {
     })
   },
   methods: {
+    /** 初始化用户订单数据 */
+    async initUserData () {
+      this.loading = true
+      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
+      this.getList(this.tab || this.defaultTab)
+      await this.parseTags(this.purchases)
+      this.loading = false
+    },
+    /** 解析标签为属性字段 */
+    async parseTags (purchase) {
+      for (const arr of Object.values(purchase)) {
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i]) {
+            const tags = {}
+            arr[i].tags.forEach(tag => {
+              const name = tag.name.replace('-', '').replace('_', '').toLowerCase()
+              Object.defineProperty(tags, name, {
+                value: tag.value,
+                writable: true,
+                enumerable: true
+              })
+            })
+            arr[i].parsedTag = tags
+          }
+        }
+      }
+    },
+    /** 获取标签页的数据 */
     getList (tab) {
       switch (tab) {
         case 'all':
@@ -139,30 +186,13 @@ export default {
           break
       }
     },
-    async initUserData () {
+    /** 页面切换控制 */
+    handlePageChange (pageNum) {
       this.loading = true
-      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
-      this.getList(this.tab || this.defaultTab)
-      this.parseTags(this.purchases)
-      this.loading = false
-    },
-    parseTags (purchase) {
-      for (const arr of Object.values(purchase)) {
-        for (let i = 0; i < arr.length; i++) {
-          const tags = {}
-          if (arr[i]) {
-            arr[i].tags.forEach(tag => {
-              const name = tag.name.replace('-', '').replace('_', '')
-              Object.defineProperty(tags, name, {
-                value: tag.value,
-                writable: true,
-                enumerable: true
-              })
-            })
-          }
-          arr[i].parsedTag = tags
-        }
-      }
+      setTimeout(() => {
+        this.page = pageNum
+        this.loading = false
+      }, 200)
     }
   }
 }
