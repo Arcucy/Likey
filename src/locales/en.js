@@ -213,7 +213,9 @@ export default {
     ownNUnlock: 'Own {0} {1}/Unlock',
     needToMeetTheAboveUnlockConditions: 'You will need to meet the unlock requirement above',
     unlocked: 'Unlocked',
-    displayContent: 'Show Content'
+    displayContent: 'Show Content',
+    donate: 'Donate',
+    share: 'Share'
   },
   home: {
     // 部分翻译存疑
@@ -222,6 +224,7 @@ export default {
     flowLoading: 'Flow loading...',
     creatorsLoading: 'Creators loading...',
     showMoreCreators: 'Show more',
-    findMoreCreators: 'Find more creators'
+    findMoreCreators: 'Find more creators',
+    sharedLinkHasBeenCopiedToTheClipboard: 'Shared link has been copied to the clipboard'
   }
 }

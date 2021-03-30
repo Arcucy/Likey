@@ -73,36 +73,24 @@
           />
         </a>
         <!-- 统计数据 -->
-        <a class="jump-shield" href="javascript:;">
-          <div class="cardunit-r-flows">
-            <!-- 喜欢 -->
-            <div class="cardunit-r-flows-like">
-              <i v-if="likeLoading" class="el-icon-loading" />
-              <span
-                v-else
-                class="mdi mdi-currency-usd dynamic-good"
-                :class="likeIconClass"
-                @click="likeClick"
-              />
-              <span v-if="flows.donate">
-                {{ flows.donate }}
-              </span>
-              <span v-else>
-                赞赏
-              </span>
+        <div class="cardunit-r-flows">
+          <router-link :to="{}">
+            <div class="cardunit-r-flows-list">
+              <div class="cardunit-r-flows-list-item" @click="likeClick">
+                <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
+                <span class="cardunit-r-flows-list-item-text">
+                  {{ $t('flowCard.donate') }}
+                </span>
+              </div>
+              <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
+                <span class="mdi mdi-export-variant cardunit-r-flows-list-item-icon" />
+                <span class="cardunit-r-flows-list-item-text">
+                  {{ $t('flowCard.share') }}
+                </span>
+              </div>
             </div>
-            <!-- 分享 -->
-            <div class="cardunit-r-flows-share">
-              <span
-                class="mdi mdi-export-variant dynamic-share"
-                @click="copyCode(getShareLink())"
-              />
-              <span>
-                分享
-              </span>
-            </div>
-          </div>
-        </a>
+          </router-link>
+        </div>
       </div>
     </div>
   </router-link>
@@ -300,7 +288,7 @@ export default {
         () => {
           this.$message({
             showClose: true,
-            message: this.$t('success.copy'),
+            message: this.$t('home.sharedLinkHasBeenCopiedToTheClipboard'),
             type: 'success'
           })
         },
@@ -334,6 +322,9 @@ export default {
 a {
   color: @dark;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
 }
 p {
   margin: 0;
@@ -354,6 +345,13 @@ span {
   box-shadow: 0 0 2px 0 #0000001a;
   overflow: hidden;
   cursor: pointer;
+
+  &:active {
+    background-color: @background;
+  }
+  &:hover {
+    background-color: @background;
+  }
 
   &-retweeted {
     display: block;
@@ -489,73 +487,43 @@ span {
     &-flows {
       display: flex;
       justify-content: flex-end;
-      margin: 10px 0 0;
-      .flow-default {
-        font-size: 18px;
-        svg {
-          height: 18px;
-          width: 18px;
+      &-list {
+        display: flex;
+        user-select: none;
+        &-item {
+          display: flex;
+          align-items: center;
+          margin-right: 20px;
           color: @gray3;
-          -moz-user-select:none;
-          -webkit-user-select:none;
-          user-select:none;
-        }
-        span {
-          margin:  0 0 0 5px;
-          font-size: 15px;
-        }
-      }
-      .default-hover {
-        transition: all ease-in 0.05s;
-        cursor: pointer;
+          border-radius: 6px;
+          padding: 5px 8px 5px 6px;
 
-        &:hover {
-          transform: scale(1.2);
-        }
+          &:last-child {
+            margin-right: 0;
+          }
 
-        &:active {
-          transform: scale(1);
-        }
-      }
+          &-icon {
+            font-size: 18px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
 
-      &-like {
-        .flow-default();
-        min-width: 100px;
-
-        svg {
-          width: 20px;
-        }
-
-        .like-touch {
-          -moz-user-select:none;
-          -webkit-user-select:none;
-          user-select:none;
-          transition: all ease-in 0.05s;
-          cursor: pointer;
+          &-text {
+            font-size: 14px;
+            margin: 0 0 0 5px;
+          }
 
           &:hover {
-            transform: scale(1.2);
+            color: @primary;
+            background: @primary-light;
           }
 
           &:active {
-            transform: scale(1);
+            color: @primary;
+            background: @primary-dark;
           }
-
-          &.active {
-            color: #ca8f04;
-            transform: scale(1);
-            cursor: default;
-          }
-        }
-      }
-
-      &-share {
-        .flow-default();
-        margin-right: 5px;
-
-        svg {
-          .default-hover();
-          width: 17px;
         }
       }
     }
