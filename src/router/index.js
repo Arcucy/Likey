@@ -6,6 +6,7 @@ import ThemesTest from '@/views/ThemesTest'
 
 import User from '@/views/User/_id'
 import UserIndex from '@/views/User'
+import Order from '@/views/Order'
 
 import Flow from '@/views/Flow'
 
@@ -37,6 +38,11 @@ const routes = [
     path: '/themes-test',
     name: 'ThemesTest',
     component: ThemesTest
+  },
+  {
+    path: '/order',
+    name: 'Order',
+    component: Order
   },
   {
     path: '/user/:id',

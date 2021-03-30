@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 
 import SponsorStatistics from '@/components/Creator/SponsorStatistics'
 import UnlockSolutionList from '@/components/Creator/UnlockSolutionList'
@@ -105,6 +105,10 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      creators: state => state.contract.creators,
+      creatorPst: state => state.contract.creatorPst
+    }),
     ...mapGetters(['isMe']),
     address () {
       const name = this.$route.name
@@ -141,7 +145,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCreatorInfo']),
+    ...mapActions(['getCreatorInfo', 'getPstContract']),
     /** 初始化获取创作者信息 */
     async initCreatorInfo (address) {
       this.creatorLoading = true

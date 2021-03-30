@@ -58,6 +58,7 @@ export default {
   },
   pageTitle: {
     myProfile: 'My Profile',
+    myOrder: 'My Orders',
     home: 'Home',
     themesTest: 'Themes Test'
   },
@@ -158,8 +159,8 @@ export default {
     other: 'Other'
   },
   statusInput: {
-    titlePlaceholder: '标题',
-    contentPlaceholder: '正文，输入你想要发表的动态吧～',
+    titlePlaceholder: 'Subject',
+    contentPlaceholder: 'Content, type in anything you are willing to share',
     push: 'Push',
     download: 'Download',
     pictureSelectionLimitWarning: 'You can only select {0} image(s)',
@@ -175,7 +176,8 @@ export default {
     holders: 'Holders',
     donationAndSponsorCount: 'Purchased',
     custom: 'Custom',
-    customInputDescription: 'You can specify you purchase amount here'
+    customInputDescription: 'You can specify you purchase amount here',
+    myBalance: 'Already Own'
   },
   payment: {
     pay: 'Pay',
@@ -193,7 +195,14 @@ export default {
     media: 'Uploading media',
     audio: 'Uploading audio',
     file: 'Uploading file',
-    encrypting: '加密中'
+    encrypting: 'Encrypting'
+  },
+  orderTab: {
+    allPurchases: 'All Purchases',
+    sponsors: 'Sponsors',
+    donations: 'Donations',
+    purchasePST: 'Purchase PST',
+    onlyDonation: 'Donate Creator'
   },
   flowCard: {
     loadMore: 'Load More',
@@ -202,7 +211,7 @@ export default {
     file: 'File',
     noStatusYet: 'No status yet',
     ownNUnlock: 'Own {0} {1}/Unlock',
-    needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
+    needToMeetTheAboveUnlockConditions: 'You will need to meet the unlock requirement above',
     unlocked: 'Unlocked',
     displayContent: 'Show Content'
   },
