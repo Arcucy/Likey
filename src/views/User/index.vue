@@ -14,11 +14,13 @@
           :user="user"
           no-load-user
         />
-        <div v-if="!flow || !flow.length || flowLoading" class="no-data" v-loading="flowLoading">
-          <p v-if="!flowLoading">
-            {{ $t('flowCard.noStatusYet') }}
-          </p>
-        </div>
+        <InfiniteScroll
+          :no-data="!flow || !flow.length"
+          :loading="flowLoading"
+          :distance="200"
+          :disable="!hasNextPage"
+          @load="() => getUserStatus(address)"
+        />
       </div>
       <div class="col-3">
         <div class="col-header">
@@ -55,13 +57,15 @@ import SponsorStatistics from '@/components/Creator/SponsorStatistics'
 import UnlockSolutionList from '@/components/Creator/UnlockSolutionList'
 import FlowCard from '@/components/FlowCard'
 import InputBox from '@/components/Creator/InputBox'
+import InfiniteScroll from '@/components/InfiniteScroll'
 
 export default {
   components: {
     SponsorStatistics,
     UnlockSolutionList,
     FlowCard,
-    InputBox
+    InputBox,
+    InfiniteScroll
   },
   props: {
     basicInfo: {
@@ -90,8 +94,14 @@ export default {
         },
         items: []
       },
+      /** 动态列表 */
       flow: [],
-      flowLoading: false
+      /** 动态获取中 */
+      flowLoading: false,
+      /** 是否还有下一页么 */
+      hasNextPage: true,
+      /** 每页（每次）获取的条目数量 */
+      pageSize: 10
     }
   },
   computed: {
@@ -112,6 +122,11 @@ export default {
         ...this.basicInfo,
         ...this.creatorInfo
       }
+    },
+    /** flow 中最后条数据的 cursor（索引） */
+    endCursor () {
+      if (!this.flow || !this.flow.length) return ''
+      return this.flow[this.flow.length - 1].cursor
     }
   },
   watch: {
@@ -119,7 +134,7 @@ export default {
       handler (val) {
         if (val) {
           this.initCreatorInfo(val)
-          this.getUserStatus(val)
+          // this.getUserStatus(val)
         }
       },
       immediate: true
@@ -141,11 +156,24 @@ export default {
     },
     /** 获取用户动态列表 */
     async getUserStatus (address) {
+      // 如果已经在加载了，则直接结束，否则开始加载
+      if (this.flowLoading) return
       this.flowLoading = true
-      const res = await this.$api.gql.getUserStatusByAddress(address)
-      this.flow = res.transactions.edges
-      console.log('flow:', this.flow)
+      try {
+        // 获取数据
+        const res = await this.$api.gql.getUserStatusByAddress(address, this.endCursor, this.pageSize)
+        // 将获取到的数据加入数组尾部，并且更新 hasNextPage 字段
+        this.flow.push(...res.transactions.edges)
+        this.hasNextPage = res.transactions.pageInfo.hasNextPage
+      } catch (err) {
+        console.error(err)
+        this.$message.error(this.$t('failure.load'))
+      }
+      // 结束加载状态
       this.flowLoading = false
+    },
+    load () {
+      console.log('load')
     }
   }
 }
@@ -224,21 +252,6 @@ export default {
 
 .flow-card {
   margin-bottom: 20px;
-}
-
-.no-data {
-  height: 100px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  p {
-    margin: 0;
-    padding: 0;
-    font-size: 14px;
-    color: @gray3;
-  }
 }
 
 @media screen and (max-width: 799px) {
