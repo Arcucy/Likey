@@ -213,7 +213,9 @@ export default {
     ownNUnlock: '持有 {0} {1}/解锁',
     needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
     unlocked: '已解锁',
-    displayContent: '显示内容'
+    displayContent: '显示内容',
+    donate: '赞赏',
+    share: '分享'
   },
   home: {
     tabFlow: '最新动态',
@@ -221,6 +223,7 @@ export default {
     flowLoading: '正在加载动态',
     creatorsLoading: '正在加载创作者',
     showMoreCreators: '显示更多',
-    findMoreCreators: '发现创作者'
+    findMoreCreators: '发现创作者',
+    sharedLinkHasBeenCopiedToTheClipboard: '已复制分享链接到剪贴板'
   }
 }
