@@ -4,6 +4,7 @@
       :title="$t('login.insertYourKey')"
       :visible.sync="dialogVisible"
       :before-close="handleClose"
+      :modal-append-to-body="false"
       width="380px"
       custom-class="login-dialog"
     >

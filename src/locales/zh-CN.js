@@ -36,7 +36,8 @@ export default {
     dynamicEncryptFailedMessage: '动态加密失败，出现了重大严重错误，如果屡次出现请反馈指开发者',
     shouldnotSponsorYourSelf: '不能自己赞助以及打赏自己',
     youCanOnlyPayForYourSelf: '你只能使用与你当前登录地址相同的钱包进行支付',
-    getStatusDetails: '无法获取动态详情'
+    getStatusDetails: '无法获取动态详情',
+    load: '加载失败'
   },
   app: {
     loading: '加载中'
@@ -205,6 +206,18 @@ export default {
     numPictures: '{0} 张图片',
     audio: '音频',
     file: '附件',
-    noStatusYet: '暂无动态'
+    noStatusYet: '暂无动态',
+    ownNUnlock: '持有 {0} {1}/解锁',
+    needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
+    unlocked: '已解锁',
+    displayContent: '显示内容'
+  },
+  home: {
+    tabFlow: '最新动态',
+    tabAppreciated: '我赞赏的',
+    flowLoading: '正在加载动态',
+    creatorsLoading: '正在加载创作者',
+    showMoreCreators: '显示更多',
+    findMoreCreators: '发现创作者'
   }
 }

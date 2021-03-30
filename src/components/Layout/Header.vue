@@ -84,13 +84,13 @@ export default {
       fileName: '',
       fileContent: '',
       fileRaw: '',
-      isWalletLoaded: '',
-      isCreator: false
+      isWalletLoaded: ''
     }
   },
   computed: {
     ...mapState({
-      myInfo: state => state.user.myInfo
+      myInfo: state => state.user.myInfo,
+      creators: state => state.contract.creators
     }),
     ...mapGetters(['isLoggedIn', 'isMe']),
     /** 特定情况下隐藏成为创作者按钮 */
@@ -98,18 +98,13 @@ export default {
       const onSettingPage = this.$route.name === 'Setting-Creator' || this.$route.name === 'Setting-Token'
       const onMyProfilePage = this.$route.name === 'User' && this.isMe(this.$route.params.id)
       return onSettingPage || onMyProfilePage || this.isCreator
+    },
+    isCreator () {
+      if (!this.isLoggedIn) return false
+      return Boolean(this.creators && this.creators[this.myInfo.address])
     }
   },
   watch: {
-    isLoggedIn: {
-      async handler (val) {
-        if (val) {
-          const res = await this.getCreatorInfo(this.myInfo.address)
-          this.isCreator = Boolean(res)
-        } else this.isCreator = false
-      },
-      immediate: true
-    }
   },
   async mounted () {
     this.initJwkLogin()

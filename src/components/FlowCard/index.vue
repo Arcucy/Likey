@@ -44,7 +44,18 @@
         <h4 class="cardunit-r-title">
           {{ title }}
         </h4>
-        <Summary :preview="preview" @load-more="loadMore" :loading="detailsLoading" />
+        <Summary
+          v-if="!preview.lockContract"
+          :preview="preview"
+          @load-more="loadMore"
+          :loading="detailsLoading"
+        />
+        <Locked
+          v-else
+          :preview="preview"
+          @load-more="loadMore"
+          :loading="detailsLoading"
+        />
         <!-- 正文 -->
         <mainText
           v-if="card"
@@ -102,17 +113,21 @@ import { mapState } from 'vuex'
 
 import * as momentFun from '@/util/momentFun'
 import decode from '@/util/decode'
+import { decryptText } from '@/util/encrypt'
 
 import Avatar from '@/components/User/Avatar'
 import mainText from './MainText'
 import photoAlbum from './PhotoAlbum'
 import Summary from './Summary'
+import Locked from './Locked'
+
 export default {
   components: {
     Avatar,
     mainText,
     photoAlbum,
-    Summary
+    Summary,
+    Locked
   },
   props: {
     // 卡片数据
@@ -239,7 +254,9 @@ export default {
       console.log('开始获取动态详情')
       try {
         const transaction = await this.$api.gql.getTransactionDetail(this.preview.id)
+        console.log('获取到了数据,', transaction)
         const data = JSON.parse(decode.uint8ArrayToString(transaction.data))
+        this.decryptText(data)
         this.details = data
         console.log('动态详情：', this.details)
       } catch (err) {
@@ -254,7 +271,7 @@ export default {
     },
     // 获取分享链接
     getShareLink () {
-      return 'test'
+      return window.location.origin + '/status/' + this.preview.id
     },
     /** 拷贝 */
     copyCode (code) {
@@ -284,6 +301,12 @@ export default {
         console.error(err)
         return null
       }
+    },
+    decryptText (data) {
+      if (data.isLock) {
+        data.content = decryptText(data.content)
+      }
+      return data
     }
   }
 }
@@ -312,6 +335,7 @@ span {
   box-sizing: border-box;
   box-shadow: 0 0 2px 0 #0000001a;
   overflow: hidden;
+  cursor: pointer;
 
   &-retweeted {
     display: block;

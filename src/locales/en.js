@@ -36,7 +36,8 @@ export default {
     dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
     shouldnotSponsorYourSelf: 'Can\'t sponsor or donate yourself',
     youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address',
-    getStatusDetails: 'Unable to get status details'
+    getStatusDetails: 'Unable to get status details',
+    load: 'Failed to load'
   },
   app: {
     loading: 'Loading'
@@ -205,6 +206,19 @@ export default {
     numPictures: '{0} Pictures',
     audio: 'Audio',
     file: 'File',
-    noStatusYet: 'No status yet'
+    noStatusYet: 'No status yet',
+    ownNUnlock: 'Own {0} {1}/Unlock',
+    needToMeetTheAboveUnlockConditions: '你需要达成以上解锁条件',
+    unlocked: 'Unlocked',
+    displayContent: 'Show Content'
+  },
+  home: {
+    // 部分翻译存疑
+    tabFlow: 'Flow',
+    tabAppreciated: 'Appreciated',
+    flowLoading: 'Flow loading...',
+    creatorsLoading: 'Creators loading...',
+    showMoreCreators: 'Show more',
+    findMoreCreators: 'Find more creators'
   }
 }
