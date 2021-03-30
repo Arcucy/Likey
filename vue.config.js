@@ -56,7 +56,8 @@ module.exports = {
       localeDir: 'locales',
       enableInSFC: false
     }
-  }
+  },
+  runtimeCompiler: true
 }
 
 function addStyleResource (rule) {

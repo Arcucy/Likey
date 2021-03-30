@@ -4,11 +4,7 @@
     <p v-if="preview.summary" class="flow-locked-text">
       {{ text }}
     </p>
-    <a
-      v-if="isShowExtraBox"
-      style="display: block;"
-      href="javascript:;"
-    >
+    <router-link :to="{}">
       <div class="flow-locked-boxbg">
         <div class="flow-locked-boxbg-pillar" />
         <div class="flow-locked-box">
@@ -62,7 +58,7 @@
           </div>
         </div>
       </div>
-    </a>
+    </router-link>
   </div>
 </template>
 
@@ -132,7 +128,7 @@ export default {
     /** 是否解锁 */
     isUnlocked () {
       // 请把是否解锁的逻辑判断写在这里
-      return false
+      return true
     }
   },
   mounted () {
@@ -147,7 +143,7 @@ export default {
       console.log('购买 PST！')
     },
     async getPostStatus () {
-      if (!this.pstStatus || this.pstStatus.loading) this.pstLoading = true
+      if (!this.pstStatus) this.pstLoading = true
       try {
         await this.getPstContract(this.preview.lockContract)
         this.pstLoading = false

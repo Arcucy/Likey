@@ -13,6 +13,8 @@ import Flow from '@/views/Flow'
 import SettingCreator from '../views/Setting/Creator'
 import SettingToken from '../views/Setting/Token'
 
+import Status from '../views/Status/_id'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -82,6 +84,11 @@ const routes = [
     path: '/flow',
     name: 'Flow',
     component: Flow
+  },
+  {
+    path: '/status/:id',
+    name: 'Status',
+    component: Status
   }
 ]
 
