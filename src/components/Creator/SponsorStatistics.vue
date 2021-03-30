@@ -8,6 +8,14 @@
         {{ name }}
       </p>
     </div>
+    <div class="sponsor-balance">
+      <h4>
+        {{ myBalance | winstonToAr }}
+      </h4>
+      <p>
+        {{ $t('sponsor.myBalance') }}
+      </p>
+    </div>
     <div class="sponsor-data">
       <div class="sponsor-data-item">
         <h4>
@@ -77,7 +85,8 @@ export default {
   },
   computed: {
     ...mapState({
-      creators: state => state.contract.creators
+      creators: state => state.contract.creators,
+      myAddress: state => state.user.myInfo.address
     }),
     creator () {
       return this.creators ? this.creators[this.address] : null
@@ -89,6 +98,10 @@ export default {
     name () {
       if (!this.creator) return ''
       return this.creator.ticker.name
+    },
+    myBalance () {
+      if (!this.creator) return '0'
+      return this.contract.balances[this.myAddress]
     }
   },
   watch: {
@@ -131,6 +144,25 @@ export default {
       margin: 0 0 0;
     }
   }
+
+  &-balance {
+    border-bottom: 1px solid @gray2;
+    padding: 0 0 10px;
+    margin: 0 0 10px;
+
+    h4 {
+      font-size: 20px;
+      color: @dark;
+      margin: 0 0 5px;
+    }
+
+    p {
+      font-size: 15px;
+      color: @dark;
+      margin: 0 0 0;
+    }
+  }
+
   &-data {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));

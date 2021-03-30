@@ -176,7 +176,8 @@ export default {
     holders: '持仓人数',
     donationAndSponsorCount: '赞赏总数',
     custom: '自定义',
-    customInputDescription: '本方案可自定义 PST 购买数量'
+    customInputDescription: '本方案可自定义 PST 购买数量',
+    myBalance: '已经持有'
   },
   payment: {
     pay: '支 付',

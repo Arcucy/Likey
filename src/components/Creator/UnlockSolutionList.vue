@@ -28,7 +28,7 @@
           @click="buyUnlockSolution(item, index)"
           :loading="loading"
         >
-          {{ convertPstToWinston(item.value, ratio) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(item.value) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -63,7 +63,7 @@
           @click="buyCustomSolution(customPstInput)"
           :loading="loading"
         >
-          {{ convertPstToWinston(customPstInput, ratio) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -87,8 +87,6 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 
 import PaymentKeyReader from '@/components/Common/PaymentKeyReader'
 import SolutionPurchaseReceipt from '@/components/Common/SolutionPurchaseReceipt'
-
-import decode from '@/util/decode'
 
 export default {
   components: {
@@ -122,9 +120,7 @@ export default {
         holder: new BigNumber('0'),
         developer: new BigNumber('0'),
         owner: ''
-      },
-      // import convertPstToWinston
-      convertPstToWinston: decode.convertPstToWinston
+      }
     }
   },
   computed: {
@@ -157,8 +153,8 @@ export default {
   },
   watch: {
   },
-  mounted () {
-    this.initContractInfo()
+  async mounted () {
+    await this.initContractInfo()
   },
   methods: {
     ...mapActions(['getPstContract']),
@@ -168,6 +164,41 @@ export default {
       await this.getPstContract(this.creator.ticker.contract)
       this.ratio = this.contract.ratio
       this.loading = false
+    },
+    /** 转换 PST 为 Winston */
+    convertPstToWinston (value) {
+      const { from, to } = this.getRatio(this.ratio)
+      value = new BigNumber(String(value)).multipliedBy(to).div(from).multipliedBy(1000000000000)
+      value = value.toFixed(12)
+
+      if (value === 'Infinity' || value === 'NaN') {
+        return '0'
+      }
+      return value
+    },
+    /** 拆分换算比率 */
+    getRatio (ratio) {
+      if (!/^1:\d*\.?\d*$/.test(ratio)) {
+        return { from: '1', to: '0' }
+      }
+      let from = 1
+      let to = parseFloat(parseFloat(ratio.split(':').pop()).toFixed(12))
+      let iteration = 0
+
+      while (true) {
+        if (!Number.isInteger(to)) {
+          to = to * 10
+          iteration++
+          continue
+        }
+        break
+      }
+
+      for (let i = 0; i < iteration; i++) {
+        from = new BigNumber(from).multipliedBy(10)
+      }
+      to = BigNumber(to)
+      return { from: new BigNumber(String(from)), to }
     },
     /** 购买解锁方案 */
     async buyUnlockSolution (item, index) {
@@ -185,7 +216,7 @@ export default {
       this.paymentType = 0
 
       // 换算为具体支付的金额
-      let value = this.convertPstToWinston(item.value, this.ratio)
+      let value = this.convertPstToWinston(item.value)
       value = new BigNumber(value).toFixed(0)
 
       this.paymentData = await this.$api.contract.distributeTokens(this.contract, value, undefined, false)
@@ -215,7 +246,7 @@ export default {
       this.paymentType = 1
 
       // 换算为具体支付的金额
-      value = this.convertPstToWinston(String(value), this.ratio)
+      value = this.convertPstToWinston(String(value))
       const paymentValue = new BigNumber(value).toFixed(0)
 
       this.paymentData = await this.$api.contract.distributeTokens(this.contract, paymentValue, undefined, false)
@@ -449,30 +480,6 @@ export default {
           display: none;
         }
       }
-    }
-  }
-}
-
-@media screen and (max-width: 640px) {
-  .solutions {
-    display: flex;
-    overflow-x: auto;
-    width: 100%;
-    box-sizing: border-box;
-    flex-wrap: nowrap;
-    flex-direction: row;
-  }
-
-  .solution {
-    border-radius: 6px;
-    padding: 20px 16px;
-    width: 100%;
-    min-width: 87%;
-    display: flex;
-    flex-direction: column;
-    margin: 0 5px;
-    &-desp {
-      flex: 1;
     }
   }
 }

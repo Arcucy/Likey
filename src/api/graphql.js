@@ -97,7 +97,6 @@ export default {
   async getIdByAddress (address, type = 'name') {
     const ls = localStorage || window.localStorage
     const id = JSON.parse(ls.getItem(`id:${address}`))
-    console.log(id)
     if (id) {
       return id
     }
