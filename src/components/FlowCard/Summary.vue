@@ -4,7 +4,7 @@
     <p v-if="preview.summary" class="flow-summary-text">
       {{ text }}
     </p>
-    <a href="javascript:;">
+    <router-link :to="{}">
       <el-button v-if="loading" class="flow-summary-btn">
         <i class="el-icon-loading" />
         {{ $t('app.loading') }}
@@ -12,11 +12,11 @@
       <el-button v-else class="flow-summary-btn" @click="loadMore">
         {{ $t('flowCard.loadMore') }}
       </el-button>
-    </a>
-    <a
+    </router-link>
+    <router-link
       v-if="isShowExtraBox"
       style="display: block;"
-      href="javascript:;"
+      :to="{}"
       v-loading="loading"
     >
       <div v-if="extra.media" class="flow-summary-mediabg" @click="loadMore">
@@ -44,7 +44,7 @@
           </p>
         </div>
       </div>
-    </a>
+    </router-link>
   </div>
 </template>
 
