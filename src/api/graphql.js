@@ -249,5 +249,57 @@ export default {
     }
 
     return res
+  },
+  /**
+   * 直接获取动态列表
+   * @param {String} after 获取指定的 cursor 之后的数据
+   * @param {Number} first 一次获取几条数据，默认获取 10 条
+   * @param {Boolean} filterNoBlock 不返回没有区块信息的交易，没有区块信息的交易将无法通过 transactions.get 获取。
+   */
+  async getUserStatus (after = '', first = 10, filterNoBlock = false) {
+    const query = gql`
+      query getStatus(
+        $appName: String!,
+        $schemaVersion: [String!]!,
+        $first: Int,
+        $after: String,
+      ) {
+        transactions(
+          first: $first
+          after: $after
+          tags: [
+            { name: "App-Name"        values: [$appName] },
+            { name: "Schema-Version"  values: $schemaVersion },
+            { name: "Type"            values: ["status"] }
+          ]
+        ) {
+          pageInfo { hasNextPage }
+          edges {
+            cursor
+            node {
+              id
+              owner { address }
+              tags { name value }
+              block { timestamp }
+            }
+        }
+        }
+      }
+    `
+    const res = await graph.request(query, {
+      appName: process.env.VUE_APP_APP_NAME,
+      schemaVersion: SCHEMA_VERSION_SUPPORTED,
+      after: after || '',
+      first: first || 10
+    })
+
+    if (filterNoBlock) {
+      const edges = res.transactions.edges.filter(item => {
+        return item.node.block && item.node.block.timestamp
+      })
+      res.transactions.edges = edges
+    }
+
+    return res
   }
 }
