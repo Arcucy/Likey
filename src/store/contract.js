@@ -146,6 +146,37 @@ export default {
     async getPstContract ({ state, dispatch }, contractId) {
       await checkCreatorPstContractCache(state, dispatch, contractId)
       return state.creatorPst[contractId]
+    },
+
+    /** 通过合约地址获取 PST 基础信息，读取缓存，速度更快 */
+    async getPstBasicInfo ({ state, dispatch }, contractId) {
+      let pst = state.creatorPst[contractId]
+      // pst 合约已经被缓存了的情况
+      if (pst && pst.owner) {
+        return {
+          owner: pst.owner,
+          name: pst.name,
+          ticker: pst.ticker
+        }
+      }
+      // pst 合约没有被缓存的情况，看看主合约有没有
+      for (const [key, value] of Object.entries(state.creators)) {
+        if (value && value.ticker && value.ticker.contract === contractId) {
+          return {
+            owner: key,
+            name: value.ticker.name,
+            ticker: value.ticker.ticker
+          }
+        }
+      }
+      // 都没有，去链上拿数据回来
+      await checkCreatorPstContractCache(state, dispatch, contractId)
+      pst = state.creatorPst[contractId] || {}
+      return {
+        owner: pst.owner || '',
+        name: pst.name || '',
+        ticker: pst.ticker || ''
+      }
     }
   }
 }
