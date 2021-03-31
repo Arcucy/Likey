@@ -287,6 +287,54 @@ export default {
     }
     return matched
   },
+  async getAllSponsorAndDonation (address, after = '') {
+    const query = gql`
+      query getAllPurchases($address: String!, $after: String) {
+        transactions (
+          recipient: [$address],
+          after: $after,
+          first: 100,
+          tags: [
+            { name: "Purchase-Type", values: ["Likey-Sponsor", "Likey-Donation"] }
+          ],
+          block: { min: 1 }
+        ) {
+          pageInfo { hasNextPage }
+          edges {
+            node {
+              id
+              recipient
+              quantity {
+                ar
+                winston
+              }
+              tags {
+                name
+                value
+              }
+              block {
+                id
+              }
+            }
+            cursor
+          }
+        }
+      }
+    `
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address, after })
+    const matched = { sponsorsHasNextPage: false, sponsors: [], donationsHasNextPage: false, donations: [] }
+    for (const tx of res.transactions.edges) {
+      for (const tag of tx.node.tags) {
+        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
+          matched.sponsors.push(res.transactions.edges)
+        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
+          matched.donations.push(res.transactions.edges)
+        }
+      }
+    }
+    return matched
+  },
   /**
    * 根据用户地址获取动态列表
    * @param {String | String[]} address 查询的用户地址，可以传入单个地址或地址列表

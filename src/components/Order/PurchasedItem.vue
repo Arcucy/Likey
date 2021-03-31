@@ -13,7 +13,7 @@
       <div class="purchased-item-left-info" v-if="purchase.parsedTag.purchasetype === 'Likey-Sponsor'">
         <span class="purchased-item-left-info-item">{{ purchase.parsedTag.solutiontitle || '' }}</span>
         <div class="purchased-item-left-info-pst">
-          <span class="purchased-item-left-info-pst-value">+{{ purchase.parsedTag.solutionvalue }}</span>
+          <span class="purchased-item-left-info-pst-value">{{ indicator }}{{ purchase.parsedTag.solutionvalue }}</span>
           <span class="purchased-item-left-info-pst-ticker"> {{ tickerContract.ticker }}</span>
         </div>
       </div>
@@ -24,7 +24,7 @@
             <span class="username">{{ username }}</span>
           </div>
           <div class="purchased-item-left-recipient-user-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.recipient}`">{{ purchase.recipient }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.recipient)" />
+            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.target}`">{{ purchase.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.recipient)" />
           </div>
         </div>
         <span class="purchased-item-right-time">{{ createTime }}</span>
@@ -74,6 +74,10 @@ export default {
       if (!momentFun.isNDaysAgo(2, time)) return time.fromNow()
       else if (!momentFun.isNDaysAgo(365, time)) return time.format('MMMDo')
       return time.format('YYYY MMMDo')
+    },
+    indicator () {
+      if (this.purchase.parsedTag.txType === 'Out') return '-'
+      else return '+'
     }
   },
   async mounted () {
@@ -91,7 +95,7 @@ export default {
       }
       this.tickerContract = { ...this.purchase.tickerContract }
       if (!this.purchase.username) {
-        const res = await this.$api.gql.getIdByAddress(this.purchase.recipient)
+        const res = await this.$api.gql.getIdByAddress(this.purchase.traget)
         this.username = res.data
       }
       this.username = this.purchase.username
