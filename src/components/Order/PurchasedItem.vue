@@ -8,12 +8,12 @@
             <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.id)" />
           </div>
         </div>
-        <span class="purchased-item-left-type-info-spend">-{{ purchase.quantity.winston | winstonToAr }} AR</span>
+        <span class="purchased-item-left-type-info-spend">{{ indicator }}{{ purchase.quantity.winston | winstonToAr }} AR</span>
       </div>
       <div class="purchased-item-left-info" v-if="purchase.parsedTag.purchasetype === 'Likey-Sponsor'">
         <span class="purchased-item-left-info-item">{{ purchase.parsedTag.solutiontitle || '' }}</span>
         <div class="purchased-item-left-info-pst">
-          <span class="purchased-item-left-info-pst-value">{{ indicator }}{{ purchase.parsedTag.solutionvalue }}</span>
+          <span class="purchased-item-left-info-pst-value">+{{ purchase.parsedTag.solutionvalue }}</span>
           <span class="purchased-item-left-info-pst-ticker"> {{ tickerContract.ticker }}</span>
         </div>
       </div>
@@ -76,7 +76,7 @@ export default {
       return time.format('YYYY MMMDo')
     },
     indicator () {
-      if (this.purchase.parsedTag.txType === 'Out') return '-'
+      if (this.purchase.txType === 'Out') return '-'
       else return '+'
     }
   },

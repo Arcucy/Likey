@@ -289,9 +289,9 @@ export default {
   },
   async getAllSponsorAndDonation (address, after = '') {
     const query = gql`
-      query getAllPurchases($address: String!, $after: String) {
+      query getAllSponsorAndDonation($address: String!, $after: String) {
         transactions (
-          recipient: [$address],
+          recipients: [$address],
           after: $after,
           first: 100,
           tags: [

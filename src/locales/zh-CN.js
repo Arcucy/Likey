@@ -61,6 +61,7 @@ export default {
   pageTitle: {
     myProfile: '我的资料',
     myOrder: '我的订单',
+    myStatistic: '管理面板',
     home: '主页',
     themesTest: '主题测试'
   },
@@ -210,6 +211,9 @@ export default {
     purchasePST: '购买 PST',
     onlyDonation: '打赏作者',
     nodata: '暂无历史订单数据'
+  },
+  statistics: {
+    historyIncome: '历史收入'
   },
   flowCard: {
     loadMore: '加载全文',

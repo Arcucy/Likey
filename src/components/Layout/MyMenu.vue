@@ -10,6 +10,9 @@
       <router-link :to="{ name: 'Order' }">
         <el-dropdown-item>{{ $t('pageTitle.myOrder') }}</el-dropdown-item>
       </router-link>
+      <router-link v-if="creator" :to="{ name: 'StatisticsPanel' }">
+        <el-dropdown-item>{{ $t('pageTitle.myStatistic') }}</el-dropdown-item>
+      </router-link>
       <div @click="logout">
         <el-dropdown-item>{{ $t('login.signOut') }}</el-dropdown-item>
       </div>
