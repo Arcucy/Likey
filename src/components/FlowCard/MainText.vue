@@ -47,6 +47,7 @@ export default {
   display: -webkit-box;
   -webkit-line-clamp: 20;
   -webkit-box-orient: vertical;
+  margin: 0 0 5px;
   /deep/ a {
     color: @primary;
     text-decoration: none;

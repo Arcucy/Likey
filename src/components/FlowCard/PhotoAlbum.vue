@@ -7,12 +7,9 @@
         v-if="imgUrls.length === 1"
         class="album-one"
       >
-        <el-image
+        <Photo
           :src="imgUrls[0]"
-          alt="image"
           :preview-src-list="getImgList(0)"
-          fit="cover"
-          lazy
         />
       </div>
       <!-- 两张图片 -->
@@ -21,21 +18,15 @@
         class="album-two"
       >
         <div class="album-two-column">
-          <el-image
+          <Photo
             :src="imgUrls[0]"
-            alt="image"
             :preview-src-list="getImgList(0)"
-            fit="cover"
-            lazy
           />
         </div>
         <div class="album-two-column">
-          <el-image
+          <Photo
             :src="imgUrls[1]"
-            alt="image"
             :preview-src-list="getImgList(1)"
-            fit="cover"
-            lazy
           />
         </div>
       </div>
@@ -45,77 +36,56 @@
         class="album-three"
       >
         <div class="album-three-column">
-          <el-image
+          <Photo
             :src="imgUrls[0]"
-            alt="image"
             :preview-src-list="getImgList(0)"
-            fit="cover"
-            lazy
           />
         </div>
         <div class="album-three-column">
           <div class="album-three-column-line">
-            <el-image
+            <Photo
               :src="imgUrls[1]"
-              alt="image"
               :preview-src-list="getImgList(1)"
-              fit="cover"
-              lazy
             />
           </div>
           <div class="album-three-column-line">
-            <el-image
-              :src="imgUrls[3]"
-              alt="image"
-              :preview-src-list="getImgList(3)"
-              fit="cover"
-              lazy
+            <Photo
+              :src="imgUrls[2]"
+              :preview-src-list="getImgList(2)"
             />
           </div>
         </div>
       </div>
       <!-- 四张图片 -->
       <div
-        v-else-if="imgUrls.length === 4"
+        v-else-if="imgUrls.length <= 4"
         class="album-three"
       >
         <div class="album-three-column">
           <div class="album-three-column-line">
-            <el-image
+            <Photo
               :src="imgUrls[0]"
-              alt="image"
               :preview-src-list="getImgList(0)"
-              fit="cover"
-              lazy
             />
           </div>
           <div class="album-three-column-line">
-            <el-image
+            <Photo
               :src="imgUrls[2]"
-              alt="image"
               :preview-src-list="getImgList(2)"
-              fit="cover"
-              lazy
             />
           </div>
         </div>
         <div class="album-three-column">
           <div class="album-three-column-line">
-            <el-image
+            <Photo
               :src="imgUrls[1]"
-              alt="image"
               :preview-src-list="getImgList(1)"
-              fit="cover"
-              lazy
             />
           </div>
           <div class="album-three-column-line">
-            <el-image
+            <Photo
               :src="imgUrls[3]"
-              alt="image"
               :preview-src-list="getImgList(3)"
-              fit="cover"
-              lazy
             />
           </div>
         </div>
@@ -125,36 +95,75 @@
 </template>
 
 <script>
+import Photo from './Photo'
 
 export default {
   components: {
+    Photo
   },
   props: {
     // 卡片数据
     media: {
       type: Array,
       required: true
+    },
+    isEncrypt: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
+      imageList: []
     }
   },
   computed: {
     imgUrls () {
       try {
-        return this.media.map(item => item.id)
+        return this.imageList.map(item => item.src)
       } catch (e) {
         console.error('[Unable to display picture]:', e)
         return []
       }
     }
   },
+  watch: {
+    media: {
+      handler (val) {
+        if (val) this.initAllImage(val)
+      },
+      immediate: true
+    }
+  },
+  destroyed () {
+    const url = window.URL || window.webkitURL
+    this.imgUrls.forEach(item => url.revokeObjectURL(item))
+  },
   methods: {
     getImgList (index) {
       const imgs = [...this.imgUrls]
       imgs.push(...imgs.splice(0, index))
       return imgs
+    },
+    initAllImage (val) {
+      this.imageList = []
+      val.forEach(async item => {
+        const imageObj = {
+          id: item.id,
+          src: 'loading'
+        }
+        this.imageList.push(imageObj)
+        imageObj.src = await this.getImage(item.id)
+      })
+    },
+    async getImage (address) {
+      try {
+        const data = await this.$api.gql.getImage(address, this.isEncrypt)
+        return data
+      } catch (err) {
+        console.error(err)
+        return ''
+      }
     }
   }
 }
@@ -170,7 +179,7 @@ img {
   position: absolute;
   left: 10px;
   top: 10px;
-  background: #000000c4;
+  background: @primary;
   border-radius: 4px;
   font-size: 13px;
   color: white;
@@ -184,9 +193,31 @@ img {
 .album-frame {
   position: relative;
   width: 100%;
+  margin: 0 0 10px;
 
   &-pillar {
     padding-bottom: 56.25%;
+  }
+}
+
+.image-slot {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: @gray3;
+
+  &-icon {
+    font-size: 38px;
+    height: 42px;
+    width: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
   }
 }
 
@@ -196,41 +227,18 @@ img {
   bottom: 0;
   left: 0;
   right: 0;
-  border: 1px solid #ccd6dd;
-  background: #f1f1f1;
+  border: 1px solid @gray2;
+  background: @gray1;
   border-radius: 10px;
   overflow: hidden;
   box-sizing: border-box;
-  color: white;
-
-  .sensitive-filter {
-    &.sensitive {
-      filter: blur(50px);
-      cursor: pointer;
-    }
-  }
-
-  &-sensitivetab {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate3d(-50%, -50%, 0);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: black;
-    z-index: 1;
-    background: #ffffff80;
-    cursor: pointer;
-  }
+  color: @light;
 
   &-one {
     overflow: hidden;
     width: 100%;
     height: 100%;
     position: relative;
-    .sensitive-filter();
 
     .el-image {
       width: 100%;
@@ -243,7 +251,6 @@ img {
     width: 100%;
     height: 100%;
     display: flex;
-    .sensitive-filter();
 
     .el-image {
       width: 100%;
@@ -266,7 +273,6 @@ img {
     width: 100%;
     height: 100%;
     display: flex;
-    .sensitive-filter();
 
     .el-image {
       width: 100%;

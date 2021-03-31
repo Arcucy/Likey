@@ -63,31 +63,30 @@
           :card="details"
         />
         <!-- 图片 -->
-        <a
+        <router-link
           v-if="media && media.length > 0"
           class="jump-shield cardtop10"
-          href="javascript:;"
+          :to="{}"
         >
           <photoAlbum
             :media="media"
+            :is-encrypt="details.isLock"
           />
-        </a>
+        </router-link>
         <!-- 统计数据 -->
         <div class="cardunit-r-flows">
-          <router-link :to="{}">
-            <div class="cardunit-r-flows-list">
-              <div class="cardunit-r-flows-list-item" @click="likeClick">
-                <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
-                <span class="cardunit-r-flows-list-item-text">
-                  {{ $t('flowCard.donate') }}
-                </span>
-              </div>
-              <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
-                <span class="mdi mdi-export-variant cardunit-r-flows-list-item-icon" />
-                <span class="cardunit-r-flows-list-item-text">
-                  {{ $t('flowCard.share') }}
-                </span>
-              </div>
+          <router-link class="cardunit-r-flows-list" :to="{}">
+            <div class="cardunit-r-flows-list-item" @click="likeClick">
+              <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
+              <span class="cardunit-r-flows-list-item-text">
+                {{ $t('flowCard.donate') }}
+              </span>
+            </div>
+            <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
+              <span class="mdi mdi-export-variant cardunit-r-flows-list-item-icon" />
+              <span class="cardunit-r-flows-list-item-text">
+                {{ $t('flowCard.share') }}
+              </span>
             </div>
           </router-link>
         </div>
@@ -204,9 +203,8 @@ export default {
       return this.preview.title
     },
     media () {
-      return []
-      // if (!this.card) return []
-      // return this.card.extra.media
+      if (!this.details || !this.details.extra || !this.details.extra.medias) return []
+      return this.details.extra.medias
     },
     flows () {
       return {
