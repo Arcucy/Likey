@@ -100,8 +100,9 @@ export default {
     }),
     paginatedList () {
       if (this.flash) return []
-      console.log(this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize))
-      return this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      const temp = this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
+      return temp
     },
     maxPage () {
       return Math.ceil(this.tabList.length / this.pagesize)
@@ -192,6 +193,7 @@ export default {
     /** 获取标签页的数据 */
     getList (tab) {
       const arr = []
+      this.tabList = []
       switch (tab) {
         case 'all':
           this.purchases.sponsors.forEach(item1 => {
@@ -213,7 +215,7 @@ export default {
               arr.push(item2.node)
             })
           })
-          this.tabList = arr
+          this.tabList = [...arr]
           break
         case 'donations':
           this.purchases.donations.forEach(item1 => {
@@ -221,7 +223,7 @@ export default {
               arr.push(item2.node)
             })
           })
-          this.tabList = arr
+          this.tabList = [...arr]
           break
         default:
           this.tabList = []

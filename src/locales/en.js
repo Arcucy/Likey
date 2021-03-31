@@ -61,6 +61,7 @@ export default {
   pageTitle: {
     myProfile: 'My Profile',
     myOrder: 'My Orders',
+    myStatistic: 'Stats Panel',
     home: 'Home',
     themesTest: 'Themes Test'
   },
