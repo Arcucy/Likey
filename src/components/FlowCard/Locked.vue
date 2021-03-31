@@ -11,7 +11,7 @@
           <!-- 未解锁 -->
           <div v-if="!isUnlocked" class="flow-locked-box-content">
             <h4>
-              {{ $t('flowCard.ownNUnlock', [preview.lockValue, pstTicker]) }}
+              {{ $t('flowCard.ownNUnlock', [preview.lockValue === '0' ? '' : preview.lockValue, pstTicker]) }}
             </h4>
             <p>
               {{ $t('flowCard.needToMeetTheAboveUnlockConditions') }}
@@ -23,7 +23,7 @@
               :loading="pstLoading"
               @click="buyPst"
             >
-              {{ convertPstToWinston(preview.lockValue, pstRatio) | winstonToAr | finalize(pstLoading) }}
+              {{ unlockPstValue | winstonToAr | finalize(pstLoading) }}
             </el-button>
           </div>
           <!-- 已解锁 -->
@@ -32,7 +32,7 @@
               {{ $t('flowCard.unlocked') }}
             </h4>
             <p>
-              {{ $t('flowCard.ownNUnlock', [preview.lockValue, pstTicker]) }}
+              {{ $t('flowCard.ownNUnlock', [preview.lockValue === '0' ? '' : preview.lockValue, pstTicker]) }}
             </p>
             <el-button
               class="flow-locked-box-content-btn"
@@ -63,13 +63,12 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import BigNumber from 'bignumber.js'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 import decode from '@/util/decode'
 
 export default {
-  components: {
-  },
   props: {
     // 预览数据
     preview: {
@@ -84,15 +83,19 @@ export default {
   data () {
     return {
       pstLoading: false,
-
       // import convertPstToWinston
       convertPstToWinston: decode.convertPstToWinston
     }
   },
   computed: {
     ...mapState({
-      creatorPst: state => state.contract.creatorPst
+      creators: state => state.contract.creators,
+      creatorPst: state => state.contract.creatorPst,
+      owner: state => state.contract.owner,
+      myAddress: state => state.user.myInfo.address,
+      paymentInProgress: state => state.app.paymentInProgress
     }),
+    ...mapGetters(['isLoggedIn']),
     text () {
       return this.preview.summary + (this.preview.summary.length >= 100 ? '...' : '')
     },
@@ -128,19 +131,71 @@ export default {
     /** 是否解锁 */
     isUnlocked () {
       // 请把是否解锁的逻辑判断写在这里
-      return true
+      return false
+    },
+    unlockPstValue () {
+      let returnValue = this.preview.lockValue === '0' ? '1' : this.preview.lockValue
+      if (this.preview.lockValue === '0') {
+        for (let i = 0; i < this.pstItems.length; i++) {
+          const item = this.pstItems[i]
+          const value = new BigNumber(item.value)
+          if (value.isGreaterThanOrEqualTo(this.preview.lockValue)) {
+            returnValue = item.value
+            break
+          }
+        }
+      }
+      return this.convertPstToWinston(returnValue, this.pstRatio)
+    },
+    creator () {
+      return this.creators ? this.creators[this.preview.creator] : null
+    },
+    pstInfo () {
+      if (!this.creator) return ''
+      return this.creator.ticker
+    },
+    pstItems () {
+      if (!this.creator) return []
+      return this.creator.items
+    },
+    contract () {
+      if (!this.creator) return {}
+      return this.creatorPst[this.creator.ticker.contract]
     }
   },
-  mounted () {
+  watch: {
+    paymentInProgress (val) {
+      this.pstLoading = val
+    }
+  },
+  async mounted () {
     this.getPostStatus()
+    if (!this.owner) await this.getCreatorInfo(this.preview.creator)
   },
   methods: {
-    ...mapActions(['getPstContract']),
+    ...mapActions(['getPstContract', 'getCreatorInfo']),
+    buyPst () {
+      let matchedItem = {
+        title: 'Custom',
+        value: '1',
+        number: '1'
+      }
+      for (let i = 0; i < this.pstItems.length; i++) {
+        const item = this.pstItems[i]
+        const value = new BigNumber(item.value)
+        if (value.isGreaterThanOrEqualTo(this.preview.lockValue)) {
+          matchedItem = item
+          break
+        }
+      }
+      this.$emit('locked-payment', {
+        status: this.preview,
+        unlock: matchedItem,
+        contract: this.contract
+      })
+    },
     loadMore () {
       this.$emit('load-more')
-    },
-    buyPst () {
-      console.log('购买 PST！')
     },
     async getPostStatus () {
       if (!this.pstStatus) this.pstLoading = true
@@ -148,7 +203,6 @@ export default {
         await this.getPstContract(this.preview.lockContract)
         this.pstLoading = false
       } catch (err) {
-        console.error(err)
         this.$message.error(this.$t('failure.failedToObtainContractStatus'))
         this.pstLoading = false
       }

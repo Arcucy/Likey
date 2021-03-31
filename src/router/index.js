@@ -6,7 +6,9 @@ import ThemesTest from '@/views/ThemesTest'
 
 import User from '@/views/User/_id'
 import UserIndex from '@/views/User'
+
 import Order from '@/views/Order'
+import StatisticsPanel from '@/views/StatisticsPanel.vue'
 
 import Flow from '@/views/Flow'
 
@@ -45,6 +47,11 @@ const routes = [
     path: '/order',
     name: 'Order',
     component: Order
+  },
+  {
+    path: '/stats',
+    name: 'StatisticsPanel',
+    component: StatisticsPanel
   },
   {
     path: '/user/:id',

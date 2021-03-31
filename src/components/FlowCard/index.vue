@@ -54,6 +54,7 @@
           v-else-if="!details"
           :preview="preview"
           @load-more="loadMore"
+          @locked-payment="startPayment"
           :loading="detailsLoading"
         />
         <!-- 正文 -->
@@ -76,10 +77,15 @@
         <!-- 统计数据 -->
         <div class="cardunit-r-flows">
           <router-link class="cardunit-r-flows-list" :to="{}">
+            <DonationPurchase
+              v-model="showDonationInput"
+              @confirm-donation="confirmDonation"
+              @donation-close="closeDonation"
+            />
             <div class="cardunit-r-flows-list-item" @click="likeClick">
               <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
               <span class="cardunit-r-flows-list-item-text">
-                {{ $t('flowCard.donate') }}
+                {{ donateBtnText }}
               </span>
             </div>
             <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
@@ -107,6 +113,7 @@ import mainText from './MainText'
 import photoAlbum from './PhotoAlbum'
 import Summary from './Summary'
 import Locked from './Locked'
+import DonationPurchase from '@/components/Common/DonationPurchase'
 
 export default {
   components: {
@@ -114,7 +121,8 @@ export default {
     mainText,
     photoAlbum,
     Summary,
-    Locked
+    Locked,
+    DonationPurchase
   },
   props: {
     // 卡片数据
@@ -147,12 +155,17 @@ export default {
       username: '',
       selfLoadShortname: '',
       details: null,
-      detailsLoading: false
+      detailsLoading: false,
+      showDonationInput: false
     }
   },
   computed: {
     ...mapState({
-      appLang: state => state.app.appLang
+      appLang: state => state.app.appLang,
+      creators: state => state.contract.creators,
+      creatorPst: state => state.contract.creatorPst,
+      owner: state => state.contract.owner,
+      donationPaymentInProgress: state => state.app.donationPaymentInProgress
     }),
     likeIconClass () {
       return {
@@ -211,6 +224,16 @@ export default {
         idonated: false,
         donate: 0
       }
+    },
+    creator () {
+      return this.creators ? this.creators[this.preview.creator] : null
+    },
+    contract () {
+      if (!this.creator) return {}
+      return this.creatorPst[this.creator.ticker.contract]
+    },
+    donateBtnText () {
+      return this.donationPaymentInProgress ? this.$t('app.loading') : this.$t('flowCard.donate')
     }
   },
   watch: {
@@ -224,6 +247,8 @@ export default {
       },
       immediate: true
     }
+  },
+  mounted () {
   },
   methods: {
     /** 获取头像 */
@@ -273,7 +298,30 @@ export default {
     },
     /** 推荐 */
     async likeClick () {
-      console.log('推荐')
+      if (!this.owner) await this.getCreatorInfo(this.preview.creator)
+      if (this.contract && this.contract.loading) {
+        this.$message({
+          showClose: true,
+          message: this.$t('app.loading'),
+          type: 'info'
+        })
+        return
+      }
+      this.showDonationInput = true
+    },
+    confirmDonation (val) {
+      console.log(val)
+      this.$emit('status-donation', {
+        status: this.preview,
+        contract: this.contract,
+        donation: {
+          value: String(val)
+        }
+      })
+      this.showDonationInput = false
+    },
+    closeDonation (val) {
+      this.showDonationInput = val
     },
     // 获取分享链接
     getShareLink () {
@@ -311,6 +359,9 @@ export default {
     decryptText (text) {
       if (text) return decryptText(text)
       return ''
+    },
+    startPayment (data) {
+      this.$emit('locked-payment', data)
     }
   }
 }

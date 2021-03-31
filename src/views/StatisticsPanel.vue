@@ -1,13 +1,18 @@
 <template>
   <div
-    class="my-order"
+    class="my-statistics"
     v-loading="loading"
   >
-    <div class="my-order-header">
-      <h3 class="my-order-header-title">
-        {{ $t('pageTitle.myOrder') }}
+    <div class="my-statistics-pst">
+      <h3 class="my-statistics-pst-title">
+        {{ $t('pageTitle.myStatistic') }}
       </h3>
-      <div class="my-order-header-menu">
+    </div>
+    <div class="my-statistics-order">
+      <h3 class="my-statistics-order-header-title">
+        {{ $t('statistics.historyIncome') }}
+      </h3>
+      <div class="my-statistics-order-header-menu">
         <h4>
           <span
             v-for="(item, index) in tabs"
@@ -19,7 +24,7 @@
           </span>
         </h4>
       </div>
-      <div class="my-order-container">
+      <div class="my-statistics-order-container">
         <div v-if="tabList.length > 0">
           <PurchasedItem
             v-for="(item, index) of paginatedList"
@@ -32,7 +37,7 @@
         </div>
       </div>
       <div
-        class="my-order-pagination"
+        class="my-statistics-pagination"
         v-if="tabList.length > 0"
       >
         <el-pagination
@@ -100,9 +105,8 @@ export default {
     }),
     paginatedList () {
       if (this.flash) return []
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      const temp = this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
-      return temp
+      console.log(this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize))
+      return this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
     },
     maxPage () {
       return Math.ceil(this.tabList.length / this.pagesize)
@@ -148,7 +152,7 @@ export default {
     /** 初始化用户订单数据 */
     async initUserData () {
       this.loading = true
-      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
+      this.purchases = await this.$api.gql.getAllSponsorAndDonation(this.myAddress)
       await this.parseTags(this.purchases)
       this.sponsorsHasNextPage = this.purchases.sponsorsHasNextPage
       this.donationsHasNextPage = this.purchases.donationsHasNextPage
@@ -183,8 +187,8 @@ export default {
               // 获取对应的用户数据
               const res = await this.$api.gql.getIdByAddress(arr[j][i].node.recipient)
               arr[j][i].node.username = res.data
-              arr[j][i].node.target = arr[j][i].node.recipient
-              arr[j][i].node.txType = 'Out'
+              arr[j][i].node.target = arr[j][i].node.owner
+              arr[j][i].node.txType = 'In'
             }
           }
         }
@@ -193,7 +197,6 @@ export default {
     /** 获取标签页的数据 */
     getList (tab) {
       const arr = []
-      this.tabList = []
       switch (tab) {
         case 'all':
           this.purchases.sponsors.forEach(item1 => {
@@ -215,7 +218,7 @@ export default {
               arr.push(item2.node)
             })
           })
-          this.tabList = [...arr]
+          this.tabList = arr
           break
         case 'donations':
           this.purchases.donations.forEach(item1 => {
@@ -223,7 +226,7 @@ export default {
               arr.push(item2.node)
             })
           })
-          this.tabList = [...arr]
+          this.tabList = arr
           break
         default:
           this.tabList = []
@@ -243,7 +246,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.my-order {
+.my-statistics {
   margin: 20px auto 0px;
   padding: 10px;
   box-sizing: border-box;
@@ -252,61 +255,68 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  &-pst {
+    width: 100%;
+  }
+  &-order {
+    width: 100%;
 
-  &-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    flex: 1;
+    &-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1;
 
-    &-title {
-      color: @dark;
-      margin-bottom: 10px;
-      line-height: 22px;
-      text-align: left;
-    }
-
-    &-menu {
-      h4 {
-        font-size: 16px;
+      &-title {
+        color: @dark;
+        margin-bottom: 10px;
+        line-height: 22px;
         text-align: left;
-        margin-bottom: 16px;
-        span {
-          transition: all 0.3s ease;
-          cursor: pointer;
-          color: @gray2;
-          margin-right: 20px;
-          display: inline-block;
-          &:hover {
-            color: @dark;
-          }
-          &.active {
-            color: @primary;
+      }
+
+      &-menu {
+        h4 {
+          font-size: 16px;
+          text-align: left;
+          margin-bottom: 16px;
+          span {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: @gray2;
+            margin-right: 20px;
+            display: inline-block;
+            &:hover {
+              color: @dark;
+            }
+            &.active {
+              color: @primary;
+            }
           }
         }
       }
     }
-  }
 
-  &-container {
-    width: 100%;
-    flex: 1;
+    &-container {
+      width: 100%;
+      flex: 1;
 
-    .no-data {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 20px;
-      margin-bottom: 50px;
-      font-weight: 500;
+      .no-data {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 50px;
+        font-weight: 500;
+      }
     }
   }
+}
 
-  &-pagination {
-    margin: 20px 10px 20px;
-    width: calc(100% - 20px);
-    display: flex;
-    justify-content: center;
-  }
+&-pagination {
+  margin: 20px 10px 20px;
+  width: calc(100% - 20px);
+  display: flex;
+  justify-content: center;
 }
 </style>

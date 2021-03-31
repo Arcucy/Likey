@@ -17,7 +17,7 @@
           <span>{{ developerValue | winstonToAr }} AR</span>
         </div>
         <div class="solution-purchase-item" v-if="receipt.selected">
-          <span>{{ $t('payment.pstHolders') }} (~15%)</span>
+          <span>{{ $t('payment.holder') }} (~15%)</span>
           <span>{{ holdersValue | winstonToAr }} AR</span>
         </div>
         <div class="solution-purchase-item">
