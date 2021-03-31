@@ -7,6 +7,7 @@ export default {
     profitSharingTxSuccess: 'PST 持有人分润成功',
     developerTipTxSuccess: '开发者分润成功',
     sponsorTxSuccess: '赞助成功',
+    donateTxSuccess: '打赏成功',
     txSuccess: '交易成功',
     statusPublished: '动态发布成功'
   },
@@ -29,6 +30,7 @@ export default {
     profitSharingTxFailed: 'PST 持有人分润失败',
     developerTipTxFailed: '开发者分润失败',
     sponsorTxFailed: '赞助失败',
+    donateTxFailed: '打赏失败',
     txFailed: '交易失败',
     txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
     dynamicUploadFailed: '动态上传失败，请检查网络后重试',
@@ -178,6 +180,10 @@ export default {
     custom: '自定义',
     customInputDescription: '本方案可自定义 PST 购买数量',
     myBalance: '已经持有'
+  },
+  donation: {
+    pleaseInputDonationAmount: '请输入打赏金额',
+    donationAmountShouldnotBeNone: '打赏金额不能为空'
   },
   payment: {
     pay: '支 付',

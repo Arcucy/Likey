@@ -12,7 +12,7 @@ const PST_HOLDER_TIP = '0.15'
 const DEVELOPER_TIP = '0.05'
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
+const TEST_MODE = false
 console.log('Is it test mode? :', TEST_MODE)
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -295,8 +295,9 @@ export default {
 
     status = 'onDeveloper'
     callback(status, '')
+    console.log(DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1)
     if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1) {
-      if (paymentAddress === selected) {
+      if (paymentAddress === DEVELOPER) {
         developerQuantity = new BigNumber('0')
       } else {
         try {
@@ -321,10 +322,12 @@ export default {
 
             if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
               status = 'onDeveloperError'
+              console.log(txStatus)
               callback(status, developerTransaction.id)
               throw new Error('Send Developer Tip Failed')
             }
             status = 'onDeveloperPosted'
+            console.log(status, developerTransaction.id)
             callback(status, developerTransaction.id)
 
             // 分润的金额

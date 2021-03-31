@@ -173,7 +173,7 @@ export default {
     if (!this.owner) await this.getCreatorInfo(this.preview.creator)
   },
   methods: {
-    ...mapActions(['getPstContract']),
+    ...mapActions(['getPstContract', 'getCreatorInfo']),
     buyPst () {
       let matchedItem = {
         title: 'Custom',
