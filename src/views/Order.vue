@@ -84,6 +84,8 @@ export default {
         sponsors: [],
         donations: []
       },
+      sponsorsHasNextPage: false,
+      donationsHasNextPage: false,
       tabList: [],
       flash: false,
       page: this.$route.query.page || 1, // 页码
@@ -93,7 +95,8 @@ export default {
   computed: {
     ...mapGetters(['isLoggedIn']),
     ...mapState({
-      myAddress: state => state.user.myInfo.address
+      myAddress: state => state.user.myInfo.address,
+      themeName: state => state.app.themeName
     }),
     paginatedList () {
       if (this.flash) return []
@@ -145,6 +148,12 @@ export default {
     async initUserData () {
       this.loading = true
       this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
+      this.sponsorsHasNextPage = this.purchases.sponsorsHasNextPage
+      this.donationsHasNextPage = this.purchases.donationsHasNextPage
+
+      console.log(this.sponsorsHasNextPage)
+      console.log(this.donationsHasNextPage)
+
       this.getList(this.tab || this.defaultTab)
       this.loading = false
       await this.parseTags(this.purchases)
@@ -152,37 +161,65 @@ export default {
     /** 解析标签为属性字段 */
     async parseTags (purchase) {
       for (const arr of Object.values(purchase)) {
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i]) {
-            const tags = {}
-            arr[i].tags.forEach(tag => {
-              const name = tag.name.replace('-', '').replace('_', '').toLowerCase()
-              Object.defineProperty(tags, name, {
-                value: tag.value,
-                writable: true,
-                enumerable: true
+        for (let j = 0; j < arr.length; j++) {
+          for (let i = 0; i < arr[j].length; i++) {
+            if (arr[j][i].node) {
+              // 整理标签
+              const tags = {}
+              arr[j][i].node.tags.forEach(tag => {
+                const name = tag.name.replace('-', '').replace('_', '').toLowerCase()
+                Object.defineProperty(tags, name, {
+                  value: tag.value,
+                  writable: true,
+                  enumerable: true
+                })
               })
-            })
-            arr[i].parsedTag = tags
+              arr[j][i].node.parsedTag = tags
 
-            arr[i].tickerContract = await this.getPstContract(arr[i].parsedTag.contract)
-            const res = await this.$api.gql.getIdByAddress(arr[i].recipient)
-            arr[i].username = res.data
+              // 获取对应的合约数据
+              arr[j][i].node.tickerContract = await this.getPstContract(arr[j][i].node.parsedTag.contract)
+
+              // 获取对应的用户数据
+              const res = await this.$api.gql.getIdByAddress(arr[j][i].node.recipient)
+              arr[j][i].node.username = res.data
+            }
           }
         }
       }
     },
     /** 获取标签页的数据 */
     getList (tab) {
+      const arr = []
       switch (tab) {
         case 'all':
-          this.tabList = [...this.purchases.sponsors, ...this.purchases.donations]
+          this.purchases.sponsors.forEach(item1 => {
+            item1.forEach(item2 => {
+              arr.push(item2.node)
+            })
+          })
+
+          this.purchases.donations.forEach(item1 => {
+            item1.forEach(item2 => {
+              arr.push(item2.node)
+            })
+          })
+          this.tabList = [...arr]
           break
         case 'sponsors':
-          this.tabList = this.purchases.sponsors
+          this.purchases.sponsors.forEach(item1 => {
+            item1.forEach(item2 => {
+              arr.push(item2.node)
+            })
+          })
+          this.tabList = arr
           break
         case 'donations':
-          this.tabList = this.purchases.donations
+          this.purchases.donations.forEach(item1 => {
+            item1.forEach(item2 => {
+              arr.push(item2.node)
+            })
+          })
+          this.tabList = arr
           break
         default:
           this.tabList = []

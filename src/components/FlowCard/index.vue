@@ -54,6 +54,7 @@
           v-else-if="!details"
           :preview="preview"
           @load-more="loadMore"
+          @locked-payment="startPayment"
           :loading="detailsLoading"
         />
         <!-- 正文 -->
@@ -313,6 +314,9 @@ export default {
     decryptText (text) {
       if (text) return decryptText(text)
       return ''
+    },
+    startPayment (data) {
+      this.$emit('locked-payment', data)
     }
   }
 }

@@ -12,6 +12,7 @@
           :key="index"
           :brief="data"
           :user="user"
+          @locked-payment="startPayment"
           no-load-user
         />
         <InfiniteScroll
@@ -47,6 +48,11 @@
         </a>
       </div>
     </div>
+    <Payment
+      v-model="showPaymentDialog"
+      :data="paymentData"
+      @payment-close="paymentClose"
+    />
   </div>
 </template>
 
@@ -58,6 +64,7 @@ import UnlockSolutionList from '@/components/Creator/UnlockSolutionList'
 import FlowCard from '@/components/FlowCard'
 import InputBox from '@/components/Creator/InputBox'
 import InfiniteScroll from '@/components/InfiniteScroll'
+import Payment from '@/components/Common/Payment'
 
 export default {
   components: {
@@ -65,7 +72,8 @@ export default {
     UnlockSolutionList,
     FlowCard,
     InputBox,
-    InfiniteScroll
+    InfiniteScroll,
+    Payment
   },
   props: {
     basicInfo: {
@@ -101,7 +109,9 @@ export default {
       /** 是否还有下一页么 */
       hasNextPage: true,
       /** 每页（每次）获取的条目数量 */
-      pageSize: 10
+      pageSize: 10,
+      showPaymentDialog: false,
+      paymentData: {}
     }
   },
   computed: {
@@ -178,6 +188,13 @@ export default {
     },
     load () {
       console.log('load')
+    },
+    startPayment (data) {
+      this.paymentData = data
+      this.showPaymentDialog = true
+    },
+    paymentClose (val) {
+      this.showPaymentDialog = val
     }
   }
 }

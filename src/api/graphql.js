@@ -239,12 +239,19 @@ export default {
     }
     return matched
   },
-  async getAllPurchases (address) {
+  async getAllPurchases (address, after = '') {
     const query = gql`
-      query getAllPurchases($address: String!) {
+      query getAllPurchases($address: String!, $after: String) {
         transactions (
-          owners: [$address]
+          owners: [$address],
+          after: $after,
+          first: 100,
+          tags: [
+            { name: "Purchase-Type", values: ["Likey-Sponsor", "Likey-Donation"] }
+          ],
+          block: { min: 1 }
         ) {
+          pageInfo { hasNextPage }
           edges {
             node {
               id
@@ -261,19 +268,20 @@ export default {
                 id
               }
             }
+            cursor
           }
         }
       }
     `
     // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address })
-    const matched = { sponsors: [], donations: [] }
+    const res = await graph.request(query, { address, after })
+    const matched = { sponsorsHasNextPage: false, sponsors: [], donationsHasNextPage: false, donations: [] }
     for (const tx of res.transactions.edges) {
       for (const tag of tx.node.tags) {
         if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
-          matched.sponsors.push(tx.node)
+          matched.sponsors.push(res.transactions.edges)
         } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
-          matched.donations.push(tx.node)
+          matched.donations.push(res.transactions.edges)
         }
       }
     }
