@@ -147,7 +147,7 @@ export default {
     /** 初始化用户订单数据 */
     async initUserData () {
       this.loading = true
-      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
+      this.purchases = await this.$api.gql.getAllSponsorAndDonation(this.myAddress)
       await this.parseTags(this.purchases)
       this.sponsorsHasNextPage = this.purchases.sponsorsHasNextPage
       this.donationsHasNextPage = this.purchases.donationsHasNextPage
@@ -182,8 +182,8 @@ export default {
               // 获取对应的用户数据
               const res = await this.$api.gql.getIdByAddress(arr[j][i].node.recipient)
               arr[j][i].node.username = res.data
-              arr[j][i].node.target = arr[j][i].node.recipient
-              arr[j][i].node.txType = 'Out'
+              arr[j][i].node.target = arr[j][i].node.owner
+              arr[j][i].node.txType = 'In'
             }
           }
         }

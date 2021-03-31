@@ -7,6 +7,7 @@ export default {
     profitSharingTxSuccess: 'Successfully Profit Share to PST Holder',
     developerTipTxSuccess: 'Successfully Profit Share to Developer',
     sponsorTxSuccess: 'Sponsor Successful',
+    donateTxSuccess: 'Donation Successful',
     txSuccess: 'Transaction Successful',
     statusPublished: 'Status published successfully'
   },
@@ -29,6 +30,7 @@ export default {
     profitSharingTxFailed: 'Failed to Profit Share to PST Holder',
     developerTipTxFailed: 'Failed to Profit Share to Developer',
     sponsorTxFailed: 'Sponsor Failed',
+    donateTxFailed: 'Donation Failed',
     txFailed: 'Transaction Failed',
     txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
     dynamicUploadFailed: 'Status upload failed',
@@ -179,6 +181,10 @@ export default {
     customInputDescription: 'You can specify you purchase amount here',
     myBalance: 'Already Own'
   },
+  donation: {
+    pleaseInputDonationAmount: 'Please input the amount of PST to donate',
+    donationAmountShouldnotBeNone: 'Donation amount should not be empty'
+  },
   payment: {
     pay: 'Pay',
     purchase: 'Purchase',
@@ -197,12 +203,13 @@ export default {
     file: 'Uploading file',
     encrypting: 'Encrypting'
   },
-  orderTab: {
+  order: {
     allPurchases: 'All Purchases',
     sponsors: 'Sponsors',
     donations: 'Donations',
     purchasePST: 'Purchase PST',
-    onlyDonation: 'Donate Creator'
+    onlyDonation: 'Donate Creator',
+    nodata: 'No Order History Yet'
   },
   flowCard: {
     loadMore: 'Load More',

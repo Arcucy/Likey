@@ -6,7 +6,7 @@
       <AudioUploader @audio-input="getAudioFiles" />
       <FileUploader @file-input="getFiles" />
     </div> -->
-    <!-- <img v-if="url" :src="url" class="preview">
+    <img v-if="url" :src="url" class="preview">
     <el-button>
       上传
     </el-button> -->
@@ -29,11 +29,10 @@ export default {
     }
   },
   async mounted () {
-    const data = await Axios.get('https://arweave.arcucy.io/SKx7PHt3IXLSf_X4JK_Vret9jcO95ZGk8o0FUcAyuPc', { responseType: 'arraybuffer' })
-    const array = new Uint8Array(data.data)
-    const blob = new Blob([array], { type: 'image/png' })
-    const url = window.URL || window.webkitURL
-    this.url = url.createObjectURL(blob)
+    const data = await Axios.get('https://arweave.arcucy.io/JIck1dl0H56YxSMb_fnrnWZOP6SdJJ4He_n9g-P4FVk', { responseType: 'arraybuffer' })
+    this.url = 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(data.data)))
+    // const url = window.URL || window.webkitURL
+    // this.url = url.createObjectURL(data.data)
   },
   methods: {
     getImageFiles (files) {
