@@ -241,15 +241,15 @@ export default {
     }
     return matched
   },
-  async getAllPurchases (address, after = '') {
+  async getAllPurchases (address, mode, after = '') {
     const query = gql`
-      query getAllPurchases($address: String!, $after: String) {
+      query getAllPurchases($address: String!, $after: String, $purchaseType: [String!]!) {
         transactions (
           owners: [$address],
           after: $after,
           first: 100,
           tags: [
-            { name: "Purchase-Type", values: ["Likey-Sponsor", "Likey-Donation"] }
+            { name: "Purchase-Type", values: $purchaseType ] }
           ],
           block: { min: 1 }
         ) {
@@ -275,19 +275,22 @@ export default {
         }
       }
     `
-    // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address, after })
-    const matched = { sponsorsHasNextPage: false, sponsors: [], donationsHasNextPage: false, donations: [] }
-    for (const tx of res.transactions.edges) {
-      for (const tag of tx.node.tags) {
-        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
-          matched.sponsors.push(res.transactions.edges)
-        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
-          matched.donations.push(res.transactions.edges)
-        }
-      }
+    let purchaseType = []
+    switch (mode) {
+      case 'sponsors':
+        purchaseType = ['Likey-Sponsor']
+        break
+      case 'donations':
+        purchaseType = ['Likey-Donation']
+        break
+      case 'all':
+      default:
+        purchaseType = ['Likey-Sponsor', 'Likey-Donation']
+        break
     }
-    return matched
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address, after, purchaseType })
+    return res
   },
   async getAllSponsorAndDonation (address, after = '') {
     const query = gql`

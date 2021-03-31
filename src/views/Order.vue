@@ -15,7 +15,7 @@
             :key="index"
             @click="tab = item.type"
           >
-            {{ item.label }}
+            {{ $t(item.label) }}
           </span>
         </h4>
       </div>
@@ -68,15 +68,15 @@ export default {
       defaultTab: 'all',
       tabs: [
         {
-          label: 'All Purchases',
+          label: 'order.allPurchases',
           type: 'all'
         },
         {
-          label: 'Sponsors',
+          label: 'order.sponsors',
           type: 'sponsors'
         },
         {
-          label: 'Donations',
+          label: 'order.donations',
           type: 'donations'
         }
       ],
@@ -137,18 +137,13 @@ export default {
     }
   },
   mounted () {
-    this.$nextTick(() => {
-      this.tabs[0].label = this.$t('order.allPurchases')
-      this.tabs[1].label = this.$t('order.sponsors')
-      this.tabs[2].label = this.$t('order.donations')
-    })
   },
   methods: {
     ...mapActions(['getPstContract']),
     /** 初始化用户订单数据 */
     async initUserData () {
       this.loading = true
-      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
+      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress, this.tab)
       await this.parseTags(this.purchases)
       this.sponsorsHasNextPage = this.purchases.sponsorsHasNextPage
       this.donationsHasNextPage = this.purchases.donationsHasNextPage
