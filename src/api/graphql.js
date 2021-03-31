@@ -1,5 +1,7 @@
 import { GraphQLClient, gql } from 'graphql-request'
 import Arweave from 'arweave'
+import { decryptBuffer } from '@/util/encrypt'
+
 // TODO:缓存问题解决后请取消注释
 // import localforage from 'localforage'
 // import { cache } from '@/util/cache'
@@ -239,15 +241,15 @@ export default {
     }
     return matched
   },
-  async getAllPurchases (address, after = '') {
+  async getAllPurchases (address, mode, after = '') {
     const query = gql`
-      query getAllPurchases($address: String!, $after: String) {
+      query getAllPurchases($address: String!, $after: String, $purchaseType: [String!]!) {
         transactions (
           owners: [$address],
           after: $after,
           first: 100,
           tags: [
-            { name: "Purchase-Type", values: ["Likey-Sponsor", "Likey-Donation"] }
+            { name: "Purchase-Type", values: $purchaseType ] }
           ],
           block: { min: 1 }
         ) {
@@ -273,19 +275,22 @@ export default {
         }
       }
     `
-    // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address, after })
-    const matched = { sponsorsHasNextPage: false, sponsors: [], donationsHasNextPage: false, donations: [] }
-    for (const tx of res.transactions.edges) {
-      for (const tag of tx.node.tags) {
-        if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Sponsor') {
-          matched.sponsors.push(res.transactions.edges)
-        } else if (tag.name === 'Purchase-Type' && tag.value === 'Likey-Donation') {
-          matched.donations.push(res.transactions.edges)
-        }
-      }
+    let purchaseType = []
+    switch (mode) {
+      case 'sponsors':
+        purchaseType = ['Likey-Sponsor']
+        break
+      case 'donations':
+        purchaseType = ['Likey-Donation']
+        break
+      case 'all':
+      default:
+        purchaseType = ['Likey-Sponsor', 'Likey-Donation']
+        break
     }
-    return matched
+    // 使用 GraphQL 获取 Ar 链上的交易
+    const res = await graph.request(query, { address, after, purchaseType })
+    return res
   },
   async getAllSponsorAndDonation (address, after = '') {
     const query = gql`
@@ -444,5 +449,27 @@ export default {
     }
 
     return res
+  },
+  /**
+   * 获取动态图片
+   * @param {String} txid 交易 id
+   * @param {Boolean} isEncrypt 是否解密
+   */
+  async getImage (txid, isEncrypt) {
+    try {
+      const transaction = await this.getTransactionDetail(txid, { decode: true, string: true })
+      // 获取文件的 mime 类型
+      const type = this.getTagsByTransaction(transaction).Type
+      // 如果需要，则进行解密
+      const data = isEncrypt ? decryptBuffer(transaction.data) : transaction.data
+      // 神秘的代码
+      const blob = new Blob([data], { type: type || 'image/jpeg' })
+      // 创建资源地址
+      const url = window.URL || window.webkitURL
+      return url.createObjectURL(blob)
+    } catch (err) {
+      if (err.type !== 'TX_PENDING') throw new Error(err)
+      return ''
+    }
   }
 }
