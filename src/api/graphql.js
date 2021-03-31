@@ -1,5 +1,7 @@
 import { GraphQLClient, gql } from 'graphql-request'
 import Arweave from 'arweave'
+import { decryptBuffer } from '@/util/encrypt'
+
 // TODO:缓存问题解决后请取消注释
 // import localforage from 'localforage'
 // import { cache } from '@/util/cache'
@@ -388,5 +390,27 @@ export default {
     }
 
     return res
+  },
+  /**
+   * 获取动态图片
+   * @param {String} txid 交易 id
+   * @param {Boolean} isEncrypt 是否解密
+   */
+  async getImage (txid, isEncrypt) {
+    try {
+      const transaction = await this.getTransactionDetail(txid, { decode: true, string: true })
+      // 获取文件的 mime 类型
+      const type = this.getTagsByTransaction(transaction).Type
+      // 如果需要，则进行解密
+      const data = isEncrypt ? decryptBuffer(transaction.data) : transaction.data
+      // 神秘的代码
+      const blob = new Blob([data], { type: type || 'image/jpeg' })
+      // 创建资源地址
+      const url = window.URL || window.webkitURL
+      return url.createObjectURL(blob)
+    } catch (err) {
+      if (err.type !== 'TX_PENDING') throw new Error(err)
+      return ''
+    }
   }
 }
