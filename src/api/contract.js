@@ -12,7 +12,7 @@ const PST_HOLDER_TIP = '0.15'
 const DEVELOPER_TIP = '0.05'
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = false
+const TEST_MODE = true
 console.log('Is it test mode? :', TEST_MODE)
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
