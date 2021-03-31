@@ -10,7 +10,7 @@
         </div>
         <span class="purchased-item-left-type-info-spend">-{{ purchase.quantity.winston | winstonToAr }} AR</span>
       </div>
-      <div class="purchased-item-left-info">
+      <div class="purchased-item-left-info" v-if="purchase.parsedTag.purchasetype === 'Likey-Sponsor'">
         <span class="purchased-item-left-info-item">{{ purchase.parsedTag.solutiontitle || '' }}</span>
         <div class="purchased-item-left-info-pst">
           <span class="purchased-item-left-info-pst-value">+{{ purchase.parsedTag.solutionvalue }}</span>
@@ -82,10 +82,11 @@ export default {
     this.loading = false
   },
   methods: {
-    ...mapActions(['getPstContract']),
+    ...mapActions(['getPstContract', 'getCreatorInfo']),
     /** 初始化卡片 */
     async initHistoryData () {
       if (!this.purchase.tickerContract) {
+        await this.getCreatorInfo()
         this.tickerContract = await this.getPstContract(this.purchase.parsedTag.contract)
       }
       this.tickerContract = { ...this.purchase.tickerContract }

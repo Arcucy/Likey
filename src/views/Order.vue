@@ -89,7 +89,7 @@ export default {
       tabList: [],
       flash: false,
       page: this.$route.query.page || 1, // 页码
-      pagesize: 2 // 每页数量
+      pagesize: 10 // 每页数量
     }
   },
   computed: {
@@ -131,7 +131,7 @@ export default {
     },
     page (val) {
       this.flash = true
-      setTimeout(() => { this.flash = false }, 100)
+      setTimeout(() => { this.flash = false })
       this.updateQuery('page', val)
     }
   },
@@ -148,6 +148,7 @@ export default {
     async initUserData () {
       this.loading = true
       this.purchases = await this.$api.gql.getAllPurchases(this.myAddress)
+      await this.parseTags(this.purchases)
       this.sponsorsHasNextPage = this.purchases.sponsorsHasNextPage
       this.donationsHasNextPage = this.purchases.donationsHasNextPage
 
@@ -156,7 +157,6 @@ export default {
 
       this.getList(this.tab || this.defaultTab)
       this.loading = false
-      await this.parseTags(this.purchases)
     },
     /** 解析标签为属性字段 */
     async parseTags (purchase) {
