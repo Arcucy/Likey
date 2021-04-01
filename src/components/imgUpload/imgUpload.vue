@@ -28,12 +28,12 @@
         slot="title"
         class="modal-header"
       >
-        <p class="modal-header-title">
+        <span class="modal-header-title">
           编辑图像
-        </p>
-        <p class="modal-header-subtitle">
+        </span>
+        <span class="modal-header-subtitle">
           调整图像尺寸和位置
-        </p>
+        </span>
       </div>
       <div
         :style="computedStyleContent"
@@ -64,7 +64,7 @@ import VueUploadComponent from 'vue-upload-component'
 import Cropper from 'cropperjs'
 import Compressor from 'compressorjs'
 
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ImgUpload',
@@ -119,16 +119,9 @@ export default {
   computed: {
     ...mapState(['currentAppId', 'currentTeamId', 'currentTeamAppId', 'userId']),
     computedStyleContent () {
-      if (this.updateType === 'artileCover') {
-        return {
-          width: '240px',
-          height: '120px'
-        }
-      } else {
-        return {
-          width: '240px',
-          height: '240px'
-        }
+      return {
+        width: '320px',
+        height: '80px'
       }
     }
   },
@@ -141,8 +134,9 @@ export default {
           if (!this.$refs.editImage) {
             return
           }
+          console.log(this.aspectRatio)
           const cropper = new Cropper(this.$refs.editImage, {
-            aspectRatio: this.aspectRatio,
+            aspectRatio: 1004 / 252,
             viewMode: 3,
             dragMode: 'move',
             autoCropArea: 1,
@@ -171,7 +165,6 @@ export default {
     this.isShowFileUpload = true
   },
   methods: {
-    ...mapActions(['setSingleCoverFile', 'setAlbumCoverFile', 'setPodcastCoverFile', 'setSoundEffectCoverFile']),
     /**
      * Pretreatment // 过滤操作可以写在这里
      * @param  Object|undefined   newFile   读写
@@ -262,34 +255,10 @@ export default {
         file = new File([arr], oldFile.name, { type: oldFile.type })
       }
       try {
-        const res = { data: { code: 0 } }
-        res.data.code = 0
-        switch (this.updateType) {
-          case 'single':
-            this.setSingleCoverFile(file)
-            break
-          case 'album':
-            this.setAlbumCoverFile(file)
-            break
-          case 'podcast':
-            this.setPodcastCoverFile(file)
-            break
-          case 'soundeffect':
-            this.setSoundEffectCoverFile(file)
-            break
-        }
-        if (res.data.code === 0 || res.data.code === 1) {
-          this.$emit('done-image-upload', {
-            type: this.updateType,
-            data: res
-          })
-        } else {
-          this.modalLoading = false
-          this.$message.error({
-            duration: 1000,
-            message: this.$t('imageUploadFail')
-          })
-        }
+        this.$emit('done-image-upload', {
+          type: this.updateType,
+          data: file
+        })
       } catch (error) {
         // 捕获错误 未登录提示
         console.error(error)
@@ -334,18 +303,34 @@ export default {
 }
 
 .img-upload-card {
-  background-color: white;
+  background-color: @background;
   align-items: center !important;
   justify-content: center !important;
   display: flex !important;
   flex-direction: column;
 }
 
-/deep/ .v-card__title {
+.modal-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.save-button {
   display: block;
+  margin: 0 auto 20px;
+  text-align: center;
+  width: 220px;
+  background-color: #E56D9B;
+  border-color: #E56D9B;
 }
 
 /deep/ .modal-header-title {
   margin-bottom: 0px !important;
+}
+
+.img-upload-modal {
+  .el-dialog__body {
+    padding: 0px 0px;
+  }
 }
 </style>
