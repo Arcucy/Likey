@@ -22,28 +22,22 @@
       <div class="my-order-container">
         <div v-if="tabList.length > 0">
           <PurchasedItem
-            v-for="(item, index) of paginatedList"
+            v-for="(item, index) of tabList"
             :key="index"
             :purchase="item"
           />
+          <InfiniteScroll
+            class="flow-card"
+            :no-data="!tabList || !tabList.length"
+            :loading="loading"
+            :distance="500"
+            :disable="!hasNextPage"
+            @load="getList"
+          />
         </div>
-        <div class="no-data" v-if="loading || tabList.length === 0">
+        <div class="no-data" v-if="(!flash && tabList.length === 0) || loading">
           <span>{{ $t('order.nodata') }}</span>
         </div>
-      </div>
-      <div
-        class="my-order-pagination"
-        v-if="tabList.length > 0"
-      >
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :page-count="maxPage"
-          :page-size="pagesize"
-          :total="tabList.length"
-          :current-page="Number(page)"
-          @current-change="handlePageChange"
-        />
       </div>
     </div>
   </div>
@@ -55,10 +49,12 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import { getCookie } from '@/util/cookie'
 
 import PurchasedItem from '@/components/Order/PurchasedItem'
+import InfiniteScroll from '@/components/InfiniteScroll'
 
 export default {
   components: {
-    PurchasedItem
+    PurchasedItem,
+    InfiniteScroll
   },
   inject: ['updateQuery'],
   data () {
@@ -84,11 +80,9 @@ export default {
         sponsors: [],
         donations: []
       },
-      sponsorsHasNextPage: false,
-      donationsHasNextPage: false,
+      hasNextPage: false,
       tabList: [],
       flash: false,
-      page: this.$route.query.page || 1, // 页码
       pagesize: 10 // 每页数量
     }
   },
@@ -98,14 +92,13 @@ export default {
       myAddress: state => state.user.myInfo.address,
       themeName: state => state.app.themeName
     }),
-    paginatedList () {
-      if (this.flash) return []
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      const temp = this.tabList.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
-      return temp
-    },
     maxPage () {
       return Math.ceil(this.tabList.length / this.pagesize)
+    },
+    /** tabList 中最后条数据的 cursor（索引） */
+    endCursor () {
+      if (!this.tabList || !this.tabList.length) return ''
+      return this.tabList[this.tabList.length - 1].cursor
     }
   },
   watch: {
@@ -124,16 +117,16 @@ export default {
       },
       immediate: true
     },
-    tab (val) {
+    async tab (val) {
+      this.flash = true
       this.tabList = []
       this.page = 1
       this.updateQuery('tab', val)
-      if (this.isLoggedIn) this.getList(val || this.defaultTab)
-    },
-    page (val) {
-      this.flash = true
+
+      if (this.isLoggedIn) {
+        await this.getList(val || this.defaultTab)
+      }
       setTimeout(() => { this.flash = false })
-      this.updateQuery('page', val)
     }
   },
   mounted () {
@@ -142,88 +135,38 @@ export default {
     ...mapActions(['getPstContract']),
     /** 初始化用户订单数据 */
     async initUserData () {
-      this.loading = true
-      this.purchases = await this.$api.gql.getAllPurchases(this.myAddress, this.tab)
-      await this.parseTags(this.purchases)
-      this.sponsorsHasNextPage = this.purchases.sponsorsHasNextPage
-      this.donationsHasNextPage = this.purchases.donationsHasNextPage
-
-      console.log(this.sponsorsHasNextPage)
-      console.log(this.donationsHasNextPage)
-
-      this.getList(this.tab || this.defaultTab)
-      this.loading = false
+      await this.getList(this.tab || this.defaultTab)
     },
     /** 解析标签为属性字段 */
-    async parseTags (purchase) {
-      for (const arr of Object.values(purchase)) {
-        for (let j = 0; j < arr.length; j++) {
-          for (let i = 0; i < arr[j].length; i++) {
-            if (arr[j][i].node) {
-              // 整理标签
-              const tags = {}
-              arr[j][i].node.tags.forEach(tag => {
-                const name = tag.name.replace('-', '').replace('_', '').toLowerCase()
-                Object.defineProperty(tags, name, {
-                  value: tag.value,
-                  writable: true,
-                  enumerable: true
-                })
-              })
-              arr[j][i].node.parsedTag = tags
-
-              // 获取对应的合约数据
-              arr[j][i].node.tickerContract = await this.getPstContract(arr[j][i].node.parsedTag.contract)
-
-              // 获取对应的用户数据
-              const res = await this.$api.gql.getIdByAddress(arr[j][i].node.recipient)
-              arr[j][i].node.username = res.data
-              arr[j][i].node.target = arr[j][i].node.recipient
-              arr[j][i].node.txType = 'Out'
-            }
-          }
+    parseTags (purchase) {
+      for (let i = 0; i < purchase.transactions.edges.length; i++) {
+        if (purchase.transactions.edges[i].node) {
+          // 整理标签
+          const tags = {}
+          purchase.transactions.edges[i].node.tags.forEach(tag => {
+            const name = tag.name.replace('-', '').replace('_', '').toLowerCase()
+            Object.defineProperty(tags, name, {
+              value: tag.value,
+              writable: true,
+              enumerable: true
+            })
+          })
+          purchase.transactions.edges[i].node.parsedTag = tags
+          purchase.transactions.edges[i].node.target = purchase.transactions.edges[i].node.recipient
+          purchase.transactions.edges[i].node.txType = 'Out'
         }
       }
     },
     /** 获取标签页的数据 */
-    getList (tab) {
-      const arr = []
-      this.tabList = []
-      switch (tab) {
-        case 'all':
-          this.purchases.sponsors.forEach(item1 => {
-            item1.forEach(item2 => {
-              arr.push(item2.node)
-            })
-          })
+    async getList (tab) {
+      if (this.loading) return
+      this.loading = true
+      const tx = await this.$api.gql.getAllPurchases(this.myAddress, tab, this.pagesize, this.endCursor)
+      this.parseTags(tx)
 
-          this.purchases.donations.forEach(item1 => {
-            item1.forEach(item2 => {
-              arr.push(item2.node)
-            })
-          })
-          this.tabList = [...arr]
-          break
-        case 'sponsors':
-          this.purchases.sponsors.forEach(item1 => {
-            item1.forEach(item2 => {
-              arr.push(item2.node)
-            })
-          })
-          this.tabList = [...arr]
-          break
-        case 'donations':
-          this.purchases.donations.forEach(item1 => {
-            item1.forEach(item2 => {
-              arr.push(item2.node)
-            })
-          })
-          this.tabList = [...arr]
-          break
-        default:
-          this.tabList = []
-          break
-      }
+      this.tabList.push(...tx.transactions.edges)
+      this.hasNextPage = tx.transactions.pageInfo.hasNextPage
+      this.loading = false
     },
     /** 页面切换控制 */
     handlePageChange (pageNum) {

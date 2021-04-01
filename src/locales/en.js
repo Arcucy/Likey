@@ -212,6 +212,11 @@ export default {
     onlyDonation: 'Donate Creator',
     nodata: 'No Order History Yet'
   },
+  statistics: {
+    historyIncome: '历史收入',
+    donationCount: '打赏人数',
+    sponsorCount: '赞助人数'
+  },
   flowCard: {
     loadMore: 'Load More',
     numPictures: '{0} Pictures',
