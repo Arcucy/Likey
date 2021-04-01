@@ -131,12 +131,18 @@ export default {
     /** 是否解锁 */
     isUnlocked () {
       // 请把是否解锁的逻辑判断写在这里
+      // 没登录，不解锁
       if (!this.isLoggedIn) return false
+      // 是创作者本人，直接解锁
       if (this.isMe(this.preview.creator)) return true
+      // 合约没有加载好，不解锁
       if (!this.contract) return false
-      if (!this.contract.balances[this.myAddress]) return false
-      if (new BigNumber(this.contract.balances[this.myAddress]).isGreaterThanOrEqualTo(new BigNumber(this.preview.lockValue))) return true
-      return false
+      // 没有余额，不解锁
+      const balance = this.contract.balances[this.myAddress]
+      if (!balance) return false
+      // 判断余额是否足够解锁
+      const lockValue = new BigNumber(this.preview.lockValue)
+      return Boolean(new BigNumber(balance).isGreaterThanOrEqualTo(lockValue))
     },
     unlockPstValue () {
       let returnValue = this.preview.lockValue === '0' ? '1' : this.preview.lockValue
