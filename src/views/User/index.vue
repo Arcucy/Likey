@@ -54,6 +54,11 @@
       :data="paymentData"
       @payment-close="paymentClose"
     />
+    <DonationPurchase
+      v-model="showDonationInput"
+      @confirm-donation="confirmDonation"
+      @donation-close="closeDonation"
+    />
   </div>
 </template>
 
@@ -66,6 +71,7 @@ import FlowCard from '@/components/FlowCard'
 import InputBox from '@/components/Creator/InputBox'
 import InfiniteScroll from '@/components/InfiniteScroll'
 import Payment from '@/components/Common/Payment'
+import DonationPurchase from '@/components/Common/DonationPurchase'
 
 export default {
   components: {
@@ -74,7 +80,8 @@ export default {
     FlowCard,
     InputBox,
     InfiniteScroll,
-    Payment
+    Payment,
+    DonationPurchase
   },
   props: {
     basicInfo: {
@@ -112,6 +119,14 @@ export default {
       /** 每页（每次）获取的条目数量 */
       pageSize: 10,
       showPaymentDialog: false,
+      showDonationInput: false,
+      donateData: {
+        contract: {},
+        status: {},
+        donation: {
+          value: ''
+        }
+      },
       paymentData: {
         type: '0',
         data: {}
@@ -199,12 +214,21 @@ export default {
       this.showPaymentDialog = true
     },
     startDonationPayment (data) {
+      this.showDonationInput = true
+      this.donateData = data
+    },
+    confirmDonation (val) {
+      this.showDonationInput = false
+      this.donateData.donation.value = val
       this.paymentData.type = '1'
-      this.paymentData.data = data
+      this.paymentData.data = this.donateData
       this.showPaymentDialog = true
     },
-    paymentClose (val) {
+    paymentClose () {
       this.showPaymentDialog = false
+    },
+    closeDonation (val) {
+      this.showDonationInput = val
     }
   }
 }

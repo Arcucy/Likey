@@ -183,8 +183,10 @@ export default {
     myBalance: 'Already Own'
   },
   donation: {
+    donateToCreator: 'Donate Creator',
     pleaseInputDonationAmount: 'Please input the amount of PST to donate',
-    donationAmountShouldnotBeNone: 'Donation amount should not be empty'
+    donationAmountShouldnotBeNone: 'Donation amount should not be empty',
+    pleaseInputValidDonationAmount: 'Please input a valid amount for donation'
   },
   payment: {
     pay: 'Pay',
@@ -211,6 +213,11 @@ export default {
     purchasePST: 'Purchase PST',
     onlyDonation: 'Donate Creator',
     nodata: 'No Order History Yet'
+  },
+  statistics: {
+    historyIncome: '历史收入',
+    donationCount: '打赏人数',
+    sponsorCount: '赞助人数'
   },
   flowCard: {
     loadMore: 'Load More',

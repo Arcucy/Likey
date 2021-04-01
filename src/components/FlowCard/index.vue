@@ -85,11 +85,6 @@
         <!-- 动态交互 -->
         <div class="cardunit-r-flows">
           <router-link class="cardunit-r-flows-list" :to="{}">
-            <DonationPurchase
-              v-model="showDonationInput"
-              @confirm-donation="confirmDonation"
-              @donation-close="closeDonation"
-            />
             <div class="cardunit-r-flows-list-item" @click="likeClick">
               <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
               <span class="cardunit-r-flows-list-item-text">
@@ -122,7 +117,6 @@ import photoAlbum from './PhotoAlbum'
 import AudioCard from './AudioCard'
 import Summary from './Summary'
 import Locked from './Locked'
-import DonationPurchase from '@/components/Common/DonationPurchase'
 
 export default {
   components: {
@@ -131,8 +125,7 @@ export default {
     photoAlbum,
     AudioCard,
     Summary,
-    Locked,
-    DonationPurchase
+    Locked
   },
   props: {
     // 卡片数据
@@ -321,21 +314,13 @@ export default {
         })
         return
       }
-      this.showDonationInput = true
-    },
-    confirmDonation (val) {
-      console.log(val)
       this.$emit('status-donation', {
         status: this.preview,
         contract: this.contract,
         donation: {
-          value: String(val)
+          value: ''
         }
       })
-      this.showDonationInput = false
-    },
-    closeDonation (val) {
-      this.showDonationInput = val
     },
     // 获取分享链接
     getShareLink () {

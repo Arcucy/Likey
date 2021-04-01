@@ -3,6 +3,7 @@
     <SolutionPurchaseReceipt
       v-model="showReceipt"
       :receipt="paymentData.data"
+      :loading="receiptLoading"
       @confirm="openKeyReader"
       @dialog-close="handleReceiptClose"
     />
@@ -71,6 +72,7 @@ export default {
       showKeyReader: false,
       // import convertPstToWinston
       convertPstToWinston: decode.convertPstToWinston,
+      receiptLoading: false,
       paymentData: {
         type: '0',
         data: {
@@ -79,7 +81,13 @@ export default {
           creator: new BigNumber('0'),
           holder: new BigNumber('0'),
           developer: new BigNumber('0'),
-          owner: ''
+          owner: '',
+          item: {
+            title: '',
+            description: '',
+            number: '',
+            value: ''
+          }
         }
       }
     }
@@ -97,7 +105,6 @@ export default {
   watch: {
     async value (val) {
       if (val) {
-        console.log(this.data)
         this.paymentData.type = this.data.type
         this.setLoading(true)
         await this.buyPst()
@@ -112,21 +119,23 @@ export default {
     async buyPst () {
       if (!this.isLoggedIn) {
         this.$message.warning(this.$t('login.pleaseLogInFirst'))
-        this.setLoading(true)
+        this.setLoading(false)
         return
       }
       if (this.data.data.status.creator === this.myAddress) {
         this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
-        this.setLoading(true)
+        this.setLoading(false)
         return ''
       }
       this.showReceipt = false
-
-      console.log(this.data)
+      this.setLoading(true)
+      this.showReceipt = true
 
       // 换算为具体支付的金额
+      this.receiptLoading = true
       let value
       switch (this.data.type) {
+        // 0 为解锁
         case '0':
           value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
           value = new BigNumber(value).toFixed(0)
@@ -135,24 +144,20 @@ export default {
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
-          console.log(this.paymentData.data)
           break
+        // 1 为打赏
         case '1':
-          value = this.convertPstToWinston(this.data.data.donation.value, this.data.data.contract.ratio)
-          value = new BigNumber(value).toFixed(0)
-
+          value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
           this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
           this.paymentData.data.contract = this.data.data.contract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = {
             statusId: this.data.data.status.id,
-            value: this.data.data.donation.value
+            value: value
           }
-          console.log(this.paymentData.data)
           break
       }
-
-      this.showReceipt = true
+      this.receiptLoading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
@@ -170,20 +175,23 @@ export default {
         const myWalletAddress = await this.$api.ArweaveNative.wallets.getAddress(jwk)
         if (myWalletAddress === this.data.data.status.creator) {
           this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+          this.setLoading(false)
           return
         }
         if (myWalletAddress !== this.myAddress) {
           this.$message.warning(this.$t('failure.youCanOnlyPayForYourSelf'))
+          this.setLoading(false)
           return
         }
       } catch (err) {
         this.$message.warning(this.$t('failure.fileFormatError'))
+        this.setLoading(false)
         return
       }
 
       this.showKeyReader = false
+      this.setLoading(true)
       const callback = (event, id) => {
-        console.log(event, id)
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
