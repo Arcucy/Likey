@@ -20,6 +20,13 @@
         </div>
         <img src="@/assets/img/default/myProfileCover.jpg" alt="cover">
       </div>
+      <!-- <ImageUpload
+        :aspect-ratio="4"
+        :img-upload-done="imgUploadDone"
+        :update-type="'album'"
+        class="app-icon"
+        @done-image-upload="updateBanner"
+      /> -->
     </div>
     <!-- 用户信息 -->
     <div class="user-header-info-bg">
@@ -51,10 +58,12 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import Avatar from '@/components/User/Avatar'
+// import ImageUpload from '@/components/imgUpload/imgUpload'
 
 export default {
   components: {
     Avatar
+    // ImageUpload
   },
   inject: ['routerRefresh'],
   data () {
@@ -78,7 +87,8 @@ export default {
           contract: ''
         },
         items: []
-      }
+      },
+      imgUploadDone: 0
     }
   },
   computed: {
@@ -166,8 +176,8 @@ export default {
     pushBasicInfo () {
       this.$emit('basic-info', this.basicInfo)
     },
-    async updateBanner () {
-
+    async updateBanner (data) {
+      console.log(data)
     }
   }
 }
