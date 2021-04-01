@@ -30,7 +30,7 @@
                 :loading="flowLoading"
                 :distance="200"
                 :disable="!hasNextPage"
-                @load="getUserStatus"
+                @load="() => getUserStatus()"
               />
             </div>
           </el-col>
@@ -93,6 +93,10 @@ export default {
     }),
     shownCreators () {
       return this.creatorsAddress.slice(0, this.showMore * 5)
+    },
+    flowCursor () {
+      if (!this.flow || !this.flow.length) return ''
+      return this.flow[this.flow.length - 1].cursor
     }
   },
   methods: {
@@ -103,9 +107,9 @@ export default {
     async getUserStatus () {
       if (this.flowLoading) return
       this.flowLoading = true
-      const res = await this.$api.gql.getUserStatus()
+      const res = await this.$api.gql.getUserStatus(this.flowCursor, 10)
       this.flow.push(...res.transactions.edges)
-      this.hasNextPage = res.transactions.hasNextPage
+      this.hasNextPage = res.transactions.pageInfo.hasNextPage
       this.flowLoading = false
     }
   }

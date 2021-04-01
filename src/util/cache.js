@@ -1,6 +1,6 @@
 import localforage from 'localforage'
-import Api from '../api/api'
 import Transaction from 'arweave/web/lib/transaction'
+import Api from '@/api/api'
 
 export const cache = {
   /**
@@ -34,6 +34,7 @@ export const cache = {
     const tags = Api.gql.getTagsByTransaction(transaction)
     const type = tags.Type
     if (type !== 'status') {
+      console.warn('This transaction is not cached: ' + txid)
       return
     }
     const timestamp = new Date().getTime()
