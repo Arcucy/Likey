@@ -51,7 +51,7 @@ export default {
       if (!this.src) return ''
       return {
         src: this.src,
-        title: this.file.name,
+        title: this.file.name.substring(0, this.file.name.lastIndexOf('.')),
         artist: this.fileSize,
         pic: logo80px
       }
