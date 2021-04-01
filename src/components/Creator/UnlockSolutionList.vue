@@ -151,11 +151,6 @@ export default {
       return this.creatorPst[this.creator.ticker.contract]
     }
   },
-  watch: {
-    customPstInput (val) {
-      this.customPstInput = String(val).replace(/[^\d]/g, '')
-    }
-  },
   async mounted () {
     await this.initContractInfo()
   },
