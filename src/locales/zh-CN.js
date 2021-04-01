@@ -39,7 +39,8 @@ export default {
     shouldnotSponsorYourSelf: '不能自己赞助以及打赏自己',
     youCanOnlyPayForYourSelf: '你只能使用与你当前登录地址相同的钱包进行支付',
     getStatusDetails: '无法获取动态详情',
-    load: '加载失败'
+    load: '加载失败',
+    download: '下载失败'
   },
   app: {
     loading: '加载中'
@@ -230,7 +231,11 @@ export default {
     unlocked: '已解锁',
     displayContent: '显示内容',
     donate: '赞赏',
-    share: '分享'
+    share: '分享',
+    downloading: '下载中',
+    downloaded: '已下载',
+    ifYourDownloadDidnotStarted: '如果你的下载没有开始，',
+    clickHere: '请点击这里'
   },
   home: {
     tabFlow: '最新动态',

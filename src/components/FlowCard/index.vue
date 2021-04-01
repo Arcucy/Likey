@@ -41,15 +41,17 @@
           </p>
         </div>
         <!-- 标题 -->
-        <h4 class="cardunit-r-title">
+        <h4 v-if="title" class="cardunit-r-title">
           {{ title }}
         </h4>
+        <!-- 预览卡片（未上锁时显示） -->
         <Summary
           v-if="!preview.lockContract && !details"
           :preview="preview"
           @load-more="loadMore"
           :loading="detailsLoading"
         />
+        <!-- 解锁卡片（上锁时显示） -->
         <Locked
           v-else-if="!details"
           :preview="preview"
@@ -74,23 +76,35 @@
             :is-encrypt="details.isLock"
           />
         </router-link>
+        <!-- 音频 -->
         <router-link
-          v-for="(item, index) of audio"
+          v-for="(item, index) of audio.slice(0,4)"
           class="jump-shield cardbtm10"
-          :key="index"
+          :key="'audio-' + index"
           :to="{}"
         >
           <AudioCard :audio="item" :is-encrypt="details.isLock" />
         </router-link>
+        <!-- 文件 -->
+        <router-link
+          v-for="(item, index) of files.slice(0,4)"
+          class="jump-shield cardbtm10"
+          :key="'files-' + index"
+          :to="{}"
+        >
+          <FileCard :file="item" :is-encrypt="details.isLock" />
+        </router-link>
         <!-- 动态交互 -->
         <div class="cardunit-r-flows">
           <router-link class="cardunit-r-flows-list" :to="{}">
+            <!-- 赞赏 -->
             <div class="cardunit-r-flows-list-item" @click="likeClick">
               <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
               <span class="cardunit-r-flows-list-item-text">
                 {{ donateBtnText }}
               </span>
             </div>
+            <!-- 分享 -->
             <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
               <span class="mdi mdi-export-variant cardunit-r-flows-list-item-icon" />
               <span class="cardunit-r-flows-list-item-text">
@@ -115,6 +129,7 @@ import Avatar from '@/components/User/Avatar'
 import mainText from './MainText'
 import photoAlbum from './PhotoAlbum'
 import AudioCard from './AudioCard'
+import FileCard from './FileCard'
 import Summary from './Summary'
 import Locked from './Locked'
 
@@ -124,6 +139,7 @@ export default {
     mainText,
     photoAlbum,
     AudioCard,
+    FileCard,
     Summary,
     Locked
   },
@@ -225,6 +241,10 @@ export default {
     audio () {
       if (!this.details || !this.details.extra || !this.details.extra.audios) return []
       return this.details.extra.audios
+    },
+    files () {
+      if (!this.details || !this.details.extra || !this.details.extra.files) return []
+      return this.details.extra.files
     },
     flows () {
       return {

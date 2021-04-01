@@ -508,5 +508,40 @@ export default {
         reject(err)
       })
     })
+  },
+
+  /**
+   * 获取文件
+   * @param {String} txid(TransactionId)  - 文件的交易地址
+   * @param {any} cancelToken - 取消标记（用来取消下载）
+   * @param {Function} callback - 如果需要获取加载进度，请使用这个回调方法
+   */
+  getFile (txid, isEncrypt, cancelToken, callback) {
+    return new Promise((resolve, reject) => {
+      // 加载进度回调
+      let onDownloadProgress
+      if (callback) {
+        onDownloadProgress = progressEvent => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          callback(percentCompleted)
+        }
+      }
+      // get
+      Axios.get(this.getUrlByTxid(txid), {
+        responseType: 'arraybuffer',
+        cancelToken,
+        onDownloadProgress
+      }).then(res => {
+        console.log('res:', res)
+        const type = res.headers['content-type']
+        const uint8View = new Uint8Array(res.data)
+        const data = isEncrypt ? decryptBuffer(uint8View) : uint8View
+        const blob = new Blob([data], { type: type || 'audio/mpeg' })
+        const url = window.URL || window.webkitURL
+        resolve(url.createObjectURL(blob))
+      }).catch(err => {
+        reject(err)
+      })
+    })
   }
 }
