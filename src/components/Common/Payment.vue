@@ -120,12 +120,15 @@ export default {
       if (!this.isLoggedIn) {
         this.$message.warning(this.$t('login.pleaseLogInFirst'))
         this.setLoading(false)
+        this.$emit('input', false)
         return
       }
+      console.log('this.data.data.status.creator', this.data.data.status.creator, this.myAddress)
       if (this.data.data.status.creator === this.myAddress) {
         this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
         this.setLoading(false)
-        return ''
+        this.$emit('input', false)
+        return
       }
       this.showReceipt = false
       this.setLoading(true)
