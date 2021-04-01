@@ -100,9 +100,6 @@ export default {
     &-input {
       display: flex;
       align-items: center;
-      &-input {
-
-      }
       &-ar {
         margin-left: 20px;
         font-size: 18px;
