@@ -39,7 +39,8 @@ export default {
     shouldnotSponsorYourSelf: 'Can\'t sponsor or donate yourself',
     youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address',
     getStatusDetails: 'Unable to get status details',
-    load: 'Failed to load'
+    load: 'Failed to load',
+    download: 'Failed to download'
   },
   app: {
     loading: 'Loading'
@@ -230,7 +231,11 @@ export default {
     unlocked: 'Unlocked',
     displayContent: 'Show Content',
     donate: 'Donate',
-    share: 'Share'
+    share: 'Share',
+    downloading: 'Downloading',
+    downloaded: 'Downloaded',
+    ifYourDownloadDidnotStarted: 'If your download didn\'t started,',
+    clickHere: 'click here'
   },
   home: {
     // 部分翻译存疑
