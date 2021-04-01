@@ -66,7 +66,7 @@
         <!-- 图片 -->
         <router-link
           v-if="media && media.length > 0"
-          class="jump-shield cardtop10"
+          class="jump-shield cardbtm10"
           :to="{}"
         >
           <photoAlbum
@@ -528,8 +528,8 @@ span {
       white-space: pre-line;
     }
 
-    .cardtop10 {
-      margin-top: 10px;
+    .cardbtm10 {
+      margin-bottom: 10px;
       overflow: hidden;
     }
 
