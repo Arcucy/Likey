@@ -131,6 +131,8 @@ export default {
     /** 是否解锁 */
     isUnlocked () {
       // 请把是否解锁的逻辑判断写在这里
+      if (!this.contract || !this.contract.balances[this.myAddress]) return false
+      if (new BigNumber(this.contract.balances[this.myAddress]).isGreaterThanOrEqualTo(new BigNumber(this.preview.lockValue))) return true
       return false
     },
     unlockPstValue () {
