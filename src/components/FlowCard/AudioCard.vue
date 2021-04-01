@@ -111,6 +111,10 @@ export default {
       immediate: true
     }
   },
+  destroyed () {
+    const url = window.URL || window.webkitURL
+    url.revokeObjectURL(this.src)
+  },
   methods: {
     async getAudio () {
       if (this.loading) return
@@ -151,9 +155,16 @@ export default {
     /deep/ .aplayer-body {
       .aplayer-title {
         color: @dark;
+        padding-bottom: 2px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
+        word-break: break-all;
+        white-space: normal;
       }
       .aplayer-author {
-        color: @gray3 !important;
+        display: none;
       }
       .aplayer-time-inner {
         color: @gray3;

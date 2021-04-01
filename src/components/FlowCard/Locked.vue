@@ -95,7 +95,7 @@ export default {
       myAddress: state => state.user.myInfo.address,
       paymentInProgress: state => state.app.paymentInProgress
     }),
-    ...mapGetters(['isLoggedIn']),
+    ...mapGetters(['isLoggedIn', 'isMe']),
     text () {
       return this.preview.summary + (this.preview.summary.length >= 100 ? '...' : '')
     },
@@ -131,7 +131,9 @@ export default {
     /** 是否解锁 */
     isUnlocked () {
       // 请把是否解锁的逻辑判断写在这里
-      if (!this.isLoggedIn || !this.contract) return false
+      if (!this.isLoggedIn) return false
+      if (this.isMe(this.preview.creator)) return true
+      if (!this.contract) return false
       if (!this.contract.balances[this.myAddress]) return false
       if (new BigNumber(this.contract.balances[this.myAddress]).isGreaterThanOrEqualTo(new BigNumber(this.preview.lockValue))) return true
       return false
@@ -162,8 +164,9 @@ export default {
       return this.creator.items
     },
     contract () {
-      if (!this.creator) return {}
-      return this.creatorPst[this.creator.ticker.contract]
+      if (!this.creator) return null
+      const contract = this.creatorPst[this.creator.ticker.contract]
+      return contract.ticker ? contract : null
     }
   },
   watch: {
