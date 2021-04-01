@@ -97,7 +97,6 @@ export default {
   watch: {
     async value (val) {
       if (val) {
-        console.log(this.data)
         this.paymentData.type = this.data.type
         this.setLoading(true)
         await this.buyPst()
@@ -112,17 +111,16 @@ export default {
     async buyPst () {
       if (!this.isLoggedIn) {
         this.$message.warning(this.$t('login.pleaseLogInFirst'))
-        this.setLoading(true)
+        this.setLoading(false)
         return
       }
       if (this.data.data.status.creator === this.myAddress) {
         this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
-        this.setLoading(true)
+        this.setLoading(false)
         return ''
       }
       this.showReceipt = false
-
-      console.log(this.data)
+      this.setLoading(true)
 
       // 换算为具体支付的金额
       let value
@@ -135,7 +133,6 @@ export default {
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
-          console.log(this.paymentData.data)
           break
         case '1':
           value = this.convertPstToWinston(this.data.data.donation.value, this.data.data.contract.ratio)
@@ -148,7 +145,6 @@ export default {
             statusId: this.data.data.status.id,
             value: this.data.data.donation.value
           }
-          console.log(this.paymentData.data)
           break
       }
 
@@ -170,18 +166,22 @@ export default {
         const myWalletAddress = await this.$api.ArweaveNative.wallets.getAddress(jwk)
         if (myWalletAddress === this.data.data.status.creator) {
           this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+          this.setLoading(false)
           return
         }
         if (myWalletAddress !== this.myAddress) {
           this.$message.warning(this.$t('failure.youCanOnlyPayForYourSelf'))
+          this.setLoading(false)
           return
         }
       } catch (err) {
         this.$message.warning(this.$t('failure.fileFormatError'))
+        this.setLoading(false)
         return
       }
 
       this.showKeyReader = false
+      this.setLoading(true)
       const callback = (event, id) => {
         console.log(event, id)
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
