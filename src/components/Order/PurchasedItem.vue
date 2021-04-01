@@ -5,15 +5,15 @@
         <div class="purchased-item-left-type-info">
           <span class="purchased-item-left-type-info-title">{{ purchaseType }}</span>
           <div class="purchased-item-left-type-info-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.id)" />
+            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.node.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.id)" />
           </div>
         </div>
-        <span class="purchased-item-left-type-info-spend">{{ indicator }}{{ purchase.quantity.winston | winstonToAr }} AR</span>
+        <span class="purchased-item-left-type-info-spend">{{ indicator }}{{ purchase.node.quantity.winston | winstonToAr }} AR</span>
       </div>
-      <div class="purchased-item-left-info" v-if="purchase.parsedTag.purchasetype === 'Likey-Sponsor'">
-        <span class="purchased-item-left-info-item">{{ purchase.parsedTag.solutiontitle || '' }}</span>
-        <div class="purchased-item-left-info-pst">
-          <span class="purchased-item-left-info-pst-value">+{{ purchase.parsedTag.solutionvalue }}</span>
+      <div class="purchased-item-left-info" v-if="purchase.node.parsedTag.purchasetype === 'Likey-Sponsor'">
+        <span class="purchased-item-left-info-item">{{ purchase.node.parsedTag.solutiontitle || '' }}</span>
+        <div class="purchased-item-left-info-pst" v-if="this.purchase.txType === 'Out'">
+          <span class="purchased-item-left-info-pst-value">+{{ purchase.node.parsedTag.solutionvalue }}</span>
           <span class="purchased-item-left-info-pst-ticker"> {{ tickerContract.ticker }}</span>
         </div>
       </div>
@@ -24,7 +24,7 @@
             <span class="username">{{ username }}</span>
           </div>
           <div class="purchased-item-left-recipient-user-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.target}`">{{ purchase.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.recipient)" />
+            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.node.target}`">{{ purchase.node.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.target)" />
           </div>
         </div>
         <span class="purchased-item-right-time">{{ createTime }}</span>
@@ -60,7 +60,7 @@ export default {
       appLang: state => state.app.appLang
     }),
     purchaseType () {
-      switch (this.purchase.parsedTag.purchasetype) {
+      switch (this.purchase.node.parsedTag.purchasetype) {
         case 'Likey-Sponsor':
           return this.$t('order.purchasePST')
         case 'Likey-Donation':
@@ -70,7 +70,7 @@ export default {
       }
     },
     createTime () {
-      const time = this.$moment(Number(this.purchase.parsedTag.unixtime)).locale(this.appLang)
+      const time = this.$moment(Number(this.purchase.node.parsedTag.unixtime)).locale(this.appLang)
       if (!momentFun.isNDaysAgo(2, time)) return time.fromNow()
       else if (!momentFun.isNDaysAgo(365, time)) return time.format('MMMDo')
       return time.format('YYYY MMMDo')
@@ -89,16 +89,12 @@ export default {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
     /** 初始化卡片 */
     async initHistoryData () {
-      if (!this.purchase.tickerContract) {
-        await this.getCreatorInfo()
-        this.tickerContract = await this.getPstContract(this.purchase.parsedTag.contract)
-      }
-      this.tickerContract = { ...this.purchase.tickerContract }
+      await this.getCreatorInfo()
+      this.tickerContract = { ...await this.getPstContract(this.purchase.node.parsedTag.contract) }
       if (!this.purchase.username) {
-        const res = await this.$api.gql.getIdByAddress(this.purchase.traget)
+        const res = await this.$api.gql.getIdByAddress(this.purchase.node.target)
         this.username = res.data
       }
-      this.username = this.purchase.username
     },
     /** 复制合约地址 */
     copyAddress (address) {

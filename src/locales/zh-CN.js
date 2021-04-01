@@ -183,8 +183,10 @@ export default {
     myBalance: '已经持有'
   },
   donation: {
+    donateToCreator: '打赏创作者',
     pleaseInputDonationAmount: '请输入打赏金额',
-    donationAmountShouldnotBeNone: '打赏金额不能为空'
+    donationAmountShouldnotBeNone: '打赏金额不能为空',
+    pleaseInputValidDonationAmount: '请输入正确的打赏金额'
   },
   payment: {
     pay: '支 付',
@@ -213,7 +215,9 @@ export default {
     nodata: '暂无历史订单数据'
   },
   statistics: {
-    historyIncome: '历史收入'
+    historyIncome: '历史收入',
+    donationCount: '打赏人数',
+    sponsorCount: '赞助人数'
   },
   flowCard: {
     loadMore: '加载全文',

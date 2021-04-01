@@ -295,7 +295,6 @@ export default {
 
     status = 'onDeveloper'
     callback(status, '')
-    console.log(DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1)
     if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1) {
       if (paymentAddress === DEVELOPER) {
         developerQuantity = new BigNumber('0')
@@ -322,12 +321,10 @@ export default {
 
             if (String(txStatus.status).length === 3 && !String(txStatus.status).startsWith('2')) {
               status = 'onDeveloperError'
-              console.log(txStatus)
               callback(status, developerTransaction.id)
               throw new Error('Send Developer Tip Failed')
             }
             status = 'onDeveloperPosted'
-            console.log(status, developerTransaction.id)
             callback(status, developerTransaction.id)
 
             // 分润的金额
@@ -365,7 +362,6 @@ export default {
       let status = 'onSponsorAddedStarted'
       callback(status, '')
       const pstState = await this.readLikeyCreatorPstContract(contract)
-      console.log(pstState)
       const obj = LikeyCreatorPst.sponsorAdded()
 
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
