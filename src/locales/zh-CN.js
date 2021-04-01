@@ -183,8 +183,10 @@ export default {
     myBalance: '已经持有'
   },
   donation: {
+    donateToCreator: '打赏创作者',
     pleaseInputDonationAmount: '请输入打赏金额',
-    donationAmountShouldnotBeNone: '打赏金额不能为空'
+    donationAmountShouldnotBeNone: '打赏金额不能为空',
+    pleaseInputValidDonationAmount: '请输入正确的打赏金额'
   },
   payment: {
     pay: '支 付',

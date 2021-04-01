@@ -3,6 +3,7 @@
     <SolutionPurchaseReceipt
       v-model="showReceipt"
       :receipt="paymentData.data"
+      :loading="receiptLoading"
       @confirm="openKeyReader"
       @dialog-close="handleReceiptClose"
     />
@@ -71,6 +72,7 @@ export default {
       showKeyReader: false,
       // import convertPstToWinston
       convertPstToWinston: decode.convertPstToWinston,
+      receiptLoading: false,
       paymentData: {
         type: '0',
         data: {
@@ -79,7 +81,13 @@ export default {
           creator: new BigNumber('0'),
           holder: new BigNumber('0'),
           developer: new BigNumber('0'),
-          owner: ''
+          owner: '',
+          item: {
+            title: '',
+            description: '',
+            number: '',
+            value: ''
+          }
         }
       }
     }
@@ -121,10 +129,13 @@ export default {
       }
       this.showReceipt = false
       this.setLoading(true)
+      this.showReceipt = true
 
       // 换算为具体支付的金额
+      this.receiptLoading = true
       let value
       switch (this.data.type) {
+        // 0 为解锁
         case '0':
           value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
           value = new BigNumber(value).toFixed(0)
@@ -134,21 +145,19 @@ export default {
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
           break
+        // 1 为打赏
         case '1':
-          value = this.convertPstToWinston(this.data.data.donation.value, this.data.data.contract.ratio)
-          value = new BigNumber(value).toFixed(0)
-
+          value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
           this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
           this.paymentData.data.contract = this.data.data.contract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = {
             statusId: this.data.data.status.id,
-            value: this.data.data.donation.value
+            value: value
           }
           break
       }
-
-      this.showReceipt = true
+      this.receiptLoading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
@@ -183,7 +192,6 @@ export default {
       this.showKeyReader = false
       this.setLoading(true)
       const callback = (event, id) => {
-        console.log(event, id)
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)

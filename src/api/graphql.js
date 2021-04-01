@@ -201,7 +201,7 @@ export default {
     }
     return ''
   },
-  async getAllPurchasesStats (address, mode, first = 10) {
+  async getAllPurchasesStats (address, mode, first = 100) {
     const query = gql`
       query getAllPurchasesStats($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
         transactions (
@@ -247,7 +247,7 @@ export default {
     let hasNextPage = true
     let after = ''
     while (hasNextPage) {
-      const res = await graph.request(query, { address, purchaseType, first: 2, after })
+      const res = await graph.request(query, { address, purchaseType, first, after })
       hasNextPage = res.transactions.pageInfo.hasNextPage
       res.transactions.edges.forEach(() => count++)
       after = res.transactions.edges[res.transactions.edges.length - 1].cursor

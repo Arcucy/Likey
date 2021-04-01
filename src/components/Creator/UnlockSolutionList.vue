@@ -70,6 +70,7 @@
     <SolutionPurchaseReceipt
       v-model="showReceipt"
       :receipt="paymentData"
+      :loading="receiptLoading"
       @confirm="openKeyReader"
       @dialog-close="handleReceiptClose"
     />
@@ -104,6 +105,7 @@ export default {
       customPstInput: 1,
       ratio: '',
       loading: false,
+      receiptLoading: false,
       showReceipt: false,
       showKeyReader: false,
       /**
@@ -210,7 +212,9 @@ export default {
       }
 
       this.showReceipt = false
+      this.showReceipt = true
       this.loading = true
+      this.receiptLoading = true
       this.paymentType = 0
 
       // 换算为具体支付的金额
@@ -225,8 +229,7 @@ export default {
         value: item.value,
         number: '1'
       }
-
-      this.showReceipt = true
+      this.receiptLoading = false
     },
     /** 购买自定义方案 */
     async buyCustomSolution (value) {
@@ -240,7 +243,9 @@ export default {
       }
 
       this.showReceipt = false
+      this.showReceipt = true
       this.loading = true
+      this.receiptLoading = true
       this.paymentType = 1
 
       // 换算为具体支付的金额
@@ -255,8 +260,7 @@ export default {
         value: '1',
         number: '1'
       }
-
-      this.showReceipt = true
+      this.receiptLoading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {

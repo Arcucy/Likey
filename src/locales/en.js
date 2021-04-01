@@ -183,8 +183,10 @@ export default {
     myBalance: 'Already Own'
   },
   donation: {
+    donateToCreator: 'Donate Creator',
     pleaseInputDonationAmount: 'Please input the amount of PST to donate',
-    donationAmountShouldnotBeNone: 'Donation amount should not be empty'
+    donationAmountShouldnotBeNone: 'Donation amount should not be empty',
+    pleaseInputValidDonationAmount: 'Please input a valid amount for donation'
   },
   payment: {
     pay: 'Pay',

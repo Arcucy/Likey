@@ -118,11 +118,7 @@ export default {
   async mounted () {
     this.loading = true
     this.contract = await this.getPstContract(this.creators[this.address].ticker.contract)
-    const sdCount = await this.$api.gql.getAllSponsorsAndDonations(this.creator.ticker.contract)
-    let count = 0
-    count += sdCount.sponsors ? sdCount.sponsors.length : 0
-    count += sdCount.donations ? sdCount.donations.length : 0
-    this.sponsorAndDonationCount = count
+    this.sponsorAndDonationCount = await this.$api.gql.getAllPurchasesStats(this.creator.ticker.contract, 'all')
     this.loading = false
   },
   methods: {

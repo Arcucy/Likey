@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      :title="$t('donation.pleaseInputDonationAmount')"
+      :title="$t('donation.donateToCreator')"
       :visible.sync="dialogVisible"
       :before-close="handleClose"
       width="380px"
@@ -9,7 +9,10 @@
     >
       <div class="donation-wrapper">
         <div class="donation-container">
-          <el-input v-model="input" placeholder="请输入内容" />
+          <div class="donation-container-input">
+            <el-input v-model="arInput" class="donation-container-input-input" :placeholder="$t('donation.pleaseInputDonationAmount')" />
+            <span class="donation-container-input-ar"> AR</span>
+          </div>
           <el-button
             class="donation-confirm-button"
             type="primary"
@@ -41,12 +44,21 @@ export default {
       input: ''
     }
   },
+  computed: {
+    arInput: {
+      /** 输入过滤 */
+      set (val) {
+        // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
+        this.input = val.replace(/([^0-9.])|((?<=(\d+)?\.\d+)\.+(.+)?)|((?<=\.)\.+)/g, '')
+      },
+      get () {
+        return this.input
+      }
+    }
+  },
   watch: {
     value (val) {
       this.dialogVisible = val
-    },
-    input (val) {
-      this.input = String(val).replace(/[^\d]/g, '')
     }
   },
   methods: {
@@ -57,6 +69,15 @@ export default {
           message: this.$t('donation.donationAmountShouldnotBeNone'),
           type: 'error'
         })
+        return
+      }
+      if (!/^[0-9]+(\.[0-9]{0,11})?$/.test(this.input)) {
+        this.$message({
+          showClose: true,
+          message: this.$t('donation.pleaseInputValidDonationAmount'),
+          type: 'error'
+        })
+        return
       }
       this.$emit('confirm-donation', String(this.input))
     },
@@ -75,6 +96,20 @@ export default {
   .donation-container {
     display: flex;
     flex-direction: column;
+
+    &-input {
+      display: flex;
+      align-items: center;
+      &-input {
+
+      }
+      &-ar {
+        margin-left: 20px;
+        font-size: 18px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+    }
 
     .donation-confirm-button {
       margin-top: 20px
