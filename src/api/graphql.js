@@ -249,6 +249,7 @@ export default {
     while (hasNextPage) {
       const res = await graph.request(query, { address, purchaseType, first, after })
       hasNextPage = res.transactions.pageInfo.hasNextPage
+      if (!hasNextPage && res.transactions.edges.length === 0) return 0
       res.transactions.edges.forEach(() => count++)
       after = res.transactions.edges[res.transactions.edges.length - 1].cursor
     }
