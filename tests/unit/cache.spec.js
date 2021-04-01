@@ -11,9 +11,17 @@
   process.env.VUE_APP_SCHEMA_VERSION_SUPPORTED = '0.1.0'
 })()
 
-const API = require('@/api/api').default
 const cache = require('@/util/cache').cache
 const decode = require('@/util/decode').default
+
+const arweave = require('arweave')
+const arweaveInstance = arweave.init({
+  host: process.env.VUE_APP_ARWEAVE_NODE,
+  port: 443,
+  protocol: 'https',
+  timeout: 20000,
+  logging: false
+})
 
 const txid = 'gALBba4ifeK4NqcIu5iPw42pYDyeSSr9CX_ajuZlrJo'
 
@@ -23,13 +31,13 @@ describe('cache.js', () => {
   })
 
   it('should get transaction', async () => {
-    const transaction = await API.gql.getTransactionDetail(txid)
+    const transaction = await arweaveInstance.transactions.get(txid)
     expect(transaction).toBeDefined()
     expect(JSON.parse(decode.uint8ArrayToString(transaction.data)).title).toBe('这只是一个测试')
   }, 20000)
 
   it('should not be cached', async () => {
-    const transaction = await API.gql.getTransactionDetail('4rGv64nxRuMUpXKN09KocuRUBIrliQAGVhofcPWLHEE')
+    const transaction = await arweaveInstance.transactions.get('4rGv64nxRuMUpXKN09KocuRUBIrliQAGVhofcPWLHEE')
     expect(transaction).toBeDefined()
     await cache.cacheTheTransaction(txid, transaction)
     const cachedTransaction = await cache.getCachedTransactionByTxid(txid)
@@ -37,7 +45,7 @@ describe('cache.js', () => {
   }, 20000)
 
   it('should be cached correctly', async () => {
-    const transaction = await API.gql.getTransactionDetail(txid)
+    const transaction = await arweaveInstance.transactions.get(txid)
     await cache.cacheTheTransaction(txid, transaction)
     const cachedTransaction = await cache.getCachedTransactionByTxid(txid)
     expect(cachedTransaction).toEqual(transaction)
