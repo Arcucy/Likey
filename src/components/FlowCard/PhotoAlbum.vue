@@ -193,7 +193,6 @@ img {
 .album-frame {
   position: relative;
   width: 100%;
-  margin: 0 0 10px;
 
   &-pillar {
     padding-bottom: 56.25%;

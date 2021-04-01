@@ -66,7 +66,7 @@
         <!-- 图片 -->
         <router-link
           v-if="media && media.length > 0"
-          class="jump-shield cardtop10"
+          class="jump-shield cardbtm10"
           :to="{}"
         >
           <photoAlbum
@@ -74,7 +74,15 @@
             :is-encrypt="details.isLock"
           />
         </router-link>
-        <!-- 统计数据 -->
+        <router-link
+          v-for="(item, index) of audio"
+          class="jump-shield cardbtm10"
+          :key="index"
+          :to="{}"
+        >
+          <AudioCard :audio="item" :is-encrypt="details.isLock" />
+        </router-link>
+        <!-- 动态交互 -->
         <div class="cardunit-r-flows">
           <router-link class="cardunit-r-flows-list" :to="{}">
             <div class="cardunit-r-flows-list-item" @click="likeClick">
@@ -106,6 +114,7 @@ import { decryptText } from '@/util/encrypt'
 import Avatar from '@/components/User/Avatar'
 import mainText from './MainText'
 import photoAlbum from './PhotoAlbum'
+import AudioCard from './AudioCard'
 import Summary from './Summary'
 import Locked from './Locked'
 
@@ -114,6 +123,7 @@ export default {
     Avatar,
     mainText,
     photoAlbum,
+    AudioCard,
     Summary,
     Locked
   },
@@ -211,6 +221,10 @@ export default {
     media () {
       if (!this.details || !this.details.extra || !this.details.extra.medias) return []
       return this.details.extra.medias
+    },
+    audio () {
+      if (!this.details || !this.details.extra || !this.details.extra.audios) return []
+      return this.details.extra.audios
     },
     flows () {
       return {
@@ -513,8 +527,8 @@ span {
       white-space: pre-line;
     }
 
-    .cardtop10 {
-      margin-top: 10px;
+    .cardbtm10 {
+      margin-bottom: 10px;
       overflow: hidden;
     }
 

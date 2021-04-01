@@ -26,7 +26,8 @@ export default {
     $route (val, oldVal) {
       const noId = val.params.id !== oldVal.params.id
       const noShortname = val.params.shortname !== oldVal.params.shortname
-      if (noId || noShortname) this.routerRefresh()
+      const isSameName = val.params.name === oldVal.params.name
+      if (isSameName && (noId || noShortname)) this.routerRefresh()
     }
   }
 }
