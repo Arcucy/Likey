@@ -74,7 +74,15 @@
             :is-encrypt="details.isLock"
           />
         </router-link>
-        <!-- 统计数据 -->
+        <router-link
+          v-for="(item, index) of audio"
+          class="jump-shield cardbtm10"
+          :key="index"
+          :to="{}"
+        >
+          <AudioCard :audio="item" :is-encrypt="details.isLock" />
+        </router-link>
+        <!-- 动态交互 -->
         <div class="cardunit-r-flows">
           <router-link class="cardunit-r-flows-list" :to="{}">
             <DonationPurchase
@@ -111,6 +119,7 @@ import { decryptText } from '@/util/encrypt'
 import Avatar from '@/components/User/Avatar'
 import mainText from './MainText'
 import photoAlbum from './PhotoAlbum'
+import AudioCard from './AudioCard'
 import Summary from './Summary'
 import Locked from './Locked'
 import DonationPurchase from '@/components/Common/DonationPurchase'
@@ -120,6 +129,7 @@ export default {
     Avatar,
     mainText,
     photoAlbum,
+    AudioCard,
     Summary,
     Locked,
     DonationPurchase
@@ -218,6 +228,10 @@ export default {
     media () {
       if (!this.details || !this.details.extra || !this.details.extra.medias) return []
       return this.details.extra.medias
+    },
+    audio () {
+      if (!this.details || !this.details.extra || !this.details.extra.audios) return []
+      return this.details.extra.audios
     },
     flows () {
       return {
