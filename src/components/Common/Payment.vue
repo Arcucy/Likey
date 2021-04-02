@@ -142,7 +142,7 @@ export default {
         case '0':
           value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
           value = new BigNumber(value).toFixed(0)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
@@ -150,7 +150,7 @@ export default {
         // 1 为打赏
         case '1':
           value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.contract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = {
@@ -208,10 +208,19 @@ export default {
       this.openTransactionInProgressNotify()
       switch (this.paymentData.type) {
         case '0':
-          await this.$api.contract.sponsorAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.total, this.paymentData.data.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.data.data.status.lockContract,
+            this.paymentData.data.total.toString(),
+            this.paymentData.data.item, callback
+          )
           break
         case '1':
-          await this.$api.contract.donationAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.item.statusId, this.paymentData.data.total, this.paymentData.data.item.value, callback)
+          await this.$api.contract.donationAdded(jwk,
+            this.data.data.status.lockContract,
+            this.paymentData.data.item.statusId,
+            this.paymentData.data.total.toString(),
+            this.paymentData.data.item.value, callback
+          )
           break
       }
       this.setLoading(false)

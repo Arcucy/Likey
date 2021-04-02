@@ -95,7 +95,7 @@ export default {
     },
     totalValue () {
       if (!this.receipt.total) return new BigNumber('0')
-      return this.receipt.total.plus(this.receipt.fee).toString()
+      return this.receipt.total.plus(this.receipt.fee).plus(this.receipt.holders).plus(this.receipt.developer).toString()
     }
   },
   watch: {

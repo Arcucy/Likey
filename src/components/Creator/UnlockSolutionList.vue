@@ -221,7 +221,12 @@ export default {
       let value = this.convertPstToWinston(item.value)
       value = new BigNumber(value).toFixed(0)
 
-      this.paymentData = await this.$api.contract.distributeTokens(this.contract, value, undefined, false)
+      this.paymentData = await this.$api.contract.distributeTokens(this.contract,
+        value,
+        undefined,
+        false,
+        this.myAddress
+      )
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
       this.paymentData.item = {
@@ -253,7 +258,12 @@ export default {
       value = this.convertPstToWinston(String(value))
       const paymentValue = new BigNumber(value).toFixed(0)
 
-      this.paymentData = await this.$api.contract.distributeTokens(this.contract, paymentValue, undefined, false)
+      this.paymentData = await this.$api.contract.distributeTokens(this.contract,
+        paymentValue,
+        undefined,
+        false,
+        this.myAddress
+      )
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
       this.paymentData.item = {
@@ -300,11 +310,19 @@ export default {
       switch (this.paymentType) {
         case 0:
           // 执行合约
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.creator.ticker.contract,
+            this.paymentData.total.toString(),
+            this.paymentData.item, callback
+          )
           this.loading = false
           break
         case 1:
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.creator.ticker.contract,
+            this.paymentData.total.toString(),
+            this.paymentData.item, callback
+          )
           this.loading = false
           break
       }
