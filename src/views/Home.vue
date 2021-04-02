@@ -90,7 +90,7 @@ export default {
       // 动态列表
       flow: [],
       flowLoading: false,
-      hasNextPage: false,
+      hasNextPage: true,
       showPaymentDialog: false,
       showDonationInput: false,
       donateData: {
