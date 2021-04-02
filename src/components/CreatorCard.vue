@@ -1,13 +1,15 @@
 <template>
-  <a :href="loading ? 'javascript:void(0)' : '/#/@' + creator.shortname" :class="loading ? 'card-loading' : ''">
-    <div class="creator-card" v-loading="loading">
-      <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
-      <div style="display: inline-block" class="creator-card-info">
-        <span class="creator-card-info-name">{{ id }}</span><br>
-        <span class="creator-card-info-bio">{{ creator.intro }}</span>
+  <div>
+    <a :href="loading ? 'javascript:void(0)' : '/#/@' + creator.shortname" :class="loading ? 'card-loading' : ''">
+      <div class="creator-card" v-loading="loading">
+        <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
+        <div style="display: inline-block" class="creator-card-info">
+          <span class="creator-card-info-name">{{ id }}</span><br>
+          <span class="creator-card-info-bio">{{ creator.intro }}</span>
+        </div>
       </div>
-    </div>
-  </a>
+    </a>
+  </div>
 </template>
 <script>
 import Avatar from '@/components/User/Avatar'
@@ -65,7 +67,6 @@ a {
   box-sizing: border-box;
   border-radius: 6px;
   padding: 20px;
-  margin-top: 10px;
   display: flex;
   align-items: center;
   &-avatar {
@@ -82,7 +83,7 @@ a {
   cursor: not-allowed;
 }
 
-.el-loading-mask {
+/deep/.el-loading-mask {
   border-radius: 6px;
 }
 </style>

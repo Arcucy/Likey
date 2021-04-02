@@ -26,7 +26,7 @@
             v-loading="loading"
             class="wallet-upload-button"
             type="primary"
-            :disabled="disallowStep2"
+            :disabled="!Boolean(keyFileContent)"
             block
             @click="step2"
           >
@@ -56,7 +56,8 @@ export default {
       fileName: '',
       dialogVisible: this.value,
       disallowStep2: true,
-      keepLoggedIn: false
+      keepLoggedIn: false,
+      keyFileContent: null
     }
   },
   computed: {
@@ -93,6 +94,8 @@ export default {
           })
 
           fileInput.addEventListener('change', () => {
+            this.file = null
+            this.keyFileContent = null
             this.disAllowStep2 = true
             this.file = fileInput.files[0]
             const reader = new FileReader()
@@ -103,6 +106,7 @@ export default {
                 this.fileName = this.file.name
                 this.disallowStep2 = false
                 fileInput.value = null
+                fileInput.files = null
               } catch (err) {
               }
             }
@@ -134,9 +138,12 @@ export default {
 
       this.file = null
       fileInput.value = null
+      fileInput.files = null
+      this.keyFileContent = null
 
       this.dialogVisible = false
       this.$emit('dialog-close', true)
+      this.$emit('input', false)
       done()
     },
     step2 () {

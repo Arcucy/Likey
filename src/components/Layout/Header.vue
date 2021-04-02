@@ -228,6 +228,10 @@ export default {
         this.mSetThemeName(lsThemeName)
         this.$switchElementTheme(lsThemeName)
       }
+      const themeName = currentTheme.split('-')[0]
+      ls.setItem('theme', themeName)
+      this.mSetThemeName(themeName)
+      this.$switchElementTheme(themeName)
     },
     /** 切换主题 */
     switchTheme () {

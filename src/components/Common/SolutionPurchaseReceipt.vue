@@ -29,6 +29,14 @@
           <span>{{ $t('payment.total') }}</span>
           <span>{{ totalValue | winstonToAr | finalize(loading) }}</span>
         </div>
+        <div class="solution-purchase-item">
+          <span>{{ $t('payment.currentBalance') }}</span>
+          <span> {{ receipt.balance | winstonToAr | finalize(loading) }}</span>
+        </div>
+        <div class="solution-purchase-item">
+          <span>{{ $t('payment.afterBalance') }}</span>
+          <span> {{ newBalance | winstonToAr | finalize(loading) }}</span>
+        </div>
       </div>
       <el-button
         type="primary"
@@ -60,7 +68,8 @@ export default {
           fee: '',
           total: '',
           owner: '',
-          selected: ''
+          selected: '',
+          balance: ''
         }
       }
     },
@@ -71,7 +80,8 @@ export default {
   },
   data () {
     return {
-      dialogVisible: this.value
+      dialogVisible: this.value,
+      balance: '0'
     }
   },
   computed: {
@@ -95,11 +105,18 @@ export default {
     },
     totalValue () {
       if (!this.receipt.total) return new BigNumber('0')
-      return this.receipt.total.plus(this.receipt.fee).toString()
+      const result = this.receipt.total.plus(this.receipt.fee).plus(this.receipt.holders).plus(this.receipt.developer)
+      return result
+    },
+    newBalance () {
+      if (!this.receipt.balance && !this.receipt.total) return new BigNumber('0')
+      const currentBalance = new BigNumber(this.receipt.balance)
+      const cost = this.receipt.total.plus(this.receipt.fee).plus(this.receipt.holders).plus(this.receipt.developer)
+      return currentBalance.minus(cost)
     }
   },
   watch: {
-    value (val) {
+    async value (val) {
       this.dialogVisible = val
     }
   },

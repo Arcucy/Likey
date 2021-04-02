@@ -183,6 +183,7 @@ export default {
   async mounted () {
     this.getPostStatus()
     if (!this.owner) await this.getCreatorInfo(this.preview.creator)
+    if (!this.contract) await this.getPstContract(this.creator.ticker.contract)
   },
   methods: {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
@@ -203,7 +204,7 @@ export default {
       this.$emit('locked-payment', {
         status: this.preview,
         unlock: matchedItem,
-        contract: this.contract
+        contract: this.creator.ticker.contract
       })
     },
     loadMore () {
