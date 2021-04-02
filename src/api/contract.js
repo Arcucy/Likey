@@ -5,9 +5,9 @@ import { Message } from 'element-ui'
 import BigNumber from 'bignumber.js'
 
 // PST 合约 zNR-5J9CJERI2s4rFnvCHOo85GY3L66prbFygB-5hFg
-const LIKEY_CREATOR_PST_CONTRACT = 'fdCi9eHLKBF4jnH98tbMzSi-VRDBp_Vzs8M5f8Z6JgQ'
-const LIKEY_CONTRACT = 'XUc8q12a_Me80D4TJopM0ruW4McTPTk1EChVHzNk1lM'
-const DEVELOPER = 't1YdNMmOJFaUwtraiM1I3vJPqhU9QxiWjjiprOPo9aA'
+const LIKEY_CREATOR_PST_CONTRACT = process.env.VUE_APP_LIKEY_PST_CONTRACT_SRC
+const LIKEY_CONTRACT = process.env.VUE_APP_LIKEY_CONTRACT
+const DEVELOPER = process.env.VUE_APP_DEVELOPER_ADDRESS
 const PST_HOLDER_TIP = '0.15'
 const DEVELOPER_TIP = '0.05'
 
