@@ -235,27 +235,34 @@ export default {
 }
 
 @media screen and (max-width: 799px) {
-  .row {
-    display: flex;
-    flex-direction: column-reverse;
-    .col-6, .col-3 {
-      width: 100%;
+  .container {
+    width: 100%;
+    .row {
+      display: flex;
+      flex-direction: column-reverse;
+      .col-6, .col-3 {
+        width: 100%;
+      }
     }
   }
 }
 
 @media screen and (max-width: 640px) {
-  .row {
-    .col-6, .col-3 {
-      padding: 0;
-      margin-bottom: 20px;
+  .container {
+    width: 100%;
+    .row {
+      .col-6, .col-3 {
+        width: 100%;
+        padding: 0;
+        margin-bottom: 20px;
+      }
     }
-  }
-  .col-header {
-    padding: 0 16px;
-  }
-  .flow-card {
-    margin-bottom: 1px;
+    .col-header {
+      padding: 0 16px;
+    }
+    .flow-card {
+      margin-bottom: 1px;
+    }
   }
 }
 </style>
