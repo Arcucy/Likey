@@ -50,10 +50,10 @@
           {{ $t('setting.exchangeRatio') }}
         </h4>
         <div class="setting-creator-item-input">
-          <span>1 {{ ticker || 'PST' }} =</span>
+          <span class="setting-creator-item-input-pst-ratio">1 {{ ticker || 'PST' }} =</span>
           <div class="setting-creator-item-input-ratio">
             <el-input v-model="exchangeRatio" :placeholder="1" />
-            <span>AR</span>
+            <span class="setting-creator-item-input-ratio-ticker">AR</span>
           </div>
         </div>
         <p class="setting-creator-item-desp">
@@ -590,12 +590,22 @@ export default {
           font-size: 20px;
         }
 
+        &-pst-ratio {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          overflow: hidden;
+          word-break: break-all;
+          white-space: normal;
+        }
+
         &-ratio {
           display: flex;
           flex-direction: row;
           align-items: center;
           column-gap: 10px;
           width: 150px;
+          min-width: 150px;
         }
       }
 
