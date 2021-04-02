@@ -106,11 +106,13 @@ export default {
   methods: {
     handleClose (done) {
       this.dialogVisible = false
+      this.$emit('input', false)
       this.$emit('dialog-close', true)
       done()
     },
     confirm () {
       this.$emit('confirm', true)
+      this.$emit('input', false)
       this.dialogVisible = false
     }
   }

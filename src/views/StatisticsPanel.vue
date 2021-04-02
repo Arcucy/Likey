@@ -12,19 +12,19 @@
       <div class="my-stats-pst-block">
         <div class="my-stats-pst-block-item" v-loading="contractLoading">
           <span class="my-stats-pst-block-item-title">{{ $t('sponsor.totalSupply') }}</span>
-          <span class="my-stats-pst-block-item-number">{{ totalSupply | winstonToAr }}</span>
+          <span class="my-stats-pst-block-item-number">{{ totalSupply | winstonToAr | abbreviateNumber }}</span>
         </div>
         <div class="my-stats-pst-block-item" v-loading="contractLoading">
           <span class="my-stats-pst-block-item-title">{{ $t('sponsor.holders') }}</span>
-          <span class="my-stats-pst-block-item-number">{{ holders }}</span>
+          <span class="my-stats-pst-block-item-number">{{ holders | abbreviateNumber }}</span>
         </div>
         <div class="my-stats-pst-block-item" v-loading="totalSponsorsLoading">
           <span class="my-stats-pst-block-item-title">{{ $t('statistics.sponsorCount') }}</span>
-          <span class="my-stats-pst-block-item-number">{{ totalSponsors }}</span>
+          <span class="my-stats-pst-block-item-number">{{ totalSponsors | abbreviateNumber }}</span>
         </div>
         <div class="my-stats-pst-block-item" v-loading="totalDonationsLoading">
           <span class="my-stats-pst-block-item-title">{{ $t('statistics.donationCount') }}</span>
-          <span class="my-stats-pst-block-item-number">{{ totalDonations }}</span>
+          <span class="my-stats-pst-block-item-number">{{ totalDonations | abbreviateNumber }}</span>
         </div>
       </div>
     </div>
@@ -45,24 +45,20 @@
         </h4>
       </div>
       <div class="my-stats-container">
-        <div v-if="tabList.length > 0">
-          <PurchasedItem
-            v-for="(item, index) of tabList"
-            :key="index"
-            :purchase="item"
-          />
-          <InfiniteScroll
-            class="flow-card"
-            :no-data="!tabList || !tabList.length"
-            :loading="loading"
-            :distance="500"
-            :disable="!hasNextPage"
-            @load="getList"
-          />
-        </div>
-        <div class="no-data" v-if="(!flash && tabList.length === 0) || loading">
-          <span>{{ $t('order.nodata') }}</span>
-        </div>
+        <PurchasedItem
+          v-for="(item, index) of tabList"
+          :key="index"
+          :purchase="item"
+        />
+        <InfiniteScroll
+          class="orders-card"
+          :no-data="!tabList || !tabList.length"
+          :no-data-text="$t('order.nodata')"
+          :loading="dataLoading"
+          :distance="500"
+          :disable="!hasNextPage"
+          @load="getList"
+        />
       </div>
     </div>
   </div>
@@ -85,6 +81,7 @@ export default {
   data () {
     return {
       loading: false,
+      dataLoading: false,
       tab: this.$route.query.tab || '',
       defaultTab: 'all',
       tabs: [
@@ -207,14 +204,14 @@ export default {
     },
     /** 获取标签页的数据 */
     async getList (tab) {
-      if (this.loading) return
-      this.loading = true
+      if (this.dataLoading || this.loading) return
+      this.dataLoading = true
       const tx = await this.$api.gql.getAllSponsorAndDonation(this.myAddress, tab, this.pagesize, this.endCursor)
       this.parseTags(tx)
 
       this.tabList.push(...tx.transactions.edges)
       this.hasNextPage = tx.transactions.pageInfo.hasNextPage
-      this.loading = false
+      this.dataLoading = false
     },
     async getContractState () {
       await this.getPstContract(this.creator.ticker.contract)
@@ -245,25 +242,26 @@ export default {
 <style lang="less" scoped>
 .my-stats {
   margin: 20px auto 0px;
-  padding: 10px;
-  box-sizing: border-box;
   max-width: 1200px;
   width: 100%;
   display: flex;
   justify-content: center;
   flex-direction: column;
+  padding: 0 10px;
+  box-sizing: border-box;
 
   &-pst {
     &-title {
       h3 {
         color: @dark;
-        margin-bottom: 10px;
-        line-height: 22px;
         text-align: left;
+        margin-top: 0;
       }
     }
     &-block {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-gap: 10px 10px;
       justify-content: space-between;
 
       &-item {
@@ -273,9 +271,7 @@ export default {
         background: @background;
         border-radius: 6px;
         flex: 1;
-        margin: 0 10px;
         position: relative;
-        box-shadow: 0 4px 10px 0px #0000000d;
 
         &:first-child {
           margin-left: 0px;
@@ -287,6 +283,7 @@ export default {
 
         &-title {
           position: absolute;
+          font-size: 14px;
           top: 15px;
           left: 15px;
         }
@@ -308,16 +305,16 @@ export default {
 
     &-title {
       color: @dark;
-      margin-bottom: 10px;
       line-height: 22px;
       text-align: left;
+      margin-top: 25px;
     }
 
     &-menu {
       h4 {
         font-size: 16px;
         text-align: left;
-        margin-bottom: 16px;
+        margin: 0 auto;
         span {
           transition: all 0.3s ease;
           cursor: pointer;
@@ -348,5 +345,10 @@ export default {
       font-weight: 500;
     }
   }
+}
+
+.orders-card {
+  margin-top: 10px;
+  border-radius: 6px;
 }
 </style>

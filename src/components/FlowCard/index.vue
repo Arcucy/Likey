@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import * as momentFun from '@/util/momentFun'
 import decode from '@/util/decode'
@@ -184,8 +184,10 @@ export default {
       creators: state => state.contract.creators,
       creatorPst: state => state.contract.creatorPst,
       owner: state => state.contract.owner,
+      myAddress: state => state.user.myInfo.address,
       donationPaymentInProgress: state => state.app.donationPaymentInProgress
     }),
+    ...mapGetters(['isLoggedIn']),
     likeIconClass () {
       return {
         'like-touch': !this.likeLoading,
@@ -325,6 +327,14 @@ export default {
     },
     /** 推荐 */
     async likeClick () {
+      if (!this.isLoggedIn) {
+        this.$message.warning(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+      if (this.preview.creator === this.myAddress) {
+        this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+        return
+      }
       if (!this.owner) await this.getCreatorInfo(this.preview.creator)
       if (this.contract && this.contract.loading) {
         this.$message({

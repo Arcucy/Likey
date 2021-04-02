@@ -411,6 +411,7 @@ export default {
 
       const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
       const tags = [
+        { name: 'Donate-Status', value: statusId || '' },
         { name: 'Purchase-Type', value: 'Likey-Donation' },
         { name: 'Purchase-Number', value: data.number || '1' },
         { name: 'Likey-Solution', value: 'Status-Creator' },

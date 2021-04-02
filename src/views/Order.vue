@@ -20,24 +20,20 @@
         </h4>
       </div>
       <div class="my-order-container">
-        <div v-if="tabList.length > 0">
-          <PurchasedItem
-            v-for="(item, index) of tabList"
-            :key="index"
-            :purchase="item"
-          />
-          <InfiniteScroll
-            class="flow-card"
-            :no-data="!tabList || !tabList.length"
-            :loading="loading"
-            :distance="500"
-            :disable="!hasNextPage"
-            @load="getList"
-          />
-        </div>
-        <div class="no-data" v-if="(!flash && tabList.length === 0) || loading">
-          <span>{{ $t('order.nodata') }}</span>
-        </div>
+        <PurchasedItem
+          v-for="(item, index) of tabList"
+          :key="index"
+          :purchase="item"
+        />
+        <InfiniteScroll
+          class="orders-card"
+          :no-data="!tabList || !tabList.length"
+          :no-data-text="$t('order.nodata')"
+          :loading="dataLoading"
+          :distance="500"
+          :disable="!hasNextPage"
+          @load="getList"
+        />
       </div>
     </div>
   </div>
@@ -60,6 +56,7 @@ export default {
   data () {
     return {
       loading: false,
+      dataLoading: false,
       tab: this.$route.query.tab || '',
       defaultTab: 'all',
       tabs: [
@@ -159,14 +156,14 @@ export default {
     },
     /** 获取标签页的数据 */
     async getList (tab) {
-      if (this.loading) return
-      this.loading = true
+      if (this.dataLoading || this.loading) return
+      this.dataLoading = true
       const tx = await this.$api.gql.getAllPurchases(this.myAddress, tab, this.pagesize, this.endCursor)
       this.parseTags(tx)
 
       this.tabList.push(...tx.transactions.edges)
       this.hasNextPage = tx.transactions.pageInfo.hasNextPage
-      this.loading = false
+      this.dataLoading = false
     },
     /** 页面切换控制 */
     handlePageChange (pageNum) {
@@ -183,7 +180,7 @@ export default {
 <style lang="less" scoped>
 .my-order {
   margin: 20px auto 0px;
-  padding: 10px;
+  padding: 0 10px;
   box-sizing: border-box;
   max-width: 1200px;
   width: 100%;
@@ -200,6 +197,7 @@ export default {
     &-title {
       color: @dark;
       margin-bottom: 10px;
+      margin-top: 0px;
       line-height: 22px;
       text-align: left;
     }
@@ -208,7 +206,7 @@ export default {
       h4 {
         font-size: 16px;
         text-align: left;
-        margin-bottom: 16px;
+        margin: 0 auto;
         span {
           transition: all 0.3s ease;
           cursor: pointer;
@@ -246,5 +244,10 @@ export default {
     display: flex;
     justify-content: center;
   }
+}
+
+.orders-card {
+  margin-top: 10px;
+  border-radius: 6px;
 }
 </style>
