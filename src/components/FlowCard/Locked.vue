@@ -170,8 +170,9 @@ export default {
       return this.creator.items
     },
     contract () {
-      if (!this.creator) return null
+      if (!this.creator || !this.creatorPst) return null
       const contract = this.creatorPst[this.creator.ticker.contract]
+      if (!contract) return null
       return contract.ticker ? contract : null
     }
   },

@@ -39,11 +39,11 @@
         </div>
       </div>
       <el-button
-        type="primary"
-        :disabled="loading"
+        :type="btnType"
+        :disabled="insufficientFunds || loading"
         @click="confirm"
       >
-        {{ $t('payment.checkout') }}
+        {{ disableBtnText }}
       </el-button>
     </div>
   </el-dialog>
@@ -113,6 +113,16 @@ export default {
       const currentBalance = new BigNumber(this.receipt.balance)
       const cost = this.receipt.total.plus(this.receipt.fee).plus(this.receipt.holders).plus(this.receipt.developer)
       return currentBalance.minus(cost)
+    },
+    insufficientFunds () {
+      const currentBalance = new BigNumber(this.receipt.balance)
+      return this.totalValue.isGreaterThan(currentBalance)
+    },
+    disableBtnText () {
+      return this.insufficientFunds ? this.$t('failure.insufficientFunds') : this.$t('payment.checkout')
+    },
+    btnType () {
+      return this.insufficientFunds ? 'danger' : 'primary'
     }
   },
   watch: {

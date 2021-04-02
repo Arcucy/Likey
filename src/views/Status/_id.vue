@@ -346,7 +346,7 @@ export default {
       }
       if (!this.owner) await this.getCreatorInfo(this.preview.creator)
       if (this.contract && this.contract.loading) {
-        this.$message.info(this.$t('app.loading'))
+        this.$message.info(this.$t('payment.dataLoadingPleaseTryLater'))
         return
       }
 
