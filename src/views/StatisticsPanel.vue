@@ -351,4 +351,14 @@ export default {
   margin-top: 10px;
   border-radius: 6px;
 }
+
+@media screen and (max-width: 640px) {
+  .my-stats {
+    &-pst {
+      &-block {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+}
 </style>
