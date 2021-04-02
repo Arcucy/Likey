@@ -239,7 +239,7 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 10000
+        duration: 30000
       })
     },
     /** 打开成功通知 */

@@ -327,7 +327,7 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 0
+        duration: 30000
       })
     },
     openSuccessNotify (type, id, duration) {

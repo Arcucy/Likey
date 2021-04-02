@@ -22,6 +22,8 @@
                 v-for="(data, index) in flow"
                 :brief="data"
                 :key="index"
+                @locked-payment="startPayment"
+                @status-donation="startDonationPayment"
                 class="flow-card"
               />
               <InfiniteScroll
@@ -58,6 +60,16 @@
         </el-row>
       </el-col>
     </el-row>
+    <Payment
+      v-model="showPaymentDialog"
+      :data="paymentData"
+      @payment-close="paymentClose"
+    />
+    <DonationPurchase
+      v-model="showDonationInput"
+      @confirm-donation="confirmDonation"
+      @donation-close="closeDonation"
+    />
   </el-main>
 </template>
 
@@ -65,6 +77,8 @@
 import CreatorCard from '@/components/CreatorCard'
 import FlowCard from '@/components/FlowCard'
 import InfiniteScroll from '@/components/InfiniteScroll'
+import Payment from '@/components/Common/Payment'
+import DonationPurchase from '@/components/Common/DonationPurchase'
 
 import { mapActions, mapMutations, mapState } from 'vuex'
 
@@ -73,7 +87,9 @@ export default {
   components: {
     CreatorCard,
     FlowCard,
-    InfiniteScroll
+    InfiniteScroll,
+    Payment,
+    DonationPurchase
   },
   data () {
     return {
@@ -83,7 +99,20 @@ export default {
       // 动态列表
       flow: [],
       flowLoading: false,
-      hasNextPage: false
+      hasNextPage: false,
+      showPaymentDialog: false,
+      showDonationInput: false,
+      donateData: {
+        contract: {},
+        status: {},
+        donation: {
+          value: ''
+        }
+      },
+      paymentData: {
+        type: '0',
+        data: {}
+      }
     }
   },
   computed: {
@@ -111,6 +140,28 @@ export default {
       this.flow.push(...res.transactions.edges)
       this.hasNextPage = res.transactions.pageInfo.hasNextPage
       this.flowLoading = false
+    },
+    startPayment (data) {
+      this.paymentData.type = '0'
+      this.paymentData.data = data
+      this.showPaymentDialog = true
+    },
+    startDonationPayment (data) {
+      this.showDonationInput = true
+      this.donateData = data
+    },
+    confirmDonation (val) {
+      this.showDonationInput = false
+      this.donateData.donation.value = val
+      this.paymentData.type = '1'
+      this.paymentData.data = this.donateData
+      this.showPaymentDialog = true
+    },
+    paymentClose () {
+      this.showPaymentDialog = false
+    },
+    closeDonation () {
+      this.showDonationInput = false
     }
   }
 }
