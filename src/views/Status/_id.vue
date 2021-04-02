@@ -460,7 +460,7 @@ span {
           font-size: 15px;
           font-weight: 700;
           color: @dark;
-          margin: 0;
+          margin: 0 0 5px;
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 1;
