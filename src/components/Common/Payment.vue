@@ -136,6 +136,7 @@ export default {
 
       // 换算为具体支付的金额
       this.receiptLoading = true
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
       let value
       switch (this.data.type) {
         // 0 为解锁
@@ -146,6 +147,7 @@ export default {
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
+          this.paymentData.data.balance = balance
           break
         // 1 为打赏
         case '1':
@@ -157,6 +159,7 @@ export default {
             statusId: this.data.data.status.id,
             value: value
           }
+          this.paymentData.data.balance = balance
           break
       }
       this.receiptLoading = false

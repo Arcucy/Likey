@@ -221,6 +221,7 @@ export default {
       let value = this.convertPstToWinston(item.value)
       value = new BigNumber(value).toFixed(0)
 
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
       this.paymentData = await this.$api.contract.distributeTokens(this.contract,
         value,
         undefined,
@@ -234,6 +235,7 @@ export default {
         value: item.value,
         number: '1'
       }
+      this.paymentData.balance = balance
       this.receiptLoading = false
       this.loading = false
     },
@@ -258,6 +260,7 @@ export default {
       value = this.convertPstToWinston(String(value))
       const paymentValue = new BigNumber(value).toFixed(0)
 
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
       this.paymentData = await this.$api.contract.distributeTokens(this.contract,
         paymentValue,
         undefined,
@@ -271,6 +274,7 @@ export default {
         value: '1',
         number: '1'
       }
+      this.paymentData.balance = balance
       this.receiptLoading = false
       this.loading = false
     },

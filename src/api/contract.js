@@ -353,7 +353,14 @@ export default {
     }, jwk)
 
     reward = reward.plus(creatorTransaction.reward)
-    return { creator: new BigNumber(quantity), holders: pstHolderQuantity, selected, developer: developerQuantity, fee: reward, total: quantityBig }
+    return {
+      creator: new BigNumber(quantity),
+      holders: pstHolderQuantity,
+      selected,
+      developer: developerQuantity,
+      fee: reward,
+      total: quantityBig
+    }
   },
   /**
    * 赞赏创作者
@@ -384,7 +391,6 @@ export default {
       ]
 
       try {
-        console.log(creator.toString())
         const res = await this.interactWritePst(jwk, contract, obj, tags, pstState.owner, creator.toString())
         if (!res.isTestMode) {
           status = 'onSponsorAdded'
