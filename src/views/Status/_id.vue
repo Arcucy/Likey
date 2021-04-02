@@ -104,6 +104,16 @@
       <SponsorStatistics v-if="creatorAdd" :address="creatorAdd" />
       <UnlockSolutionList v-if="creatorAdd" :address="creatorAdd" />
     </div>
+    <Payment
+      v-model="showPaymentDialog"
+      :data="paymentData"
+      @payment-close="paymentClose"
+    />
+    <DonationPurchase
+      v-model="showDonationInput"
+      @confirm-donation="confirmDonation"
+      @donation-close="closeDonation"
+    />
   </div>
 </template>
 
@@ -122,6 +132,9 @@ import Locked from '@/components/FlowCard/Locked'
 // right
 import SponsorStatistics from '@/components/Creator/SponsorStatistics'
 import UnlockSolutionList from '@/components/Creator/UnlockSolutionList'
+// hide
+import Payment from '@/components/Common/Payment'
+import DonationPurchase from '@/components/Common/DonationPurchase'
 
 export default {
   components: {
@@ -134,7 +147,10 @@ export default {
     Locked,
     // right
     SponsorStatistics,
-    UnlockSolutionList
+    UnlockSolutionList,
+    // hide
+    Payment,
+    DonationPurchase
   },
   data () {
     return {
@@ -146,10 +162,22 @@ export default {
       selfLoadShortname: '',
       details: null,
       detailsLoading: false,
-      showDonationInput: false,
       creatorAdd: '',
       txTags: null,
-      isUnlocked: false
+      isUnlocked: false,
+      showPaymentDialog: false,
+      showDonationInput: false,
+      donateData: {
+        contract: {},
+        status: {},
+        donation: {
+          value: ''
+        }
+      },
+      paymentData: {
+        type: '0',
+        data: {}
+      }
     }
   },
   computed: {
@@ -237,7 +265,7 @@ export default {
       return this.creatorPst[this.creator.ticker.contract]
     },
     donateBtnText () {
-      return this.donationPaymentInProgress ? this.$t('app.loading') : this.$t('flowCard.donate')
+      return this.likeLoading ? this.$t('app.loading') : this.$t('flowCard.donate')
     },
     isLocked () {
       const lock = this.details && this.details.isLock
@@ -318,20 +346,18 @@ export default {
       }
       if (!this.owner) await this.getCreatorInfo(this.preview.creator)
       if (this.contract && this.contract.loading) {
-        this.$message({
-          showClose: true,
-          message: this.$t('app.loading'),
-          type: 'info'
-        })
+        this.$message.info(this.$t('app.loading'))
         return
       }
-      this.$emit('status-donation', {
+
+      this.showDonationInput = true
+      this.donateData = {
         status: this.preview,
         contract: this.contract,
         donation: {
           value: ''
         }
-      })
+      }
     },
     // 获取分享链接
     getShareLink () {
@@ -339,7 +365,6 @@ export default {
     },
     /** 拷贝 */
     copyCode (code) {
-      console.log(code)
       this.$copyText(code).then(
         () => {
           this.$message({
@@ -367,7 +392,24 @@ export default {
       return ''
     },
     startPayment (data) {
-      this.$emit('locked-payment', data)
+      this.paymentData.type = '0'
+      this.paymentData.data = data
+      this.showPaymentDialog = true
+    },
+    async confirmDonation (val) {
+      if (!this.donateData.status.creator || !this.creators || !this.creators[this.donateData.status.creator]) return
+      this.donateData.contract = this.creators[this.donateData.status.creator].ticker.contract
+      this.showDonationInput = false
+      this.donateData.donation.value = val
+      this.paymentData.type = '1'
+      this.paymentData.data = this.donateData
+      this.showPaymentDialog = true
+    },
+    paymentClose () {
+      this.showPaymentDialog = false
+    },
+    closeDonation () {
+      this.showDonationInput = false
     }
   }
 }

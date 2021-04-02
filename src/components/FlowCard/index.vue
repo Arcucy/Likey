@@ -196,7 +196,6 @@ export default {
     },
     preview () {
       const tags = this.getTags(this.brief.node.tags)
-      console.log('tags:', this.brief.node.id, tags)
 
       return {
         id: this.brief.node.id,
@@ -372,7 +371,6 @@ export default {
     },
     /** 拷贝 */
     copyCode (code) {
-      console.log(code)
       this.$copyText(code).then(
         () => {
           this.$message({
