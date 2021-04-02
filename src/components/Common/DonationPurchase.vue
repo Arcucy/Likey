@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { mapGetters, mapState } from 'vuex'
 export default {
   props: {
@@ -98,7 +99,11 @@ export default {
         this.$message.error(this.$t('login.pleaseLogInFirst'))
         return
       }
-      if (!this.input) {
+      if (!this.input ||
+          this.input === '0' ||
+          new BigNumber(this.input) === 'NaN' ||
+          new BigNumber(this.input).isLessThanOrEqualTo(new BigNumber(0))
+      ) {
         this.$message.error(this.$t('donation.donationAmountShouldnotBeNone'))
         return
       }

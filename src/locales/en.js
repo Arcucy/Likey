@@ -202,7 +202,8 @@ export default {
     transactionInProgres: 'Transaction in progress',
     transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time',
     currentBalance: 'Current balance',
-    afterBalance: 'New balance'
+    afterBalance: 'New balance',
+    dataLoadingPleaseTryLater: 'Loading data, please try again later'
   },
   progressText: {
     status: 'Uploading status',

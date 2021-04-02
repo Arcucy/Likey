@@ -62,6 +62,7 @@
           type="primary"
           @click="buyCustomSolution(customPstInput)"
           :loading="loading"
+          :disabled="disableBtn"
         >
           {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
@@ -151,6 +152,9 @@ export default {
     contract () {
       if (!this.creator) return {}
       return this.creatorPst[this.creator.ticker.contract]
+    },
+    disableBtn () {
+      return this.customPstInput === '0' || this.customPstInput === 0 || !this.customPstInput
     }
   },
   watch: {

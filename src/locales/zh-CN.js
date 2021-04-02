@@ -202,7 +202,8 @@ export default {
     transactionInProgres: '交易正在进行',
     transactionInProgress: '你的交易正在进行，请不要关闭本页面。在此等待期间，你可以继续浏览本页的其他内容',
     currentBalance: '当前余额',
-    afterBalance: '结余'
+    afterBalance: '结余',
+    dataLoadingPleaseTryLater: '数据正在加载中，请稍后重试'
   },
   progressText: {
     status: '上传动态中',
