@@ -57,13 +57,13 @@ export default {
   watch: {
     disable (val, oldVal) {
       // 如果 immediate 为真值，则在组件解除禁用后立即 load 一次
-      if ((!oldVal && val) && this.immediate) this.$emit('load')
+      if ((oldVal && !val) && this.immediate) this.$emit('load')
     }
   },
   mounted () {
     if (process.browser) {
       this.$nextTick(() => {
-        if (this.immediate) this.$emit('load')
+        if (this.immediate && !this.disable) this.$emit('load')
         this.scrollEvent = throttle(this._scroll, 300)
         window.addEventListener('scroll', this.scrollEvent)
       })

@@ -117,6 +117,7 @@ export default {
 
 <style lang="less" scoped>
 .purchased-item {
+  color: @dark;
   display: flex;
   width: 100%;
   margin: 20px 0px;
@@ -181,7 +182,7 @@ export default {
           font-weight: 600;
           white-space: nowrap;
         }
-       }
+      }
     }
 
     &-info {
@@ -279,6 +280,20 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     &-left {
+      &-type {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        &-info {
+          &-spend {
+            font-size: 20px;
+            font-weight: 600;
+            white-space: unset;
+            word-break: break-all;
+          }
+        }
+      }
       &-recipient {
         flex-direction: column;
         align-items: flex-start;
