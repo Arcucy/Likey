@@ -86,6 +86,20 @@ export default {
   },
 
   /**
+   * 将 Arweave 交易中 owner 字段的值转换为 Arweave 钱包地址
+   * @param {String} owner - Arweave 交易中 owner 字段的值
+   * @returns         - Arweave 钱包地址
+   */
+  async getAddressByOwner (owner) {
+    const pubJwk = {
+      kty: 'RSA',
+      e: 'AQAB',
+      n: owner
+    }
+    return await arweave.wallets.getAddress(pubJwk)
+  },
+
+  /**
    * Get user's Arweave Id based on the input wallet address
    * 根据输入的钱包地址获取用户的 Arweave ID
    * @param {String} address  - 用户的钱包地址
