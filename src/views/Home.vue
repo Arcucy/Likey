@@ -1,58 +1,55 @@
 <template>
-  <el-main>
+  <div class="container">
     <div class="row">
       <div class="col-6">
-        <div class="home-timeline">
-          <el-row>
-            <el-col :span="4">
-              <span class="home-title">
-                {{ $t('home.tabFlow') }}
-              </span>
-            </el-col>
-            <el-col :span="4">
-              <span class="home-title" :class="showingAppreciate ? '' : 'home-title-not-active'">
-                {{ $t('home.tabAppreciated') }}
-              </span>
-            </el-col>
-          </el-row>
-          <FlowCard
-            v-for="(data, index) in flow"
-            :brief="data"
-            :key="index"
-            class="flow-card"
-          />
-          <InfiniteScroll
-            class="flow-card"
-            :no-data="!flow || !flow.length"
-            :loading="flowLoading"
-            :distance="200"
-            :disable="!hasNextPage"
-            @load="() => getUserStatus()"
-          />
+        <div class="home-title-container">
+          <div class="home-title">
+            {{ $t('home.tabFlow') }}
+          </div>
+          <div class="home-title home-title-sponsored" :class="showingAppreciate ? '' : 'home-title-not-active'">
+            {{ $t('home.tabAppreciated') }}
+          </div>
         </div>
+        <FlowCard
+          v-for="(data, index) in flow"
+          :brief="data"
+          :key="index"
+          class="flow-card"
+        />
+        <InfiniteScroll
+          class="flow-card"
+          :no-data="!flow || !flow.length"
+          :loading="flowLoading"
+          :distance="200"
+          :disable="!hasNextPage"
+          @load="() => getUserStatus()"
+        />
       </div>
       <div class="col-3">
-        <div class="home-discovery">
-          <span class="home-title">
-            {{ $t('home.findMoreCreators') }}
-          </span>
-          <div class="card flow-card" v-if="shownCreators.length === 0">
-            <div v-loading="true">
-              {{ $t('home.creatorsLoading') }}
-            </div>
+        <div class="home-title">
+          {{ $t('home.findMoreCreators') }}
+        </div>
+        <div class="card flow-card" v-if="shownCreators.length === 0">
+          <div v-loading="true">
+            {{ $t('home.creatorsLoading') }}
           </div>
-          <CreatorCard v-for="(address, index) in shownCreators" :address="address" :key="index" />
-          <div class="show-more-btn">
-            <span
-              @click="showMore ++"
-              v-if="creatorsAddress.length !== shownCreators.length"
-              class="show-more-btn-text"
-            >{{ $t('home.showMore') }}</span>
-          </div>
+        </div>
+        <CreatorCard
+          v-for="(address, index) in shownCreators"
+          :address="address"
+          :key="index"
+          class="flow-card"
+        />
+        <div class="show-more-btn">
+          <span
+            @click="showMore ++"
+            v-if="creatorsAddress.length !== shownCreators.length"
+            class="show-more-btn-text"
+          >{{ $t('home.showMore') }}</span>
         </div>
       </div>
     </div>
-  </el-main>
+  </div>
 </template>
 
 <script>
@@ -113,21 +110,24 @@ export default {
 <style lang="less" scoped>
 @import '../themes/variables';
 
-.row {
-  max-width: 1220px;
+.container {
   width: 100%;
-  margin: 0 auto;
-  .col-6 {
-    width: 66.6%;
-    float: left;
-    padding: 0 10px;
-    box-sizing: border-box;
-  }
-  .col-3 {
-    width: 33.3%;
-    float: right;
-    padding: 0 10px;
-    box-sizing: border-box;
+  .row {
+    max-width: 1220px;
+    width: 100%;
+    margin: 20px auto 0;
+    .col-6 {
+      width: 66.6%;
+      float: left;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+    .col-3 {
+      width: 33.3%;
+      float: right;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
   }
 }
 
@@ -139,15 +139,18 @@ export default {
   padding: 20px;
 }
 
-// 使卡片边框变得更明显
-// TODO:应当只在开发时使用
-.obviously-border {
-  border: 1px black solid;
+.home-title-container {
+  display: flex;
 }
 
 .home-title {
   font-size: 18px;
   font-weight: bold;
+  margin-bottom: 20px;
+
+  &-sponsored {
+    margin-left: 30px;
+  }
 
   &-not-active {
     color: gray;
@@ -157,7 +160,7 @@ export default {
 .show-more-btn {
   width: 100%;
   text-align: center;
-  padding: 10px;
+  padding: 20px;
 
   &-text {
     transition: all 200ms;
@@ -171,7 +174,7 @@ export default {
 }
 
 .flow-card {
-  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 @media screen and (max-width: 799px) {
