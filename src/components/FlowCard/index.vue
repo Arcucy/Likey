@@ -18,7 +18,7 @@
       <div class="cardunit-l">
         <!-- 头像 -->
         <router-link
-          :to="{name: 'Creator', params: { shortname }}"
+          :to="creatorUrl"
         >
           <Avatar size="49px" :src="avatarImg" />
         </router-link>
@@ -29,10 +29,10 @@
         <div class="cardunit-r-header">
           <p class="cardunit-r-header-user">
             <router-link
-              :to="{name: 'Creator', params: { shortname }}"
+              :to="creatorUrl"
             >
-              <span class="cardunit-r-header-user-nickname">{{ nickname }}</span>
-              <span class="cardunit-r-header-user-shortname"> @{{ shortname }}</span>
+              <span class="cardunit-r-header-user-nickname">{{ nickname || $t('flowCard.nmaeLoading') }}</span>
+              <span class="cardunit-r-header-user-shortname"> {{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</span>
             </router-link>
           </p>
           <p class="cardunit-r-header-time">
@@ -273,6 +273,10 @@ export default {
     },
     donateBtnText () {
       return this.donationPaymentInProgress ? this.$t('app.loading') : this.$t('flowCard.donate')
+    },
+    creatorUrl () {
+      if (!this.shortname) return {}
+      return { name: 'Creator', params: { shortname: this.shortname } }
     }
   },
   watch: {

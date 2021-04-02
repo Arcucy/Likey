@@ -28,7 +28,7 @@
               :to="creatorUrl"
             >
               <p class="cardunit-r-header-user-nickname">{{ nickname || $t('flowCard.nmaeLoading') }}</p>
-              <p class="cardunit-r-header-user-shortname"> {{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</p>
+              <p class="cardunit-r-header-user-shortname">{{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</p>
             </router-link>
           </div>
           <!-- 标题 -->
