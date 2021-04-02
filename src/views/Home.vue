@@ -3,29 +3,61 @@
     <div class="row">
       <div class="col-6">
         <div class="home-title-container">
-          <div class="home-title">
+          <div
+            class="home-title"
+            @click="toggleSponsored(false)"
+            :class="showingSponsored ? 'home-title-not-active' : ''"
+          >
             {{ $t('home.tabFlow') }}
           </div>
-          <div class="home-title home-title-sponsored" :class="showingAppreciate ? '' : 'home-title-not-active'">
+          <div
+            class="home-title home-title-sponsored"
+            :class="showingSponsored ? '' : 'home-title-not-active'"
+            @click="toggleSponsored(true)"
+          >
             {{ $t('home.tabAppreciated') }}
           </div>
         </div>
-        <FlowCard
-          v-for="(data, index) in flow"
-          :brief="data"
-          :key="index"
-          @locked-payment="startPayment"
-          @status-donation="startDonationPayment"
-          class="flow-card"
-        />
-        <InfiniteScroll
-          class="flow-card"
-          :no-data="!flow || !flow.length"
-          :loading="flowLoading"
-          :distance="200"
-          :disable="!hasNextPage"
-          @load="() => getUserStatus()"
-        />
+        <div
+          v-if="showingSponsored"
+        >
+          <FlowCard
+            v-for="(data, index) in sponsoredStatus"
+            :brief="data"
+            :key="index"
+            @locked-payment="startPayment"
+            @status-donation="startDonationPayment"
+            class="flow-card"
+          />
+          <InfiniteScroll
+            class="flow-card"
+            :no-data="!sponsoredStatus || !sponsoredStatus.length"
+            :loading="sponsoredStatusLoading"
+            :distance="200"
+            :disable="!sponsoredStatusHasNextPage"
+            @load="() => getSponsoredStatus()"
+          />
+        </div>
+        <div
+          v-else
+        >
+          <FlowCard
+            v-for="(data, index) in flow"
+            :brief="data"
+            :key="index"
+            @locked-payment="startPayment"
+            @status-donation="startDonationPayment"
+            class="flow-card"
+          />
+          <InfiniteScroll
+            class="flow-card"
+            :no-data="!flow || !flow.length"
+            :loading="flowLoading"
+            :distance="200"
+            :disable="!hasNextPage"
+            @load="() => getUserStatus()"
+          />
+        </div>
       </div>
       <div class="col-3">
         <div class="home-title">
@@ -86,11 +118,15 @@ export default {
     return {
       // 记录用户点了多少次展开
       showMore: 1,
-      showingAppreciate: false,
+      showingSponsored: false,
       // 动态列表
       flow: [],
       flowLoading: false,
       hasNextPage: true,
+      // 已赞赏的动态列表,
+      sponsoredStatus: [],
+      sponsoredStatusLoading: false,
+      sponsoredStatusHasNextPage: true,
       showPaymentDialog: false,
       showDonationInput: false,
       donateData: {
@@ -110,7 +146,8 @@ export default {
     ...mapState({
       creatorsAddress: state => Object.keys(state.contract.creators),
       creators: state => state.contract.creators,
-      creatorPst: state => state.contract.creatorPst
+      creatorPst: state => state.contract.creatorPst,
+      userAddress: state => state.user.myInfo.address
     }),
     shownCreators () {
       return this.creatorsAddress.slice(0, this.showMore * 5)
@@ -118,6 +155,10 @@ export default {
     flowCursor () {
       if (!this.flow || !this.flow.length) return ''
       return this.flow[this.flow.length - 1].cursor
+    },
+    sponsoredStatusCursor () {
+      if (!this.sponsoredStatus || !this.sponsoredStatus.length) return ''
+      return this.sponsoredStatus[this.sponsoredStatus.length - 1].cursor
     }
   },
   async mounted () {
@@ -135,6 +176,15 @@ export default {
       this.flow.push(...res.transactions.edges)
       this.hasNextPage = res.transactions.pageInfo.hasNextPage
       this.flowLoading = false
+    },
+    /** 获取已赞赏的动态 */
+    async getSponsoredStatus () {
+      if (this.sponsoredStatusLoading) return
+      this.sponsoredStatusLoading = true
+      const res = await this.$api.gql.getSponsoredStatus(this.userAddress, 10, this.sponsoredStatusCursor)
+      this.sponsoredStatus.push(...res.transactions.edges)
+      this.sponsoredStatusHasNextPage = res.transactions.pageInfo.hasNextPage
+      this.sponsoredStatusLoading = false
     },
     startPayment (data) {
       this.paymentData.type = '0'
@@ -159,6 +209,20 @@ export default {
     },
     closeDonation () {
       this.showDonationInput = false
+    },
+    async toggleSponsored (showingSponsored) {
+      this.showingSponsored = showingSponsored
+      if (showingSponsored) {
+        this.sponsoredStatus = []
+        this.sponsoredStatusHasNextPage = true
+        this.sponsoredStatusLoading = false
+        await this.getSponsoredStatus()
+      } else {
+        this.flow = []
+        this.flowLoading = false
+        this.hasNextPage = true
+        await this.getUserStatus()
+      }
     }
   }
 }
@@ -210,7 +274,12 @@ export default {
   }
 
   &-not-active {
+    transition: all 250ms;
     color: gray;
+    cursor: pointer;
+    &:hover {
+      color: @primary;
+    }
   }
 }
 
