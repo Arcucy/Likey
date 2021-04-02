@@ -200,7 +200,9 @@ export default {
     total: '总计',
     txPosted: '交易已经提交至 Arweave 区块链，你可以点击以访问交易：{0}',
     transactionInProgres: '交易正在进行',
-    transactionInProgress: '你的交易正在进行，请不要关闭本页面。在此等待期间，你可以继续浏览本页的其他内容'
+    transactionInProgress: '你的交易正在进行，请不要关闭本页面。在此等待期间，你可以继续浏览本页的其他内容',
+    currentBalance: '当前余额',
+    afterBalance: '结余'
   },
   progressText: {
     status: '上传动态中',

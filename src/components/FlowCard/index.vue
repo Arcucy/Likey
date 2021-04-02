@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import * as momentFun from '@/util/momentFun'
 import decode from '@/util/decode'
@@ -275,7 +275,7 @@ export default {
       return this.creatorPst[this.creator.ticker.contract]
     },
     donateBtnText () {
-      return this.donationPaymentInProgress ? this.$t('app.loading') : this.$t('flowCard.donate')
+      return this.likeLoading ? this.$t('app.loading') : this.$t('flowCard.donate')
     }
   },
   watch: {
@@ -293,6 +293,7 @@ export default {
   mounted () {
   },
   methods: {
+    ...mapActions(['getCreatorInfo']),
     /** 获取头像 */
     async getAvatar () {
       try {
@@ -348,13 +349,12 @@ export default {
         this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
         return
       }
-      if (!this.owner) await this.getCreatorInfo(this.preview.creator)
+      if (!this.owner) {
+        this.$message.info(this.$t('app.loading'))
+        await this.getCreatorInfo(this.preview.creator)
+      }
       if (this.contract && this.contract.loading) {
-        this.$message({
-          showClose: true,
-          message: this.$t('app.loading'),
-          type: 'info'
-        })
+        this.$message.info(this.$t('app.loading'))
         return
       }
       this.$emit('status-donation', {

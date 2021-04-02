@@ -200,7 +200,9 @@ export default {
     total: 'Total',
     txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}',
     transactionInProgres: 'Transaction in progress',
-    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time'
+    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time',
+    currentBalance: 'Current balance',
+    afterBalance: 'New balance'
   },
   progressText: {
     status: 'Uploading status',

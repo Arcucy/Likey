@@ -233,11 +233,18 @@ export default {
    * @param {*} callback      - 回调函数
    * @returns                 - 分润后的金额
    */
-  async distributeTokens (pstState, quantity, jwk, confirm, callback = () => {}) {
+  async distributeTokens (pstState, quantity, jwk, confirm, originPaymentAddress, callback = () => {}) {
+    let paymentAddress = ''
     if (!confirm) {
-      jwk = await arweave.wallets.generate()
+      if (!originPaymentAddress) {
+        jwk = await arweave.wallets.generate()
+        paymentAddress = await arweave.wallets.getAddress(jwk)
+      } else {
+        paymentAddress = originPaymentAddress
+      }
+    } else {
+      paymentAddress = await arweave.wallets.getAddress(jwk)
     }
-    const paymentAddress = await arweave.wallets.getAddress(jwk)
 
     let quantityBig = new BigNumber(quantity)
     let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
@@ -253,6 +260,7 @@ export default {
       selected = this.selectWeightedPstHolder(pstState.balances)
       if (paymentAddress === selected) {
         pstHolderQuantity = new BigNumber('0')
+        selected = ''
       } else {
         try {
           const pstTransaction = await arweave.createTransaction({
@@ -345,7 +353,14 @@ export default {
     }, jwk)
 
     reward = reward.plus(creatorTransaction.reward)
-    return { creator: quantityBig, holders: pstHolderQuantity, selected, developer: developerQuantity, fee: reward, total: new BigNumber(quantity) }
+    return {
+      creator: new BigNumber(quantity),
+      holders: pstHolderQuantity,
+      selected,
+      developer: developerQuantity,
+      fee: reward,
+      total: quantityBig
+    }
   },
   /**
    * 赞赏创作者
@@ -403,6 +418,7 @@ export default {
     if (!data) {
       return
     }
+    console.log(contract)
     try {
       let status = 'onDonationAddedStarted'
       callback(status, '')

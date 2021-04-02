@@ -14,6 +14,8 @@
           v-for="(data, index) in flow"
           :brief="data"
           :key="index"
+          @locked-payment="startPayment"
+          @status-donation="startDonationPayment"
           class="flow-card"
         />
         <InfiniteScroll
@@ -49,6 +51,16 @@
         </div>
       </div>
     </div>
+    <Payment
+      v-model="showPaymentDialog"
+      :data="paymentData"
+      @payment-close="paymentClose"
+    />
+    <DonationPurchase
+      v-model="showDonationInput"
+      @confirm-donation="confirmDonation"
+      @donation-close="closeDonation"
+    />
   </div>
 </template>
 
@@ -56,6 +68,8 @@
 import CreatorCard from '@/components/CreatorCard'
 import FlowCard from '@/components/FlowCard'
 import InfiniteScroll from '@/components/InfiniteScroll'
+import Payment from '@/components/Common/Payment'
+import DonationPurchase from '@/components/Common/DonationPurchase'
 
 import { mapActions, mapMutations, mapState } from 'vuex'
 
@@ -64,7 +78,9 @@ export default {
   components: {
     CreatorCard,
     FlowCard,
-    InfiniteScroll
+    InfiniteScroll,
+    Payment,
+    DonationPurchase
   },
   data () {
     return {
@@ -74,13 +90,27 @@ export default {
       // 动态列表
       flow: [],
       flowLoading: false,
-      hasNextPage: false
+      hasNextPage: false,
+      showPaymentDialog: false,
+      showDonationInput: false,
+      donateData: {
+        contract: {},
+        status: {},
+        donation: {
+          value: ''
+        }
+      },
+      paymentData: {
+        type: '0',
+        data: {}
+      }
     }
   },
   computed: {
     ...mapState({
       creatorsAddress: state => Object.keys(state.contract.creators),
-      creators: state => state.contract.creators
+      creators: state => state.contract.creators,
+      creatorPst: state => state.contract.creatorPst
     }),
     shownCreators () {
       return this.creatorsAddress.slice(0, this.showMore * 5)
@@ -90,10 +120,13 @@ export default {
       return this.flow[this.flow.length - 1].cursor
     }
   },
+  async mounted () {
+    await this.initLikeyContract()
+  },
   methods: {
     // TODO:在每次提交前记得删掉这个mutations的引用
     ...mapMutations(['mTestCreatorsAdd']),
-    ...mapActions(['getCreatorInfo']),
+    ...mapActions(['initLikeyContract', 'getPstContract']),
     /** 获取所有用户动态列表 */
     async getUserStatus () {
       if (this.flowLoading) return
@@ -102,6 +135,30 @@ export default {
       this.flow.push(...res.transactions.edges)
       this.hasNextPage = res.transactions.pageInfo.hasNextPage
       this.flowLoading = false
+    },
+    startPayment (data) {
+      this.paymentData.type = '0'
+      this.paymentData.data = data
+      this.showPaymentDialog = true
+    },
+    startDonationPayment (data) {
+      this.showDonationInput = true
+      this.donateData = data
+    },
+    async confirmDonation (val) {
+      if (!this.donateData.status.creator || !this.creators || !this.creators[this.donateData.status.creator]) return
+      this.donateData.contract = this.creators[this.donateData.status.creator].ticker.contract
+      this.showDonationInput = false
+      this.donateData.donation.value = val
+      this.paymentData.type = '1'
+      this.paymentData.data = this.donateData
+      this.showPaymentDialog = true
+    },
+    paymentClose () {
+      this.showPaymentDialog = false
+    },
+    closeDonation () {
+      this.showDonationInput = false
     }
   }
 }
