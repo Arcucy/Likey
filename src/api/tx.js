@@ -24,7 +24,6 @@ export default {
    * @param {*} callback  - 监听交易状态的回调参数
    */
   async createNewStatus (status, extra, key, callback) {
-    console.log('进入 createNewStatus 方法，入参：', status, extra, key, callback)
     const obj = this.createStatusData(status, extra)
 
     let tx = null
@@ -88,7 +87,6 @@ export default {
    * @returns               - 返回一个对象，包含 id 和 status 字段，id 字段是交易 id，status 字段是交易上传状态
    */
   async createNewFile (file, fileType, key, tags = [], callback) {
-    console.log('进入 createNewFile 方法，入参：', file, fileType, key, tags, callback)
     const types = {
       image: 'Likey-Images',
       audio: 'Likey-Audio',

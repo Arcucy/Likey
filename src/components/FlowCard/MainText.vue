@@ -23,14 +23,14 @@ export default {
   },
   props: {
     // 卡片数据
-    card: {
-      type: Object,
-      default: null
+    text: {
+      type: String,
+      default: ''
     }
   },
   computed: {
     content () {
-      return xssUtil.urlAddATag(xssUtil.escapeHtml(this.card.content.trim()))
+      return xssUtil.urlAddATag(xssUtil.escapeHtml(this.text.trim()))
     }
   }
 }

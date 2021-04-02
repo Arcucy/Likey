@@ -46,14 +46,14 @@
         </h4>
         <!-- 预览卡片（未上锁时显示） -->
         <Summary
-          v-if="!preview.lockContract && !details"
+          v-if="!preview.lockContract && !details && !isShortContent"
           :preview="preview"
           @load-more="loadMore"
           :loading="detailsLoading"
         />
         <!-- 解锁卡片（上锁时显示） -->
         <Locked
-          v-else-if="!details"
+          v-if="preview.lockContract && !details"
           :preview="preview"
           @load-more="loadMore"
           @locked-payment="startPayment"
@@ -61,9 +61,9 @@
         />
         <!-- 正文 -->
         <mainText
-          v-if="details"
+          v-if="content"
           class="cardunit-r-content"
-          :card="details"
+          :text="content"
         />
         <!-- 图片 -->
         <router-link
@@ -204,12 +204,20 @@ export default {
         creator: this.brief.node.owner.address,
         timestamp: tags['Unix-Time'],
         schemaVersion: tags['Schema-Version'],
-        title: tags.Title,
-        summary: tags.Summary,
+        title: tags.Title || '',
+        summary: tags.Summary || '',
         extra: this.strToObj(tags.Extra),
         lockContract: tags['Lock-Contract'] || '',
         lockValue: tags['Lock-Value'] || 0
       }
+    },
+    /** 是短内容么，短内容将不显示查看更多按钮 */
+    isShortContent () {
+      const lessThanMaximum = this.preview.summary.length !== 100
+      const { media, audio, file } = { ...this.preview.extra }
+      const noMedia = !media && !audio && !file
+      // 摘要未达到最大字数，没有媒体，没有上锁
+      return lessThanMaximum && noMedia && !this.preview.lockContract
     },
     card () {
       return null
@@ -235,6 +243,11 @@ export default {
     title () {
       if (this.card) return this.card.title
       return this.preview.title
+    },
+    content () {
+      if (this.details) return this.details.content
+      if (this.isShortContent) return this.preview.summary
+      return ''
     },
     media () {
       if (!this.details || !this.details.extra || !this.details.extra.medias) return []
