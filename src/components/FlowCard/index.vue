@@ -219,9 +219,6 @@ export default {
       // 摘要未达到最大字数，没有媒体，没有上锁
       return lessThanMaximum && noMedia && !this.preview.lockContract
     },
-    card () {
-      return null
-    },
     avatarImg () {
       return this.noLoadUser ? this.user.avatar : this.avatar
     },
@@ -241,7 +238,7 @@ export default {
       return time.format('YYYY MMMDo')
     },
     title () {
-      if (this.card) return this.card.title
+      if (this.details) return this.details.title
       return this.preview.title
     },
     content () {

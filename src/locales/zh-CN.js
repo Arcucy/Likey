@@ -237,7 +237,9 @@ export default {
     downloading: '下载中',
     downloaded: '已下载',
     ifYourDownloadDidnotStarted: '如果你的下载没有开始，',
-    clickHere: '请点击这里'
+    clickHere: '请点击这里',
+    shortnameLoading: '地址加载中...',
+    nmaeLoading: '昵称加载中...'
   },
   home: {
     tabFlow: '最新动态',
