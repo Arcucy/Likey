@@ -53,7 +53,6 @@ export default {
   /**
    * Get transaction detail entirely based on given txid
    * 根据给定的 txid (交易ID) 获取完整的交易明细
-   * !!获取到的data字段已在这一步完成解码，无需再次解码!!
    * @param {String} txid     - 交易编号
    */
   async getTransactionDetail (txid) {
