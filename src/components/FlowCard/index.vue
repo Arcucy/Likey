@@ -360,7 +360,7 @@ export default {
       }
       this.$emit('status-donation', {
         status: this.preview,
-        contract: this.contract,
+        contract: this.creator.ticker.contract,
         donation: {
           value: ''
         }

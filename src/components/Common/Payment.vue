@@ -138,12 +138,14 @@ export default {
       this.receiptLoading = true
       const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
       let value
+      let contract
       switch (this.data.type) {
         // 0 为解锁
         case '0':
-          value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
+          contract = await this.getPstContract(this.data.data.contract)
+          value = this.convertPstToWinston(this.data.data.unlock.value, contract.ratio)
           value = new BigNumber(value).toFixed(0)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false, this.myAddress) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
@@ -151,9 +153,9 @@ export default {
           break
         // 1 为打赏
         case '1':
-          console.log(this.data.data)
+          contract = await this.getPstContract(this.data.data.contract)
           value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false, this.myAddress) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.contract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = {
