@@ -10,8 +10,15 @@
       <div class="donation-wrapper">
         <div class="donation-container">
           <div class="donation-container-input">
-            <el-input v-model="arInput" class="donation-container-input-input" :placeholder="$t('donation.pleaseInputDonationAmount')" />
-            <span class="donation-container-input-ar"> AR</span>
+            <el-input
+              v-model="arInput"
+              class="donation-container-input-input"
+              :placeholder="$t('donation.pleaseInputDonationAmount')"
+            >
+              <template slot="append">
+                AR
+              </template>
+            </el-input>
           </div>
           <el-button
             class="donation-confirm-button"
@@ -100,12 +107,6 @@ export default {
     &-input {
       display: flex;
       align-items: center;
-      &-ar {
-        margin-left: 20px;
-        font-size: 18px;
-        font-weight: 500;
-        white-space: nowrap;
-      }
     }
 
     .donation-confirm-button {

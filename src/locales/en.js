@@ -4,8 +4,8 @@ export default {
     login: 'Login successful',
     copy: 'Copy successfully',
     created: 'Created successfully',
-    profitSharingTxSuccess: 'Successfully Profit Share to PST Holder',
-    developerTipTxSuccess: 'Successfully Profit Share to Developer',
+    profitSharingTxSuccess: 'Successfully profit shared to PST holder',
+    developerTipTxSuccess: 'Successfully profit shared to developer',
     sponsorTxSuccess: 'Sponsor Successful',
     donateTxSuccess: 'Donation Successful',
     txSuccess: 'Transaction Successful',
@@ -185,7 +185,7 @@ export default {
   },
   donation: {
     donateToCreator: 'Donate Creator',
-    pleaseInputDonationAmount: 'Please input the amount of PST to donate',
+    pleaseInputDonationAmount: 'Donation amount',
     donationAmountShouldnotBeNone: 'Donation amount should not be empty',
     pleaseInputValidDonationAmount: 'Please input a valid amount for donation'
   },
@@ -198,7 +198,9 @@ export default {
     developer: 'Developer',
     fee: 'Fee',
     total: 'Total',
-    txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}'
+    txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}',
+    transactionInProgres: 'Transaction in progress',
+    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time'
   },
   progressText: {
     status: 'Uploading status',
@@ -216,9 +218,9 @@ export default {
     nodata: 'No Order History Yet'
   },
   statistics: {
-    historyIncome: '历史收入',
-    donationCount: '打赏人数',
-    sponsorCount: '赞助人数'
+    historyIncome: 'History Income',
+    donationCount: 'Sponsor Count',
+    sponsorCount: 'Donation Count'
   },
   flowCard: {
     loadMore: 'Load More',

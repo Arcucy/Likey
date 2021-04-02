@@ -196,6 +196,13 @@ export default {
     }
     return ''
   },
+  /**
+   * 获取所有营收统计数据
+   * @param {String} address    - 我的地址
+   * @param {String} mode       - 查询模式
+   * @param {Number} first      - 单页限制
+   * @returns                   - 统计结果（数字）
+   */
   async getAllPurchasesStats (address, mode, first = 100) {
     const query = gql`
       query getAllPurchasesStats($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
@@ -250,6 +257,14 @@ export default {
     }
     return count
   },
+  /**
+   * 获取所有我购买的
+   * @param {String} address    - 我的地址
+   * @param {String} mode       - 查询模式
+   * @param {Number} first      - 单页限制
+   * @param {String} after      - 查询单元指针
+   * @returns                   - 购买历史结果
+   */
   async getAllPurchases (address, mode, first = 10, after = '') {
     const query = gql`
       query getAllPurchases($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
@@ -296,6 +311,14 @@ export default {
     const res = await graph.request(query, { address, first, after, purchaseType })
     return res
   },
+  /**
+   * 获取所有打赏我的
+   * @param {String} address    - 我的地址
+   * @param {String} mode       - 查询模式
+   * @param {Number} first      - 单页限制
+   * @param {String} after      - 查询单元指针
+   * @returns                   - 收入历史结果
+   */
   async getAllSponsorAndDonation (address, mode, first = 10, after = '') {
     const query = gql`
       query getAllSponsorAndDonation($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {

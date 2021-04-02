@@ -116,23 +116,23 @@ export default {
   methods: {
     ...mapMutations(['mSetPaymentInProgress', 'mSetDonationPaymentInProgress']),
     ...mapActions(['getPstContract', 'getCreatorInfo']),
+    /** 购买解锁或者打赏 */
     async buyPst () {
       if (!this.isLoggedIn) {
         this.$message.warning(this.$t('login.pleaseLogInFirst'))
-        this.setLoading(false)
         this.$emit('input', false)
         return
       }
-      console.log('this.data.data.status.creator', this.data.data.status.creator, this.myAddress)
       if (this.data.data.status.creator === this.myAddress) {
         this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
-        this.setLoading(false)
         this.$emit('input', false)
         return
       }
       this.showReceipt = false
-      this.setLoading(true)
-      this.showReceipt = true
+      this.setLoading(false)
+      this.$nextTick(() => {
+        this.showReceipt = true
+      })
 
       // 换算为具体支付的金额
       this.receiptLoading = true
@@ -142,7 +142,6 @@ export default {
         case '0':
           value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
           value = new BigNumber(value).toFixed(0)
-
           this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
@@ -164,6 +163,7 @@ export default {
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
+      this.showReceipt = false
       this.showKeyReader = false
       this.showKeyReader = true
     },
@@ -178,17 +178,17 @@ export default {
         const myWalletAddress = await this.$api.ArweaveNative.wallets.getAddress(jwk)
         if (myWalletAddress === this.data.data.status.creator) {
           this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
-          this.setLoading(false)
+          this.$emit('input', false)
           return
         }
         if (myWalletAddress !== this.myAddress) {
           this.$message.warning(this.$t('failure.youCanOnlyPayForYourSelf'))
-          this.setLoading(false)
+          this.$emit('input', false)
           return
         }
       } catch (err) {
         this.$message.warning(this.$t('failure.fileFormatError'))
-        this.setLoading(false)
+        this.$emit('input', false)
         return
       }
 
@@ -205,6 +205,7 @@ export default {
         if (event === 'onSponsorAddedCatchError') this.openFailureNotify('sponsor', id, 10000)
         if (event === 'onDonationAddedCatchError') this.openFailureNotify('donation', id, 10000)
       }
+      this.openTransactionInProgressNotify()
       switch (this.paymentData.type) {
         case '0':
           await this.$api.contract.sponsorAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.total, this.paymentData.data.item, callback)
@@ -219,15 +220,29 @@ export default {
     /** 关闭结算界面 */
     handleReceiptClose () {
       this.showReceipt = false
-      this.$emit('payment-close', false)
       this.setLoading(false)
+      this.$emit('payment-close', false)
+      this.$emit('input', false)
     },
     /** 打开钱包读取界面 */
     handleKeyReaderClose () {
       this.showKeyReader = false
-      this.$emit('payment-close', false)
       this.setLoading(false)
+      this.$emit('payment-close', false)
+      this.$emit('input', false)
     },
+    /** 打开交易正在进行中通知 */
+    openTransactionInProgressNotify () {
+      const message = this.$t('payment.transactionInProgress')
+      this.$notify({
+        title: this.$t('payment.transactionInProgres'),
+        dangerouslyUseHTMLString: true,
+        message: `<span class="transaction-message-text">${message}</span>`,
+        type: 'info',
+        duration: 0
+      })
+    },
+    /** 打开成功通知 */
     openSuccessNotify (type, id, duration) {
       let title = ''
 
@@ -259,6 +274,7 @@ export default {
         duration: Number(duration)
       })
     },
+    /** 打开失败通知 */
     openFailureNotify (type, duration) {
       let title = ''
 

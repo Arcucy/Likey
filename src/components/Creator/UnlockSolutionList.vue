@@ -230,6 +230,7 @@ export default {
         number: '1'
       }
       this.receiptLoading = false
+      this.loading = false
     },
     /** 购买自定义方案 */
     async buyCustomSolution (value) {
@@ -261,6 +262,7 @@ export default {
         number: '1'
       }
       this.receiptLoading = false
+      this.loading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
@@ -294,6 +296,7 @@ export default {
         if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
         if (event === 'onSponsorAddedCatchError') this.openSuccessNotify('sponsor', id, 10000)
       }
+      this.openTransactionInProgressNotify()
       switch (this.paymentType) {
         case 0:
           // 执行合约
@@ -315,6 +318,17 @@ export default {
     handleKeyReaderClose () {
       this.showKeyReader = false
       this.loading = false
+    },
+    /** 打开交易正在进行中通知 */
+    openTransactionInProgressNotify () {
+      const message = this.$t('payment.transactionInProgress')
+      this.$notify({
+        title: this.$t('payment.transactionInProgres'),
+        dangerouslyUseHTMLString: true,
+        message: `<span class="transaction-message-text">${message}</span>`,
+        type: 'info',
+        duration: 0
+      })
     },
     openSuccessNotify (type, id, duration) {
       let title = ''

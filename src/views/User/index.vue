@@ -227,8 +227,8 @@ export default {
     paymentClose () {
       this.showPaymentDialog = false
     },
-    closeDonation (val) {
-      this.showDonationInput = val
+    closeDonation () {
+      this.showDonationInput = false
     }
   }
 }
