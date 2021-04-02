@@ -1,102 +1,108 @@
 <template>
   <div class="status-detail">
-    <div class="cardunit-bg" v-loading="detailsLoading">
-      <!-- 置顶标签 -->
-      <div v-if="isTop" class="cardunit-bg-retweeted">
-        <div class="cardunit-bg-retweeted-l">
-          <svg-icon icon-class="twitter-forward" />
-        </div>
-        <div class="cardunit-bg-retweeted-r">
-          置顶
-        </div>
-      </div>
-      <!-- 卡片主体 -->
-      <div class="cardunit">
-        <!-- 卡片右侧 -->
-        <div class="cardunit-r">
-          <!-- 用户名称与发布时间 -->
-          <div class="cardunit-r-header">
-            <!-- 头像 -->
-            <router-link
-              class="cardunit-r-header-avatar"
-              :to="creatorUrl"
-            >
-              <Avatar size="49px" :src="avatarImg" />
-            </router-link>
-            <router-link
-              class="cardunit-r-header-user"
-              :to="creatorUrl"
-            >
-              <p class="cardunit-r-header-user-nickname">{{ nickname || $t('flowCard.nmaeLoading') }}</p>
-              <p class="cardunit-r-header-user-shortname">{{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</p>
-            </router-link>
+    <div class="col-6">
+      <div class="cardunit-bg" v-loading="detailsLoading">
+        <!-- 置顶标签 -->
+        <div v-if="isTop" class="cardunit-bg-retweeted">
+          <div class="cardunit-bg-retweeted-l">
+            <svg-icon icon-class="twitter-forward" />
           </div>
-          <!-- 标题 -->
-          <h4 v-if="title" class="cardunit-r-title">
-            {{ title }}
-          </h4>
-          <!-- 解锁卡片（上锁时显示） -->
-          <Locked
-            v-if="isLocked"
-            :preview="preview"
-            @load-more="unlock"
-            @locked-payment="startPayment"
-            :loading="detailsLoading"
-          />
-          <!-- 正文 -->
-          <mainText
-            v-if="content"
-            class="cardunit-r-content"
-            :text="content"
-            :limit-lines="false"
-          />
-          <!-- 图片 -->
-          <photoAlbum
-            v-if="media && media.length > 0"
-            class="cardbtm10"
-            :media="media"
-            :is-encrypt="details.isLock"
-          />
-          <!-- 音频 -->
-          <AudioCard
-            v-for="(item, index) of audio.slice(0,4)"
-            class="cardbtm10"
-            :key="'audio-' + index"
-            :audio="item"
-            :is-encrypt="details.isLock"
-          />
-          <!-- 文件 -->
-          <FileCard
-            v-for="(item, index) of files.slice(0,4)"
-            class="cardbtm10"
-            :key="'files-' + index"
-            :file="item"
-            :is-encrypt="details.isLock"
-          />
-          <!-- 动态交互 -->
-          <div class="cardunit-r-flows">
-            <p class="cardunit-r-flows-time">
-              {{ createTime }}
-            </p>
-            <router-link class="cardunit-r-flows-list" :to="{}">
-              <!-- 赞赏 -->
-              <div class="cardunit-r-flows-list-item" @click="likeClick">
-                <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
-                <span class="cardunit-r-flows-list-item-text">
-                  {{ donateBtnText }}
-                </span>
-              </div>
-              <!-- 分享 -->
-              <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
-                <span class="mdi mdi-export-variant cardunit-r-flows-list-item-icon" />
-                <span class="cardunit-r-flows-list-item-text">
-                  {{ $t('flowCard.share') }}
-                </span>
-              </div>
-            </router-link>
+          <div class="cardunit-bg-retweeted-r">
+            置顶
           </div>
         </div>
+        <!-- 卡片主体 -->
+        <div class="cardunit">
+          <!-- 卡片右侧 -->
+          <div class="cardunit-r">
+            <!-- 用户名称与发布时间 -->
+            <div class="cardunit-r-header">
+              <!-- 头像 -->
+              <router-link
+                class="cardunit-r-header-avatar"
+                :to="creatorUrl"
+              >
+                <Avatar size="49px" :src="avatarImg" />
+              </router-link>
+              <router-link
+                class="cardunit-r-header-user"
+                :to="creatorUrl"
+              >
+                <p class="cardunit-r-header-user-nickname">{{ nickname || $t('flowCard.nmaeLoading') }}</p>
+                <p class="cardunit-r-header-user-shortname">{{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</p>
+              </router-link>
+            </div>
+            <!-- 标题 -->
+            <h4 v-if="title" class="cardunit-r-title">
+              {{ title }}
+            </h4>
+            <!-- 解锁卡片（上锁时显示） -->
+            <Locked
+              v-if="isLocked"
+              :preview="preview"
+              @load-more="unlock"
+              @locked-payment="startPayment"
+              :loading="detailsLoading"
+            />
+            <!-- 正文 -->
+            <mainText
+              v-if="content"
+              class="cardunit-r-content"
+              :text="content"
+              :limit-lines="false"
+            />
+            <!-- 图片 -->
+            <photoAlbum
+              v-if="media && media.length > 0"
+              class="cardbtm10"
+              :media="media"
+              :is-encrypt="details.isLock"
+            />
+            <!-- 音频 -->
+            <AudioCard
+              v-for="(item, index) of audio.slice(0,4)"
+              class="cardbtm10"
+              :key="'audio-' + index"
+              :audio="item"
+              :is-encrypt="details.isLock"
+            />
+            <!-- 文件 -->
+            <FileCard
+              v-for="(item, index) of files.slice(0,4)"
+              class="cardbtm10"
+              :key="'files-' + index"
+              :file="item"
+              :is-encrypt="details.isLock"
+            />
+            <!-- 动态交互 -->
+            <div class="cardunit-r-flows">
+              <p class="cardunit-r-flows-time">
+                {{ createTime }}
+              </p>
+              <router-link class="cardunit-r-flows-list" :to="{}">
+                <!-- 赞赏 -->
+                <div class="cardunit-r-flows-list-item" @click="likeClick">
+                  <span class="mdi mdi-currency-usd cardunit-r-flows-list-item-icon" />
+                  <span class="cardunit-r-flows-list-item-text">
+                    {{ donateBtnText }}
+                  </span>
+                </div>
+                <!-- 分享 -->
+                <div class="cardunit-r-flows-list-item" @click="copyCode(getShareLink())">
+                  <span class="mdi mdi-export-variant cardunit-r-flows-list-item-icon" />
+                  <span class="cardunit-r-flows-list-item-text">
+                    {{ $t('flowCard.share') }}
+                  </span>
+                </div>
+              </router-link>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+    <div class="col-3">
+      <SponsorStatistics v-if="creatorAdd" :address="creatorAdd" />
+      <UnlockSolutionList v-if="creatorAdd" :address="creatorAdd" />
     </div>
   </div>
 </template>
@@ -106,22 +112,29 @@ import { mapGetters, mapState } from 'vuex'
 
 import decode from '@/util/decode'
 import { decryptText } from '@/util/encrypt'
-
+// left
 import Avatar from '@/components/User/Avatar'
 import mainText from '@/components/FlowCard/MainText'
 import photoAlbum from '@/components/FlowCard/PhotoAlbum'
 import AudioCard from '@/components/FlowCard/AudioCard'
 import FileCard from '@/components/FlowCard/FileCard'
 import Locked from '@/components/FlowCard/Locked'
+// right
+import SponsorStatistics from '@/components/Creator/SponsorStatistics'
+import UnlockSolutionList from '@/components/Creator/UnlockSolutionList'
 
 export default {
   components: {
+    // left
     Avatar,
     mainText,
     photoAlbum,
     AudioCard,
     FileCard,
-    Locked
+    Locked,
+    // right
+    SponsorStatistics,
+    UnlockSolutionList
   },
   data () {
     return {
@@ -379,11 +392,29 @@ span {
 }
 
 .status-detail {
-  margin: 20px auto 100px;
+  max-width: 1220px;
   width: 100%;
-  max-width: 800px;
-  padding: 0 10px;
-  box-sizing: border-box;
+  margin: 20px auto 100px;
+  padding-bottom: 40px;
+  &::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    clear: both;
+  }
+  .col-6 {
+    width: 66.666%;
+    padding: 0 10px;
+    float: left;
+    box-sizing: border-box;
+  }
+  .col-3 {
+    width: 33.333%;
+    padding: 0 10px;
+    float: left;
+    box-sizing: border-box;
+  }
 }
 
 .cardunit-bg {
@@ -585,12 +616,32 @@ span {
   }
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 799px) {
+  .status-detail {
+    display: flex;
+    flex-direction: column;
+    .col-6, .col-3 {
+      width: 100%;
+    }
+  }
   .cardunit-bg {
-    margin-bottom: 1px;
+    margin-bottom: 40px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .status-detail {
+    .col-6, .col-3 {
+      padding: 0;
+      margin-bottom: 20px;
+    }
+  }
+
+  .cardunit-bg {
     border-radius: 0;
     padding: 20px 16px;
   }
+
   .status-detail {
     padding: 0;
   }
