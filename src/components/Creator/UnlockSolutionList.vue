@@ -349,7 +349,6 @@ export default {
 
       let message = this.$t('payment.txPosted')
       message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
-
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,

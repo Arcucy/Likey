@@ -239,7 +239,7 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 0
+        duration: 10000
       })
     },
     /** 打开成功通知 */
@@ -265,7 +265,6 @@ export default {
 
       let message = this.$t('payment.txPosted')
       message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
-
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
