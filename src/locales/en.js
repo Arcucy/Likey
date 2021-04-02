@@ -239,7 +239,9 @@ export default {
     downloading: 'Downloading',
     downloaded: 'Downloaded',
     ifYourDownloadDidnotStarted: 'If your download didn\'t started,',
-    clickHere: 'click here'
+    clickHere: 'click here',
+    shortnameLoading: 'Shortname loading...',
+    nmaeLoading: 'Nmae loading...'
   },
   home: {
     // 部分翻译存疑

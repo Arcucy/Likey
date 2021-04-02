@@ -18,7 +18,7 @@
       <div class="cardunit-l">
         <!-- 头像 -->
         <router-link
-          :to="{name: 'Creator', params: { shortname }}"
+          :to="creatorUrl"
         >
           <Avatar size="49px" :src="avatarImg" />
         </router-link>
@@ -29,10 +29,10 @@
         <div class="cardunit-r-header">
           <p class="cardunit-r-header-user">
             <router-link
-              :to="{name: 'Creator', params: { shortname }}"
+              :to="creatorUrl"
             >
-              <span class="cardunit-r-header-user-nickname">{{ nickname }}</span>
-              <span class="cardunit-r-header-user-shortname"> @{{ shortname }}</span>
+              <span class="cardunit-r-header-user-nickname">{{ nickname || $t('flowCard.nmaeLoading') }}</span>
+              <span class="cardunit-r-header-user-shortname"> {{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</span>
             </router-link>
           </p>
           <p class="cardunit-r-header-time">
@@ -219,9 +219,6 @@ export default {
       // 摘要未达到最大字数，没有媒体，没有上锁
       return lessThanMaximum && noMedia && !this.preview.lockContract
     },
-    card () {
-      return null
-    },
     avatarImg () {
       return this.noLoadUser ? this.user.avatar : this.avatar
     },
@@ -241,7 +238,7 @@ export default {
       return time.format('YYYY MMMDo')
     },
     title () {
-      if (this.card) return this.card.title
+      if (this.details) return this.details.title
       return this.preview.title
     },
     content () {
@@ -276,6 +273,10 @@ export default {
     },
     donateBtnText () {
       return this.likeLoading ? this.$t('app.loading') : this.$t('flowCard.donate')
+    },
+    creatorUrl () {
+      if (!this.shortname) return {}
+      return { name: 'Creator', params: { shortname: this.shortname } }
     }
   },
   watch: {
