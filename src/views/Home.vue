@@ -1,63 +1,57 @@
 <template>
   <el-main>
-    <el-row justify="center" type="flex">
-      <el-col :span="24" class="content-container">
-        <el-row :gutter="20">
-          <!--分栏：动态-->
-          <el-col :span="14">
-            <div class="home-timeline">
-              <el-row>
-                <el-col :span="4">
-                  <span class="home-title">
-                    {{ $t('home.tabFlow') }}
-                  </span>
-                </el-col>
-                <el-col :span="4">
-                  <span class="home-title" :class="showingAppreciate ? '' : 'home-title-not-active'">
-                    {{ $t('home.tabAppreciated') }}
-                  </span>
-                </el-col>
-              </el-row>
-              <FlowCard
-                v-for="(data, index) in flow"
-                :brief="data"
-                :key="index"
-                class="flow-card"
-              />
-              <InfiniteScroll
-                class="flow-card"
-                :no-data="!flow || !flow.length"
-                :loading="flowLoading"
-                :distance="200"
-                :disable="!hasNextPage"
-                @load="() => getUserStatus()"
-              />
-            </div>
-          </el-col>
-          <!--分栏：发现创作者-->
-          <el-col :span="10">
-            <div class="home-discovery">
+    <div class="row">
+      <div class="col-6">
+        <div class="home-timeline">
+          <el-row>
+            <el-col :span="4">
               <span class="home-title">
-                {{ $t('home.findMoreCreators') }}
+                {{ $t('home.tabFlow') }}
               </span>
-              <div class="card flow-card" v-if="shownCreators.length === 0">
-                <div v-loading="true">
-                  {{ $t('home.creatorsLoading') }}
-                </div>
-              </div>
-              <CreatorCard v-for="(address, index) in shownCreators" :address="address" :key="index" />
-              <div class="show-more-btn">
-                <span
-                  @click="showMore ++"
-                  v-if="creatorsAddress.length !== shownCreators.length"
-                  class="show-more-btn-text"
-                >{{ $t('home.showMore') }}</span>
-              </div>
+            </el-col>
+            <el-col :span="4">
+              <span class="home-title" :class="showingAppreciate ? '' : 'home-title-not-active'">
+                {{ $t('home.tabAppreciated') }}
+              </span>
+            </el-col>
+          </el-row>
+          <FlowCard
+            v-for="(data, index) in flow"
+            :brief="data"
+            :key="index"
+            class="flow-card"
+          />
+          <InfiniteScroll
+            class="flow-card"
+            :no-data="!flow || !flow.length"
+            :loading="flowLoading"
+            :distance="200"
+            :disable="!hasNextPage"
+            @load="() => getUserStatus()"
+          />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="home-discovery">
+          <span class="home-title">
+            {{ $t('home.findMoreCreators') }}
+          </span>
+          <div class="card flow-card" v-if="shownCreators.length === 0">
+            <div v-loading="true">
+              {{ $t('home.creatorsLoading') }}
             </div>
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
+          </div>
+          <CreatorCard v-for="(address, index) in shownCreators" :address="address" :key="index" />
+          <div class="show-more-btn">
+            <span
+              @click="showMore ++"
+              v-if="creatorsAddress.length !== shownCreators.length"
+              class="show-more-btn-text"
+            >{{ $t('home.showMore') }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </el-main>
 </template>
 
@@ -119,8 +113,22 @@ export default {
 <style lang="less" scoped>
 @import '../themes/variables';
 
-.content-container {
-  max-width: 1200px;
+.row {
+  max-width: 1220px;
+  width: 100%;
+  margin: 0 auto;
+  .col-6 {
+    width: 66.6%;
+    float: left;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  .col-3 {
+    width: 33.3%;
+    float: right;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
 }
 
 .card {
@@ -135,14 +143,6 @@ export default {
 // TODO:应当只在开发时使用
 .obviously-border {
   border: 1px black solid;
-}
-
-.home-timeline {
-  // TODO
-}
-
-.home-discovery {
-  // TODO
 }
 
 .home-title {
@@ -172,5 +172,30 @@ export default {
 
 .flow-card {
   margin-top: 10px;
+}
+
+@media screen and (max-width: 799px) {
+  .row {
+    display: flex;
+    flex-direction: column-reverse;
+    .col-6, .col-3 {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .row {
+    .col-6, .col-3 {
+      padding: 0;
+      margin-bottom: 20px;
+    }
+  }
+  .col-header {
+    padding: 0 16px;
+  }
+  .flow-card {
+    margin-bottom: 1px;
+  }
 }
 </style>

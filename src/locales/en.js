@@ -242,7 +242,7 @@ export default {
   home: {
     // 部分翻译存疑
     tabFlow: 'Flow',
-    tabAppreciated: 'Appreciated',
+    tabAppreciated: 'Sponsored',
     flowLoading: 'Flow loading...',
     creatorsLoading: 'Creators loading...',
     showMoreCreators: 'Show more',
