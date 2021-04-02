@@ -104,7 +104,7 @@ export default {
     return {
       customPstInput: 1,
       ratio: '',
-      loading: false,
+      loading: true,
       receiptLoading: false,
       showReceipt: false,
       showKeyReader: false,
@@ -153,8 +153,15 @@ export default {
       return this.creatorPst[this.creator.ticker.contract]
     }
   },
-  async mounted () {
-    await this.initContractInfo()
+  watch: {
+    creator: {
+      handler (val) {
+        if (val) {
+          this.initContractInfo()
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     ...mapActions(['getPstContract']),
