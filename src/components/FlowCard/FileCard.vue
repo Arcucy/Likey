@@ -9,7 +9,7 @@
         <p class="filecard-main-head-name">
           {{ file.name }}
         </p>
-        <span v-if="loading" class="mdi mdi-close-thick filecard-main-head-close" @click="cancelToken.cancel()" />
+        <span v-if="loading" class="mdi mdi-close-thick filecard-main-head-close" @click.stop="close" />
       </div>
       <div v-if="!loading" class="filecard-main-info">
         <p class="filecard-main-info-size">
@@ -69,6 +69,10 @@ export default {
   },
   watch: {
   },
+  destroyed () {
+    const url = window.URL || window.webkitURL
+    url.revokeObjectURL(this.src)
+  },
   methods: {
     async getFile () {
       if (this.loading) return ''
@@ -79,15 +83,16 @@ export default {
         this.cancelToken = Axios.CancelToken.source()
         res = await this.$api.gql.getFile(this.file.id, this.isEncrypt, this.cancelToken.token, pct => { this.progress = pct })
       } catch (err) {
-        console.error(err)
-        this.$message.error(this.$t('failure.download'))
+        if (err.message !== 'closeDownload') {
+          console.error(JSON.stringify(err))
+          this.$message.error(this.$t('failure.download'))
+        }
       }
       this.cancelToken = null
       this.loading = false
       return res
     },
     async download () {
-      if (this.loading) return
       if (!this.src) {
         const src = await this.getFile()
         if (!src) return
@@ -123,6 +128,12 @@ export default {
           </a>
         <span>`
       })
+    },
+    async close () {
+      if (this.cancelToken) {
+        this.cancelToken.cancel('closeDownload')
+        this.cancelToken = null
+      }
     }
   }
 }

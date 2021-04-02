@@ -555,7 +555,6 @@ export default {
         cancelToken,
         onDownloadProgress
       }).then(res => {
-        console.log('res:', res)
         const type = res.headers['content-type']
         const uint8View = new Uint8Array(res.data)
         const data = isEncrypt ? decryptBuffer(uint8View) : uint8View
