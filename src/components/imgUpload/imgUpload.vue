@@ -134,7 +134,6 @@ export default {
           if (!this.$refs.editImage) {
             return
           }
-          console.log(this.aspectRatio)
           const cropper = new Cropper(this.$refs.editImage, {
             aspectRatio: 1004 / 252,
             viewMode: 3,

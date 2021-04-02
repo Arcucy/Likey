@@ -9,6 +9,10 @@
     >
       <div class="donation-wrapper">
         <div class="donation-container">
+          <div class="donation-container-balacne">
+            <span class="donation-container-balacne">{{ $t('payment.currentBalance') }}:</span>
+            <span class="donation-container-ar"> {{ balance | winstonToAr | finalize(loading) }}</span>
+          </div>
           <div class="donation-container-input">
             <el-input
               v-model="arInput"
@@ -26,6 +30,7 @@
             block
             :precision="0"
             :min="1"
+            :disabled="loading"
             :max="9007199254740991"
             @click="step2"
           >
@@ -38,6 +43,8 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+import { mapGetters, mapState } from 'vuex'
 export default {
   props: {
     value: {
@@ -48,10 +55,16 @@ export default {
   data () {
     return {
       dialogVisible: this.value,
-      input: ''
+      input: '',
+      loading: false,
+      balance: '0'
     }
   },
   computed: {
+    ...mapState({
+      myAddress: state => state.user.myInfo.address
+    }),
+    ...mapGetters(['isLoggedIn']),
     arInput: {
       /** 输入过滤 */
       set (val) {
@@ -66,24 +79,36 @@ export default {
   watch: {
     value (val) {
       this.dialogVisible = val
+      if (val) {
+        this.getUserBalance(this.myAddress)
+      }
     }
   },
   methods: {
+    async getUserBalance (address) {
+      if (!this.isLoggedIn) {
+        this.$message.error(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+      this.loading = true
+      this.balance = await this.$api.ArweaveNative.wallets.getBalance(address)
+      this.loading = false
+    },
     step2 () {
-      if (!this.input) {
-        this.$message({
-          showClose: true,
-          message: this.$t('donation.donationAmountShouldnotBeNone'),
-          type: 'error'
-        })
+      if (!this.isLoggedIn) {
+        this.$message.error(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+      if (!this.input ||
+          this.input === '0' ||
+          new BigNumber(this.input) === 'NaN' ||
+          new BigNumber(this.input).isLessThanOrEqualTo(new BigNumber(0))
+      ) {
+        this.$message.error(this.$t('donation.donationAmountShouldnotBeNone'))
         return
       }
       if (!/^[0-9]+(\.[0-9]{0,11})?$/.test(this.input)) {
-        this.$message({
-          showClose: true,
-          message: this.$t('donation.pleaseInputValidDonationAmount'),
-          type: 'error'
-        })
+        this.$message.error(this.$t('donation.pleaseInputValidDonationAmount'))
         return
       }
       this.$emit('confirm-donation', String(this.input))
@@ -103,6 +128,10 @@ export default {
   .donation-container {
     display: flex;
     flex-direction: column;
+
+    &-balacne {
+      margin-bottom: 10px;
+    }
 
     &-input {
       display: flex;

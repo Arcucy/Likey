@@ -18,7 +18,7 @@
       <div class="cardunit-l">
         <!-- 头像 -->
         <router-link
-          :to="{name: 'Creator', params: { shortname }}"
+          :to="creatorUrl"
         >
           <Avatar size="49px" :src="avatarImg" />
         </router-link>
@@ -29,10 +29,10 @@
         <div class="cardunit-r-header">
           <p class="cardunit-r-header-user">
             <router-link
-              :to="{name: 'Creator', params: { shortname }}"
+              :to="creatorUrl"
             >
-              <span class="cardunit-r-header-user-nickname">{{ nickname }}</span>
-              <span class="cardunit-r-header-user-shortname"> @{{ shortname }}</span>
+              <span class="cardunit-r-header-user-nickname">{{ nickname || $t('flowCard.nmaeLoading') }}</span>
+              <span class="cardunit-r-header-user-shortname"> {{ shortname ? '@' + shortname : $t('flowCard.shortnameLoading') }}</span>
             </router-link>
           </p>
           <p class="cardunit-r-header-time">
@@ -46,14 +46,14 @@
         </h4>
         <!-- 预览卡片（未上锁时显示） -->
         <Summary
-          v-if="!preview.lockContract && !details"
+          v-if="!preview.lockContract && !details && !isShortContent"
           :preview="preview"
           @load-more="loadMore"
           :loading="detailsLoading"
         />
         <!-- 解锁卡片（上锁时显示） -->
         <Locked
-          v-else-if="!details"
+          v-if="preview.lockContract && !details"
           :preview="preview"
           @load-more="loadMore"
           @locked-payment="startPayment"
@@ -61,9 +61,9 @@
         />
         <!-- 正文 -->
         <mainText
-          v-if="details"
+          v-if="content"
           class="cardunit-r-content"
-          :card="details"
+          :text="content"
         />
         <!-- 图片 -->
         <router-link
@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import * as momentFun from '@/util/momentFun'
 import decode from '@/util/decode'
@@ -196,7 +196,6 @@ export default {
     },
     preview () {
       const tags = this.getTags(this.brief.node.tags)
-      console.log('tags:', this.brief.node.id, tags)
 
       return {
         id: this.brief.node.id,
@@ -204,15 +203,20 @@ export default {
         creator: this.brief.node.owner.address,
         timestamp: tags['Unix-Time'],
         schemaVersion: tags['Schema-Version'],
-        title: tags.Title,
-        summary: tags.Summary,
+        title: tags.Title || '',
+        summary: tags.Summary || '',
         extra: this.strToObj(tags.Extra),
         lockContract: tags['Lock-Contract'] || '',
         lockValue: tags['Lock-Value'] || 0
       }
     },
-    card () {
-      return null
+    /** 是短内容么，短内容将不显示查看更多按钮 */
+    isShortContent () {
+      const lessThanMaximum = this.preview.summary.length !== 100
+      const { media, audio, file } = { ...this.preview.extra }
+      const noMedia = !media && !audio && !file
+      // 摘要未达到最大字数，没有媒体，没有上锁
+      return lessThanMaximum && noMedia && !this.preview.lockContract
     },
     avatarImg () {
       return this.noLoadUser ? this.user.avatar : this.avatar
@@ -233,8 +237,13 @@ export default {
       return time.format('YYYY MMMDo')
     },
     title () {
-      if (this.card) return this.card.title
+      if (this.details) return this.details.title
       return this.preview.title
+    },
+    content () {
+      if (this.details) return this.details.content
+      if (this.isShortContent) return this.preview.summary
+      return ''
     },
     media () {
       if (!this.details || !this.details.extra || !this.details.extra.medias) return []
@@ -262,7 +271,11 @@ export default {
       return this.creatorPst[this.creator.ticker.contract]
     },
     donateBtnText () {
-      return this.donationPaymentInProgress ? this.$t('app.loading') : this.$t('flowCard.donate')
+      return this.likeLoading ? this.$t('app.loading') : this.$t('flowCard.donate')
+    },
+    creatorUrl () {
+      if (!this.shortname) return {}
+      return { name: 'Creator', params: { shortname: this.shortname } }
     }
   },
   watch: {
@@ -280,6 +293,7 @@ export default {
   mounted () {
   },
   methods: {
+    ...mapActions(['getCreatorInfo']),
     /** 获取头像 */
     async getAvatar () {
       try {
@@ -335,18 +349,17 @@ export default {
         this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
         return
       }
-      if (!this.owner) await this.getCreatorInfo(this.preview.creator)
+      if (!this.owner) {
+        this.$message.info(this.$t('payment.dataLoadingPleaseTryLater'))
+        await this.getCreatorInfo(this.preview.creator)
+      }
       if (this.contract && this.contract.loading) {
-        this.$message({
-          showClose: true,
-          message: this.$t('app.loading'),
-          type: 'info'
-        })
+        this.$message.info(this.$t('payment.dataLoadingPleaseTryLater'))
         return
       }
       this.$emit('status-donation', {
         status: this.preview,
-        contract: this.contract,
+        contract: this.creator.ticker.contract,
         donation: {
           value: ''
         }
@@ -358,7 +371,6 @@ export default {
     },
     /** 拷贝 */
     copyCode (code) {
-      console.log(code)
       this.$copyText(code).then(
         () => {
           this.$message({

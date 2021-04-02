@@ -59,7 +59,7 @@ export default {
   },
   data () {
     return {
-      loading: false,
+      loading: true,
       ratio: '',
       sponsorAndDonationCount: '0',
       creatorInfo: {
@@ -114,15 +114,25 @@ export default {
     }
   },
   watch: {
+    creator: {
+      handler (val) {
+        if (val) {
+          this.initContractInfo()
+        }
+      },
+      immediate: true
+    }
   },
-  async mounted () {
-    this.loading = true
-    this.contract = await this.getPstContract(this.creators[this.address].ticker.contract)
-    this.sponsorAndDonationCount = await this.$api.gql.getAllPurchasesStats(this.creator.ticker.contract, 'all')
-    this.loading = false
+  mounted () {
   },
   methods: {
-    ...mapActions(['getPstContract'])
+    ...mapActions(['getPstContract']),
+    async initContractInfo () {
+      this.loading = true
+      this.contract = await this.getPstContract(this.creator.ticker.contract)
+      this.sponsorAndDonationCount = await this.$api.gql.getAllPurchasesStats(this.creator.ticker.contract, 'all')
+      this.loading = false
+    }
   }
 }
 </script>

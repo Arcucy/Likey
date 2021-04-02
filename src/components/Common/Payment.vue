@@ -136,27 +136,33 @@ export default {
 
       // 换算为具体支付的金额
       this.receiptLoading = true
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
       let value
+      let contract
       switch (this.data.type) {
         // 0 为解锁
         case '0':
-          value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
+          contract = await this.getPstContract(this.data.data.contract)
+          value = this.convertPstToWinston(this.data.data.unlock.value, contract.ratio)
           value = new BigNumber(value).toFixed(0)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
+          this.paymentData.data.balance = balance
           break
         // 1 为打赏
         case '1':
+          contract = await this.getPstContract(this.data.data.contract)
           value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.contract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = {
             statusId: this.data.data.status.id,
             value: value
           }
+          this.paymentData.data.balance = balance
           break
       }
       this.receiptLoading = false
@@ -208,10 +214,19 @@ export default {
       this.openTransactionInProgressNotify()
       switch (this.paymentData.type) {
         case '0':
-          await this.$api.contract.sponsorAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.total, this.paymentData.data.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.paymentData.data.contract,
+            this.paymentData.data.total.toString(),
+            this.paymentData.data.item, callback
+          )
           break
         case '1':
-          await this.$api.contract.donationAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.item.statusId, this.paymentData.data.total, this.paymentData.data.item.value, callback)
+          await this.$api.contract.donationAdded(jwk,
+            this.paymentData.data.contract,
+            this.paymentData.data.item.statusId,
+            this.paymentData.data.total.toString(),
+            this.paymentData.data.item.value, callback
+          )
           break
       }
       this.setLoading(false)
@@ -239,7 +254,7 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 0
+        duration: 30000
       })
     },
     /** 打开成功通知 */
@@ -265,7 +280,6 @@ export default {
 
       let message = this.$t('payment.txPosted')
       message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
-
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,

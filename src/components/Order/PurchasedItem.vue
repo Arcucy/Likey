@@ -5,7 +5,7 @@
         <div class="purchased-item-left-type-info">
           <span class="purchased-item-left-type-info-title">{{ purchaseType }}</span>
           <div class="purchased-item-left-type-info-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.node.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.id)" />
+            <a class="address" target="_blank" :href="`https://viewblock.io/arweave/tx/${purchase.node.id}`">{{ purchase.node.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.id)" />
           </div>
         </div>
         <span class="purchased-item-left-type-info-spend">{{ indicator }}{{ purchase.node.quantity.winston | winstonToAr }} AR</span>
@@ -24,7 +24,7 @@
             <span class="username">{{ username }}</span>
           </div>
           <div class="purchased-item-left-recipient-user-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.node.target}`">{{ purchase.node.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.target)" />
+            <a class="address" target="_blank" :href="`https://viewblock.io/arweave/tx/${purchase.node.target}`">{{ purchase.node.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.target)" />
           </div>
         </div>
         <span class="purchased-item-right-time">{{ createTime }}</span>
@@ -117,6 +117,7 @@ export default {
 
 <style lang="less" scoped>
 .purchased-item {
+  color: @dark;
   display: flex;
   width: 100%;
   margin: 20px 0px;
@@ -181,7 +182,7 @@ export default {
           font-weight: 600;
           white-space: nowrap;
         }
-       }
+      }
     }
 
     &-info {
@@ -279,6 +280,20 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     &-left {
+      &-type {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        &-info {
+          &-spend {
+            font-size: 20px;
+            font-weight: 600;
+            white-space: unset;
+            word-break: break-all;
+          }
+        }
+      }
       &-recipient {
         flex-direction: column;
         align-items: flex-start;

@@ -56,7 +56,7 @@
           :no-data-text="$t('order.nodata')"
           :loading="dataLoading"
           :distance="500"
-          :disable="!hasNextPage"
+          :disable="!isLoggedIn || !hasNextPage"
           @load="getList"
         />
       </div>
@@ -102,7 +102,7 @@ export default {
         sponsors: [],
         donations: []
       },
-      hasNextPage: false,
+      hasNextPage: true,
       tabList: [],
       flash: false,
       pagesize: 10, // 每页数量，
@@ -141,8 +141,8 @@ export default {
   },
   watch: {
     isLoggedIn: {
-      async handler (val) {
-        if (val) await this.initUserData()
+      handler (val) {
+        if (val) this.initUserData()
         else {
           // 对于没有登录的用户，检查 Cookie 中是否有 key，
           // 如果有的话，等待登录完成，没有则直接退回主页。
@@ -176,7 +176,6 @@ export default {
       this.totalSponsorsLoading = true
       this.totalDonationsLoading = true
       this.contractLoading = true
-      await this.getList(this.tab || this.defaultTab)
       await this.getCreatorInfo()
       this.getContractState()
       this.getSponsorsCount()
@@ -241,6 +240,7 @@ export default {
 
 <style lang="less" scoped>
 .my-stats {
+  color: @dark;
   margin: 20px auto 0px;
   max-width: 1200px;
   width: 100%;

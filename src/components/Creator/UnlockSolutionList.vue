@@ -62,6 +62,7 @@
           type="primary"
           @click="buyCustomSolution(customPstInput)"
           :loading="loading"
+          :disabled="disableBtn"
         >
           {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
         </el-button>
@@ -104,7 +105,7 @@ export default {
     return {
       customPstInput: 1,
       ratio: '',
-      loading: false,
+      loading: true,
       receiptLoading: false,
       showReceipt: false,
       showKeyReader: false,
@@ -151,10 +152,20 @@ export default {
     contract () {
       if (!this.creator) return {}
       return this.creatorPst[this.creator.ticker.contract]
+    },
+    disableBtn () {
+      return this.customPstInput === '0' || this.customPstInput === 0 || !this.customPstInput
     }
   },
-  async mounted () {
-    await this.initContractInfo()
+  watch: {
+    creator: {
+      handler (val) {
+        if (val) {
+          this.initContractInfo()
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     ...mapActions(['getPstContract']),
@@ -221,7 +232,13 @@ export default {
       let value = this.convertPstToWinston(item.value)
       value = new BigNumber(value).toFixed(0)
 
-      this.paymentData = await this.$api.contract.distributeTokens(this.contract, value, undefined, false)
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
+      this.paymentData = await this.$api.contract.distributeTokens(this.contract,
+        value,
+        undefined,
+        false,
+        this.myAddress
+      )
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
       this.paymentData.item = {
@@ -229,6 +246,7 @@ export default {
         value: item.value,
         number: '1'
       }
+      this.paymentData.balance = balance
       this.receiptLoading = false
       this.loading = false
     },
@@ -253,7 +271,13 @@ export default {
       value = this.convertPstToWinston(String(value))
       const paymentValue = new BigNumber(value).toFixed(0)
 
-      this.paymentData = await this.$api.contract.distributeTokens(this.contract, paymentValue, undefined, false)
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
+      this.paymentData = await this.$api.contract.distributeTokens(this.contract,
+        paymentValue,
+        undefined,
+        false,
+        this.myAddress
+      )
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
       this.paymentData.item = {
@@ -261,6 +285,7 @@ export default {
         value: '1',
         number: '1'
       }
+      this.paymentData.balance = balance
       this.receiptLoading = false
       this.loading = false
     },
@@ -300,11 +325,19 @@ export default {
       switch (this.paymentType) {
         case 0:
           // 执行合约
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.creator.ticker.contract,
+            this.paymentData.total.toString(),
+            this.paymentData.item, callback
+          )
           this.loading = false
           break
         case 1:
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.creator.ticker.contract,
+            this.paymentData.total.toString(),
+            this.paymentData.item, callback
+          )
           this.loading = false
           break
       }
@@ -327,7 +360,7 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 0
+        duration: 30000
       })
     },
     openSuccessNotify (type, id, duration) {
@@ -349,7 +382,6 @@ export default {
 
       let message = this.$t('payment.txPosted')
       message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
-
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,

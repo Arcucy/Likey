@@ -200,7 +200,10 @@ export default {
     total: 'Total',
     txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}',
     transactionInProgres: 'Transaction in progress',
-    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time'
+    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time',
+    currentBalance: 'Current balance',
+    afterBalance: 'New balance',
+    dataLoadingPleaseTryLater: 'Loading data, please try again later'
   },
   progressText: {
     status: 'Uploading status',
@@ -237,12 +240,14 @@ export default {
     downloading: 'Downloading',
     downloaded: 'Downloaded',
     ifYourDownloadDidnotStarted: 'If your download didn\'t started,',
-    clickHere: 'click here'
+    clickHere: 'click here',
+    shortnameLoading: 'Shortname loading...',
+    nmaeLoading: 'Nmae loading...'
   },
   home: {
     // 部分翻译存疑
     tabFlow: 'Flow',
-    tabAppreciated: 'Appreciated',
+    tabAppreciated: 'Sponsored',
     flowLoading: 'Flow loading...',
     creatorsLoading: 'Creators loading...',
     showMoreCreators: 'Show more',
