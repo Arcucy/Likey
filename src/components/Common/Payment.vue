@@ -151,6 +151,7 @@ export default {
           break
         // 1 为打赏
         case '1':
+          console.log(this.data.data)
           value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
           this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.contract
@@ -212,14 +213,14 @@ export default {
       switch (this.paymentData.type) {
         case '0':
           await this.$api.contract.sponsorAdded(jwk,
-            this.data.data.status.lockContract,
+            this.paymentData.data.contract,
             this.paymentData.data.total.toString(),
             this.paymentData.data.item, callback
           )
           break
         case '1':
           await this.$api.contract.donationAdded(jwk,
-            this.data.data.status.lockContract,
+            this.paymentData.data.contract,
             this.paymentData.data.item.statusId,
             this.paymentData.data.total.toString(),
             this.paymentData.data.item.value, callback

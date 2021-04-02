@@ -218,6 +218,8 @@ export default {
       this.donateData = data
     },
     confirmDonation (val) {
+      if (!this.donateData.status.creator || !this.creators || !this.creators[this.donateData.status.creator]) return
+      this.donateData.contract = this.creators[this.donateData.status.creator].ticker.contract
       this.showDonationInput = false
       this.donateData.donation.value = val
       this.paymentData.type = '1'

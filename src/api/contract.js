@@ -418,6 +418,7 @@ export default {
     if (!data) {
       return
     }
+    console.log(contract)
     try {
       let status = 'onDonationAddedStarted'
       callback(status, '')
