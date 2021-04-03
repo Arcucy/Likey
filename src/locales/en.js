@@ -181,6 +181,9 @@ export default {
     donationAndSponsorCount: 'Purchased',
     custom: 'Custom',
     customInputDescription: 'You can specify you purchase amount here',
+    locked: 'Locked',
+    unlocked: 'Unlocked',
+    unlockValueNeed: '{0} {1} is required',
     myBalance: 'Already Own'
   },
   donation: {
