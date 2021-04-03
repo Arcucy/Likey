@@ -157,10 +157,10 @@ export default {
     },
     requiredItems () {
       if (!this.creator) return []
-      if (!this.pstContract.ticker) return this.creator.items
+      if (!this.contract.ticker) return this.creator.items
       if (!this.myAddress) return this.creator.items
       const items = JSON.parse(JSON.stringify(this.creator.items))
-      const balance = new BigNumber(this.pstContract.balances[this.myAddress]).div(this.pstContract.divisibility)
+      const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
       if (balance.toString() === 'NaN') return this.creator.items
       for (let i = 0; i < items.length; i++) {
         const currentValue = new BigNumber(items[i].value)
@@ -194,8 +194,9 @@ export default {
     async initContractInfo () {
       this.loading = true
       this.initLoading = true
-      this.pstContract = await this.getPstContract(this.creator.ticker.contract)
-      this.ratio = this.contract.ratio
+      await this.getPstContract(this.creator.ticker.contract)
+      if (!this.contract.ratio) this.ratio = '1:1'
+      else this.ratio = this.contract.ratio
       this.loading = false
       this.initLoading = true
     },
