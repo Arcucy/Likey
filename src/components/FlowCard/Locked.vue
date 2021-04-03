@@ -137,6 +137,7 @@ export default {
       if (this.isMe(this.preview.creator)) return true
       // 合约没有加载好，不解锁
       if (!this.contract) return false
+      if (!this.contract.balances) return false
       // 没有余额，不解锁
       const balance = this.contract.balances[this.myAddress]
       if (!balance) return false

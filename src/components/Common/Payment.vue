@@ -143,6 +143,9 @@ export default {
         // 0 为解锁
         case '0':
           contract = await this.getPstContract(this.data.data.contract)
+          if (!contract.ratio) {
+            this.openFailureNotify('sponsor', 6000)
+          }
           value = this.convertPstToWinston(this.data.data.unlock.value, contract.ratio)
           value = new BigNumber(value).toFixed(0)
           this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
@@ -154,6 +157,9 @@ export default {
         // 1 为打赏
         case '1':
           contract = await this.getPstContract(this.data.data.contract)
+          if (!contract.ratio) {
+            this.openFailureNotify('sponsor', 6000)
+          }
           value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
           this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.contract

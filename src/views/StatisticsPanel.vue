@@ -218,8 +218,10 @@ export default {
     },
     async getContractState () {
       await this.getPstContract(this.creator.ticker.contract)
-      this.totalSupply = this.contract.totalSupply
-      this.holders = this.contract.holders
+      if (!this.contract.totalSupply) this.totalSupply = '0'
+      else this.totalSupply = this.contract.totalSupply
+      if (!this.contract.holders) this.contract.holders = '0'
+      else this.holders = this.contract.holders
       this.contractLoading = false
     },
     async getSponsorsCount () {
