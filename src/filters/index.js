@@ -32,6 +32,10 @@ const filters = {
     var d = c < 0 ? c : Math.abs(c) // enforce -0 is 0
     var e = d + ['', 'K', 'M', 'B', 'T'][k] // append power
     return e
+  },
+  unlocked (val, isUnlocked) {
+    if (isUnlocked) return i18n.tc('flowCard.unlocked')
+    return val
   }
 }
 

@@ -181,6 +181,9 @@ export default {
     donationAndSponsorCount: '赞赏总数',
     custom: '自定义',
     customInputDescription: '本方案可自定义 PST 购买数量',
+    locked: '已锁定',
+    unlocked: '已解锁',
+    unlockValueNeed: '还需要 {0} {1}',
     myBalance: '已经持有'
   },
   donation: {
