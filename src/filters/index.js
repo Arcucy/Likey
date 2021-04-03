@@ -23,6 +23,7 @@ const filters = {
   /** 数字换算为缩减版本 */
   abbreviateNumber (num, fixed = 4) {
     num = new BigNumber(num)
+    if (num.toString() === 'NaN') return '0'
     if (num === null) { return '0' } // terminate early
     if (num === 0) { return '0' } // terminate early
     fixed = (!fixed || fixed < 0) ? 0 : fixed // number of decimal places to show
