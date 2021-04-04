@@ -116,6 +116,7 @@ export default {
     exchangeRatio: 'Exchange Ratio',
     exchangeRatioDescription: 'Initial exchange ratio is used to convert the AR sponsored by the user to token',
     exchangeRatioExceedsTheLimitation: 'Exchang ratio decimals should not beyond the token',
+    exchangeRatioIsNotAValidNumber: 'Exchange ratio is not a valid number',
     pleaseFillInTheExchangeRatio: 'Please fill in the exchange ratio',
     unlockPlan: 'Unlock Solution',
     ownBalance: 'Own',
