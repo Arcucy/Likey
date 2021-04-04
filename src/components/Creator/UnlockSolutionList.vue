@@ -198,7 +198,7 @@ export default {
       if (!this.contract.ratio) this.ratio = '1:1'
       else this.ratio = this.contract.ratio
       this.loading = false
-      this.initLoading = true
+      this.initLoading = false
     },
     /** 传入解锁所需的金额，判断是否已经解锁 */
     isUnlocked (value) {
