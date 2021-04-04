@@ -9,7 +9,8 @@ export default {
     sponsorTxSuccess: '赞助成功',
     donateTxSuccess: '打赏成功',
     txSuccess: '交易成功',
-    statusPublished: '动态发布成功'
+    statusPublished: '动态发布成功',
+    tickerHoldingUpdateSuccess: '持币状态更新成功'
   },
   failure: {
     login: '登录失败',
@@ -33,6 +34,7 @@ export default {
     donateTxFailed: '打赏失败',
     txFailed: '交易失败',
     txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
+    contractWriteFailed: '合约调用失败',
     dynamicUploadFailed: '动态上传失败，请检查网络后重试',
     dynamicEncryptFailed: '动态加密失败',
     dynamicEncryptFailedMessage: '动态加密失败，出现了重大严重错误，如果屡次出现请反馈指开发者',
@@ -207,7 +209,8 @@ export default {
     transactionInProgress: '你的交易正在进行，请不要关闭本页面。在此等待期间，你可以继续浏览本页的其他内容',
     currentBalance: '当前余额',
     afterBalance: '结余',
-    dataLoadingPleaseTryLater: '数据正在加载中，请稍后重试'
+    dataLoadingPleaseTryLater: '数据正在加载中，请稍后重试',
+    nextTransactionInProgress: '正在执行下一笔交易'
   },
   progressText: {
     status: '上传动态中',

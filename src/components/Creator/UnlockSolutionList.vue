@@ -133,7 +133,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isLoggedIn']),
+    ...mapGetters(['isLoggedIn', 'isMe']),
     ...mapState({
       creators: state => state.contract.creators,
       creatorPst: state => state.contract.creatorPst,
@@ -159,16 +159,29 @@ export default {
       if (!this.creator) return []
       if (!this.contract.ticker) return this.creator.items
       if (!this.myAddress) return this.creator.items
-      const items = JSON.parse(JSON.stringify(this.creator.items))
+      const newItems = []
+      const oldItems = JSON.parse(JSON.stringify(this.creator.items))
+      oldItems.forEach(item => {
+        newItems.push({ ...item })
+      })
+
       const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
+      const resItems = []
       if (balance.toString() === 'NaN') return this.creator.items
-      for (let i = 0; i < items.length; i++) {
-        const currentValue = new BigNumber(items[i].value)
+      for (let i = 0; i < newItems.length; i++) {
+        const currentValue = new BigNumber(newItems[i].value)
         const resultValue = currentValue.minus(balance)
-        if (resultValue.isLessThanOrEqualTo(0)) items[i].value = '0'
-        else items[i].value = resultValue.toString()
+        if (resultValue.isLessThanOrEqualTo(0)) {
+          const obj = newItems[i]
+          obj.value = '0'
+          resItems.push(obj)
+        } else {
+          const obj = newItems[i]
+          obj.value = resultValue.toString()
+          resItems.push(obj)
+        }
       }
-      return items
+      return resItems
     },
     contract () {
       if (!this.creator) return {}
@@ -202,6 +215,7 @@ export default {
     },
     /** 传入解锁所需的金额，判断是否已经解锁 */
     isUnlocked (value) {
+      if (this.address === this.myAddress) return true
       return value === '0'
     },
     /** 传入解锁所需的金额，返回按钮的文字 */
@@ -305,7 +319,6 @@ export default {
 
       this.showReceipt = false
       this.showReceipt = true
-      this.loading = true
       this.receiptLoading = true
       this.paymentType = 1
 
@@ -329,7 +342,6 @@ export default {
       }
       this.paymentData.balance = balance
       this.receiptLoading = false
-      this.loading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
@@ -353,11 +365,13 @@ export default {
         return
       }
 
+      this.loading = true
       this.showKeyReader = false
       const callback = (event, id) => {
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
+        if (event === 'onUpdateTicker') this.openSuccessNotify('update', '', 30000)
 
         if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
         if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
@@ -407,23 +421,27 @@ export default {
     },
     openSuccessNotify (type, id, duration) {
       let title = ''
+      let message = this.$t('payment.txPosted')
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
 
       switch (type) {
         case 'distribution':
-          title = this.$t('success.profitSharingTxSuccess')
+          title = this.$t('success.profitSharingTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'developer':
-          title = this.$t('success.developerTipTxSuccess')
+          title = this.$t('success.developerTipTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'sponsor':
-          title = this.$t('success.sponsorTxSuccess')
+          title = this.$t('success.sponsorTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
+          break
+        case 'update':
+          title = this.$t('success.tickerHoldingUpdateSuccess')
+          message = ''
           break
         default:
           title = this.$t('success.txSuccess')
       }
 
-      let message = this.$t('payment.txPosted')
-      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
@@ -434,6 +452,7 @@ export default {
     },
     openFailureNotify (type, id, duration) {
       let title = ''
+      this.loading = false
 
       switch (type) {
         case 'distribution':
@@ -528,6 +547,12 @@ export default {
     padding: 0;
     margin: 0;
     color: @primary;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   &-title {
@@ -535,12 +560,24 @@ export default {
     padding: 0;
     margin: 5px 0 5px;
     font-weight: 500;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   &-desp {
     font-size: 14px;
     padding: 0;
     margin: 0 0 5px;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 17;
+    overflow: hidden;
   }
 
   &-unlock {
@@ -601,6 +638,7 @@ export default {
     margin: 0 5px;
     &-desp {
       flex: 1;
+      -webkit-line-clamp: 10;
     }
   }
 }

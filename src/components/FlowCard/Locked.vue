@@ -141,21 +141,25 @@ export default {
       // 没有余额，不解锁
       const balance = this.contract.balances[this.myAddress]
       if (!balance) return false
+      // 如果是全部持有者解锁，则判断余额是否大于0
+      const isAllValueUnlock = (!this.preview.lockValue || this.preview.lockValue === '0') && this.preview.lockContract
+      const balanceBig = new BigNumber(balance).div(this.contract.divisibility)
+      if (isAllValueUnlock && balanceBig.isGreaterThan(new BigNumber(0))) return true
       // 判断余额是否足够解锁
       const lockValue = new BigNumber(this.preview.lockValue)
-      return Boolean(new BigNumber(balance).isGreaterThanOrEqualTo(lockValue))
+      return Boolean(balanceBig.isGreaterThanOrEqualTo(lockValue))
     },
     unlockPstValue () {
-      let returnValue = this.preview.lockValue === '0' ? '1' : this.preview.lockValue
-      if (this.preview.lockValue === '0') {
-        for (let i = 0; i < this.pstItems.length; i++) {
-          const item = this.pstItems[i]
-          const value = new BigNumber(item.value)
-          if (value.isGreaterThanOrEqualTo(this.preview.lockValue)) {
-            returnValue = item.value
-            break
-          }
-        }
+      const isAllValueUnlock = (!this.preview.lockValue || this.preview.lockValue === '0') && this.preview.lockContract
+      let returnValue = isAllValueUnlock ? '1' : this.preview.lockValue
+      if (!isAllValueUnlock) {
+        if (!this.contract) return returnValue
+        if (!this.contract.balances) return returnValue
+        const balance = this.contract.balances[this.myAddress]
+        if (!balance) return returnValue
+        const balanceBig = new BigNumber(balance).div(this.contract.divisibility)
+        const requiredValue = new BigNumber(this.preview.lockValue)
+        returnValue = requiredValue.minus(balanceBig).toString()
       }
       return this.convertPstToWinston(returnValue, this.pstRatio)
     },
@@ -190,18 +194,17 @@ export default {
   methods: {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
     buyPst () {
-      let matchedItem = {
+      const matchedItem = {
         title: 'Custom',
         value: '1',
         number: '1'
       }
-      for (let i = 0; i < this.pstItems.length; i++) {
-        const item = this.pstItems[i]
-        const value = new BigNumber(item.value)
-        if (value.isGreaterThanOrEqualTo(this.preview.lockValue)) {
-          matchedItem = item
-          break
-        }
+      if (this.contract.balances[this.myAddress]) {
+        const balance = this.contract.balances[this.myAddress]
+        BigNumber.set({ EXPONENTIAL_AT: 26 })
+        const balanceBig = new BigNumber(balance).div(this.contract.divisibility)
+        const requiredValue = new BigNumber(this.preview.lockValue)
+        matchedItem.value = requiredValue.minus(balanceBig).toString()
       }
       this.$emit('locked-payment', {
         status: this.preview,
@@ -287,6 +290,13 @@ a {
       P {
         margin: 0 0 10px;
         font-size: 15px;
+        word-break: break-all;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        text-align: center;
       }
 
       &-btn {

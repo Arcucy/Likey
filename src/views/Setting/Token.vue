@@ -272,7 +272,8 @@ export default {
           this.name = this.tokenFormBackup.name
           this.ticker = this.tokenFormBackup.ticker
           this.solutions = this.tokenFormBackup.items
-          this.ratio = this.tokenFormBackup.ratio
+          Bignumber.set({ EXPONENTIAL_AT: 16 })
+          this.ratio = new Bignumber(this.tokenFormBackup.ratio).toString()
         }
         this.authorInfoLoading = false
         return
@@ -284,6 +285,8 @@ export default {
         // 初始化兑换比率
         const halfRatio = String(parseFloat(String(this.creatorPst[res.ticker.contract].ratio).split(':')[1]))
         this.ratio = !halfRatio ? '' : halfRatio
+        Bignumber.set({ EXPONENTIAL_AT: 26 })
+        this.ratio = new Bignumber(this.ratio).toString()
       } catch (e) {
         this.ratio = '1'
       }
@@ -308,6 +311,11 @@ export default {
       // 新来的调用创建创作者方法，已经是创作者的调用编辑方法
       this.submitting = true
       if (this.newAuthor) {
+        if (!this.creatorFormBackup) {
+          this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
+          this.submitting = false
+          return false
+        }
         await this.createCreatorContract()
         this.createCreator()
       } else {
@@ -376,7 +384,7 @@ export default {
           ticker: this.ticker,
           contract: this.tickerContract,
           ratio: '1:' + this.ratio
-        }, this.solutions.filter(item => !item.editor).map(item => {
+        }, this.solutions.filter(item => !item.editing).map(item => {
           return {
             title: item.title,
             value: String(item.value),

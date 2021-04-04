@@ -37,6 +37,7 @@ export default {
       fileBuffer: [],
       /** 图片裁切尺寸 */
       cropSize: 1000,
+      quality: 0.8,
       /** 图片 MIME 类型 */
       mimeType: 'image/jpeg',
       /** 最大文件尺寸，单位 MB */
