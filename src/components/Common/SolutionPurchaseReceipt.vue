@@ -157,11 +157,14 @@ export default {
     margin: 0px 0px 30px;
     display: flex;
     flex-direction: column;
-    row-gap: 5px;
 
     .solution-purchase-item {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 5px;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }

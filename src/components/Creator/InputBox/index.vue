@@ -40,24 +40,28 @@
     </div>
     <div class="inputbox-func">
       <ImageUploader
+        class="inputbox-func-item"
         multiple
         @image-input="getImageFiles"
         :disabled="imageFiles.length >= imageFilesMaxLength"
       />
       <AudioUploader
+        class="inputbox-func-item"
         @audio-input="getAudioFiles"
         :disabled="audioFiles.length >= audioFilesMaxLength"
       />
       <FileUploader
+        class="inputbox-func-item"
         @file-input="getFiles"
         :disabled="files.length >= filesMaxLength"
       />
-      <div class="inputbox-func-count">
+      <div class="inputbox-func-count inputbox-func-item">
         <p :class="content.length > contentMaxLength && 'overflow'">
           {{ content.length }}/{{ contentMaxLength }}
         </p>
       </div>
       <LockOption
+        class="inputbox-func-item"
         v-model="lockMode"
         :address="address"
       />
@@ -346,8 +350,11 @@ export default {
 
   &-func {
     display: flex;
-    column-gap: 5px;
     align-items: center;
+
+    &-item {
+      margin-right: 5px;
+    }
 
     &-count {
       flex: 1;
