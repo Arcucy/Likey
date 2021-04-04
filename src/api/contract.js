@@ -11,7 +11,7 @@ const DEVELOPER_TIP = String(process.env.VUE_APP_DEVELOPER_TIP)
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = false
-console.log('Is it test mode? :', TEST_MODE)
+if (TEST_MODE) console.warn('Is the contract test mode')
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
@@ -464,15 +464,10 @@ export default {
 
   async updateHoldingTicker (jwk, contract) {
     const likeyState = await this.readLikeyContract()
-    console.log(likeyState.users)
     const paymentAddress = await arweave.wallets.getAddress(jwk)
     if (likeyState && likeyState.users[paymentAddress]) {
       for (const item of likeyState.users[paymentAddress]) {
-        console.log(item)
-        if (item.contract === contract) {
-          console.log('no need to record')
-          return
-        }
+        if (item.contract === contract) return
       }
     }
 
