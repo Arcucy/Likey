@@ -10,6 +10,9 @@
           {{ ticker || 'PST' }}/{{ $t('setting.unlock') }}
         </span>
       </div>
+      <p v-if="!isUnlocked(requiredItems[index].value) && !initLoading" class="solution-left">
+        {{ $t('sponsor.unlockValueNeed' , [requiredItems[index].value, ticker]) }}
+      </p>
       <p class="solution-title">
         {{ item.title }}
       </p>
@@ -18,17 +21,18 @@
       </p>
       <div class="solution-unlock">
         <span class="solution-unlock-status">
-          <span class="mdi mdi-lock" />
-          <span class="mdi mdi-lock-open" />
-          Locked
+          <span v-if="!isUnlocked(requiredItems[index].value)" class="mdi mdi-lock" />
+          <span v-if="!isUnlocked(requiredItems[index].value)" class="mdi mdi-lock-open" />
+          <span v-else class="mdi mdi-lock-open-variant" />
+          {{ unlockedText(requiredItems[index].value) }}
         </span>
         <el-button
           class="solution-unlock-btn"
           type="primary"
-          @click="buyUnlockSolution(item, index)"
+          @click="buyUnlockSolution(requiredItems[index])"
           :loading="loading"
         >
-          {{ convertPstToWinston(item.value) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(requiredItems[index].value) | winstonToAr | finalize(loading) | unlocked(isUnlocked(requiredItems[index].value)) }}
         </el-button>
       </div>
     </div>
@@ -106,6 +110,7 @@ export default {
       customPstInput: 1,
       ratio: '',
       loading: true,
+      initLoading: true,
       receiptLoading: false,
       showReceipt: false,
       showKeyReader: false,
@@ -123,7 +128,8 @@ export default {
         holder: new BigNumber('0'),
         developer: new BigNumber('0'),
         owner: ''
-      }
+      },
+      pstContract: {}
     }
   },
   computed: {
@@ -149,6 +155,21 @@ export default {
       if (!this.creator) return []
       return this.creator.items
     },
+    requiredItems () {
+      if (!this.creator) return []
+      if (!this.contract.ticker) return this.creator.items
+      if (!this.myAddress) return this.creator.items
+      const items = JSON.parse(JSON.stringify(this.creator.items))
+      const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
+      if (balance.toString() === 'NaN') return this.creator.items
+      for (let i = 0; i < items.length; i++) {
+        const currentValue = new BigNumber(items[i].value)
+        const resultValue = currentValue.minus(balance)
+        if (resultValue.isLessThanOrEqualTo(0)) items[i].value = '0'
+        else items[i].value = resultValue.toString()
+      }
+      return items
+    },
     contract () {
       if (!this.creator) return {}
       return this.creatorPst[this.creator.ticker.contract]
@@ -172,9 +193,20 @@ export default {
     /** 初始化合约状态 */
     async initContractInfo () {
       this.loading = true
+      this.initLoading = true
       await this.getPstContract(this.creator.ticker.contract)
-      this.ratio = this.contract.ratio
+      if (!this.contract.ratio) this.ratio = '1:1'
+      else this.ratio = this.contract.ratio
       this.loading = false
+      this.initLoading = true
+    },
+    /** 传入解锁所需的金额，判断是否已经解锁 */
+    isUnlocked (value) {
+      return value === '0'
+    },
+    /** 传入解锁所需的金额，返回按钮的文字 */
+    unlockedText (value) {
+      return value === '0' ? this.$t('sponsor.unlocked') : this.$t('sponsor.locked')
     },
     /** 转换 PST 为 Winston */
     convertPstToWinston (value) {
@@ -211,8 +243,17 @@ export default {
       to = BigNumber(to)
       return { from: new BigNumber(String(from)), to }
     },
-    /** 购买解锁方案 */
-    async buyUnlockSolution (item, index) {
+    /** 开始进行交易 */
+    buyUnlockSolution (item) {
+      if (this.isUnlocked(item.value)) {
+        // 不需要购买解锁方案的时候执行的逻辑写在这里
+      } else {
+        // 如果未解锁，则开始执行交易
+        this.proceedToBuyUnlockSolution(item)
+      }
+    },
+    /** 开始购买解锁方案 */
+    async proceedToBuyUnlockSolution (item) {
       if (!this.isLoggedIn) {
         this.$message.warning(this.$t('login.pleaseLogInFirst'))
         return
@@ -313,6 +354,7 @@ export default {
 
       this.showKeyReader = false
       const callback = (event, id) => {
+        console.log(event, id)
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
@@ -439,7 +481,6 @@ export default {
     font-weight: 500;
     color: @gray3;
     padding: 0;
-    margin: 0 0 5px;
     display: flex;
     align-items: flex-start;
     white-space:nowrap;
@@ -460,7 +501,7 @@ export default {
         border-radius: 6px;
         font-weight: 500;
         &:focus {
-          color: @primary
+          color: @primary;
         }
       }
     }
@@ -481,10 +522,18 @@ export default {
       flex: 1;
     }
   }
+
+  &-left {
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+    color: @primary;
+  }
+
   &-title {
     font-size: 15px;
     padding: 0;
-    margin: 0 0 5px;
+    margin: 5px 0 5px;
     font-weight: 500;
   }
 

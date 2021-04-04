@@ -23,6 +23,7 @@ const filters = {
   /** 数字换算为缩减版本 */
   abbreviateNumber (num, fixed = 4) {
     num = new BigNumber(num)
+    if (num.toString() === 'NaN') return '0'
     if (num === null) { return '0' } // terminate early
     if (num === 0) { return '0' } // terminate early
     fixed = (!fixed || fixed < 0) ? 0 : fixed // number of decimal places to show
@@ -32,6 +33,10 @@ const filters = {
     var d = c < 0 ? c : Math.abs(c) // enforce -0 is 0
     var e = d + ['', 'K', 'M', 'B', 'T'][k] // append power
     return e
+  },
+  unlocked (val, isUnlocked) {
+    if (isUnlocked) return i18n.tc('flowCard.unlocked')
+    return val
   }
 }
 

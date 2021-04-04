@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a :href="loading ? 'javascript:void(0)' : '/#/@' + creator.shortname" :class="loading ? 'card-loading' : ''">
+    <router-link :to="creatorUrl" :class="loading && 'card-loading'">
       <div class="creator-card" v-loading="loading">
         <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
         <div style="display: inline-block" class="creator-card-info">
@@ -8,7 +8,7 @@
           <span class="creator-card-info-bio">{{ creator.intro }}</span>
         </div>
       </div>
-    </a>
+    </router-link>
   </div>
 </template>
 <script>
@@ -39,7 +39,10 @@ export default {
   computed: {
     ...mapState(['contract']),
     loading () {
-      return this.id === 'Loading...' || this.avatar === '' || this.creator.intro === 'Loading...'
+      return this.id === 'Loading...' || this.creator.intro === 'Loading...'
+    },
+    creatorUrl () {
+      return this.loading ? {} : { name: 'Creator', params: { shortname: this.creator.shortname } }
     }
   },
   async mounted () {
@@ -65,7 +68,7 @@ a {
   color: @dark;
   box-shadow: 0 0 2px 0 #0000001a;
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -75,6 +78,18 @@ a {
   &-info {
     &-name {
       font-weight: bold;
+      font-size: 15px;
+    }
+
+    &-bio {
+      font-size: 15px;
+      font-weight: 400;
+      color: @gray3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+      word-break: break-all;
     }
   }
 }
@@ -84,6 +99,13 @@ a {
 }
 
 /deep/.el-loading-mask {
-  border-radius: 6px;
+  border-radius: 10px;
+}
+
+@media screen and (max-width: 640px) {
+  .creator-card {
+    border-radius: 0;
+    padding: 20px 16px;
+  }
 }
 </style>

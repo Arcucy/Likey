@@ -3,29 +3,63 @@
     <div class="row">
       <div class="col-6">
         <div class="home-title-container">
-          <div class="home-title">
+          <div
+            class="home-title"
+            @click="toggleSponsored(false)"
+            :class="showingSponsored ? 'home-title-not-active' : ''"
+          >
             {{ $t('home.tabFlow') }}
           </div>
-          <div class="home-title home-title-sponsored" :class="showingAppreciate ? '' : 'home-title-not-active'">
+          <div
+            class="home-title home-title-sponsored"
+            :class="showingSponsored ? '' : 'home-title-not-active'"
+            @click="toggleSponsored(true)"
+          >
             {{ $t('home.tabAppreciated') }}
           </div>
         </div>
-        <FlowCard
-          v-for="(data, index) in flow"
-          :brief="data"
-          :key="index"
-          @locked-payment="startPayment"
-          @status-donation="startDonationPayment"
-          class="flow-card"
-        />
-        <InfiniteScroll
-          class="flow-card"
-          :no-data="!flow || !flow.length"
-          :loading="flowLoading"
-          :distance="200"
-          :disable="!hasNextPage"
-          @load="() => getUserStatus()"
-        />
+        <!-- 赞助列表 -->
+        <div v-if="showingSponsored">
+          <FlowCard
+            v-for="(data, index) in sponsoredStatus"
+            :brief="data"
+            :key="index"
+            @locked-payment="startPayment"
+            @status-donation="startDonationPayment"
+            class="flow-card"
+          />
+          <InfiniteScroll
+            class="flow-card"
+            tag="sponsored-infinite-scroll"
+            :no-data="!sponsoredStatus || !sponsoredStatus.length"
+            :loading="sponsoredStatusLoading"
+            :distance="200"
+            :disable="!sponsoredStatusHasNextPage"
+            :immediate="false"
+            @load="() => getSponsoredStatus()"
+          />
+        </div>
+        <!-- 主页列表 -->
+        <div v-if="!showingSponsored">
+          <FlowCard
+            v-for="(data, index) in flow"
+            :brief="data"
+            :key="index"
+            @locked-payment="startPayment"
+            @status-donation="startDonationPayment"
+            class="flow-card"
+          />
+          <InfiniteScroll
+            class="flow-card"
+            tag="home-infinite-scroll"
+            :no-data="!flow || !flow.length"
+            :loading="flowLoading"
+            :distance="200"
+            :disable="!hasNextPage"
+            :immediate="false"
+            @load="() => getUserStatus()"
+          />
+        </div>
       </div>
       <div class="col-3">
         <div class="home-title">
@@ -71,7 +105,7 @@ import InfiniteScroll from '@/components/InfiniteScroll'
 import Payment from '@/components/Common/Payment'
 import DonationPurchase from '@/components/Common/DonationPurchase'
 
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -82,17 +116,24 @@ export default {
     Payment,
     DonationPurchase
   },
+  inject: ['updateQuery'],
   data () {
     return {
       // 记录用户点了多少次展开
       showMore: 1,
-      showingAppreciate: false,
+      showingSponsored: this.$route.query.tab === 'sponsored',
       // 动态列表
       flow: [],
       flowLoading: false,
       hasNextPage: true,
+      // 已赞赏的动态列表,
+      sponsoredStatus: [],
+      sponsoredStatusLoading: false,
+      sponsoredStatusHasNextPage: true,
       showPaymentDialog: false,
       showDonationInput: false,
+      // 用户持有的 PST 列表
+      pstList: [],
       donateData: {
         contract: {},
         status: {},
@@ -110,31 +151,73 @@ export default {
     ...mapState({
       creatorsAddress: state => Object.keys(state.contract.creators),
       creators: state => state.contract.creators,
-      creatorPst: state => state.contract.creatorPst
+      creatorPst: state => state.contract.creatorPst,
+      userAddress: state => state.user.myInfo.address
     }),
+    ...mapGetters(['isLoggedIn']),
     shownCreators () {
       return this.creatorsAddress.slice(0, this.showMore * 5)
     },
     flowCursor () {
       if (!this.flow || !this.flow.length) return ''
       return this.flow[this.flow.length - 1].cursor
+    },
+    sponsoredStatusCursor () {
+      if (!this.sponsoredStatus || !this.sponsoredStatus.length) return ''
+      return this.sponsoredStatus[this.sponsoredStatus.length - 1].cursor
+    },
+    pstOwnerList () {
+      if (!this.pstList || !this.pstList.length) return []
+      return this.pstList.map(item => item.owner)
     }
   },
-  async mounted () {
-    await this.initLikeyContract()
+  watch: {
+    isLoggedIn (val) {
+      if (this.showingSponsored) {
+        if (val) {
+          this.sponsoredStatus = []
+          this.sponsoredStatusHasNextPage = true
+          this.sponsoredStatusLoading = false
+          this.getSponsoredStatus()
+        } else this.sponsoredStatus = []
+      }
+    }
+  },
+  mounted () {
+    this.initLikeyContract()
+    if (this.showingSponsored) this.getSponsoredStatus()
+    else this.getUserStatus()
   },
   methods: {
-    // TODO:在每次提交前记得删掉这个mutations的引用
-    ...mapMutations(['mTestCreatorsAdd']),
-    ...mapActions(['initLikeyContract', 'getPstContract']),
+    ...mapActions(['initLikeyContract', 'getPstContract', 'getUserPstList']),
     /** 获取所有用户动态列表 */
     async getUserStatus () {
       if (this.flowLoading) return
       this.flowLoading = true
-      const res = await this.$api.gql.getUserStatus(this.flowCursor, 10)
+      const res = await this.$api.gql.getUserStatus(this.flowCursor, 10, true)
       this.flow.push(...res.transactions.edges)
       this.hasNextPage = res.transactions.pageInfo.hasNextPage
       this.flowLoading = false
+    },
+    /** 获取已赞赏的动态 */
+    async getSponsoredStatus () {
+      if (this.sponsoredStatusLoading) return
+      if (!this.isLoggedIn) return
+      this.sponsoredStatusLoading = true
+      // 获取用户持有的 PST 列表
+      if (!this.pstList || !this.pstList.length) {
+        const pstList = await this.getUserPstList(this.userAddress)
+        if (!pstList.length) {
+          this.sponsoredStatusLoading = false
+          this.sponsoredStatusHasNextPage = false
+          return
+        }
+        this.pstList = pstList
+      }
+      const res = await this.$api.gql.getUserStatusByAddress(this.pstOwnerList, this.sponsoredStatusCursor, 10, true)
+      this.sponsoredStatus.push(...res.transactions.edges)
+      this.sponsoredStatusHasNextPage = res.transactions.pageInfo.hasNextPage
+      this.sponsoredStatusLoading = false
     },
     startPayment (data) {
       this.paymentData.type = '0'
@@ -159,6 +242,31 @@ export default {
     },
     closeDonation () {
       this.showDonationInput = false
+    },
+    async toggleSponsored (showingSponsored) {
+      if (showingSponsored) {
+        if (showingSponsored === this.showingSponsored) {
+          this.pstList = []
+          this.sponsoredStatus = []
+        }
+        if (!this.sponsoredStatus || !this.sponsoredStatus.length) {
+          this.sponsoredStatus = []
+          this.sponsoredStatusHasNextPage = true
+          this.sponsoredStatusLoading = false
+          this.updateQuery('tab', 'sponsored')
+          this.getSponsoredStatus()
+        }
+      } else {
+        if (showingSponsored === this.showingSponsored) this.flow = []
+        if (!this.flow || !this.flow.length) {
+          this.flow = []
+          this.flowLoading = false
+          this.hasNextPage = true
+          this.updateQuery('tab', 'all')
+          this.getUserStatus()
+        }
+      }
+      this.showingSponsored = showingSponsored
     }
   }
 }
@@ -210,7 +318,12 @@ export default {
   }
 
   &-not-active {
+    transition: all 250ms;
     color: gray;
+    cursor: pointer;
+    &:hover {
+      color: @primary;
+    }
   }
 }
 
@@ -218,6 +331,7 @@ export default {
   width: 100%;
   text-align: center;
   padding: 20px;
+  box-sizing: border-box;
 
   &-text {
     transition: all 200ms;
@@ -257,7 +371,7 @@ export default {
         margin-bottom: 20px;
       }
     }
-    .col-header {
+    .home-title {
       padding: 0 16px;
     }
     .flow-card {

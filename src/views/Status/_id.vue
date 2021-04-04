@@ -226,7 +226,8 @@ export default {
     createTime () {
       if (!this.preview.timestamp) return ''
       const time = this.$moment(Number(this.preview.timestamp)).locale(this.appLang)
-      return time.format('YYYY MMMDo')
+      const year = this.appLang === 'zh-CN' ? '年' : ''
+      return time.format(`YYYY${year} MMM Do`)
     },
     title () {
       return this.preview.title

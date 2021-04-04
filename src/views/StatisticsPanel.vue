@@ -8,6 +8,10 @@
         <h3>
           {{ $t('pageTitle.myStatistic') }}
         </h3>
+        <router-link class="my-stats-pst-title-jump" :to="{ name: 'Setting-Creator' }">
+          {{ $t('setting.creatorSetting') }}
+          <span class="mdi mdi-chevron-right" />
+        </router-link>
       </div>
       <div class="my-stats-pst-block">
         <div class="my-stats-pst-block-item" v-loading="contractLoading">
@@ -214,8 +218,10 @@ export default {
     },
     async getContractState () {
       await this.getPstContract(this.creator.ticker.contract)
-      this.totalSupply = this.contract.totalSupply
-      this.holders = this.contract.holders
+      if (!this.contract.totalSupply) this.totalSupply = '0'
+      else this.totalSupply = this.contract.totalSupply
+      if (!this.contract.holders) this.contract.holders = '0'
+      else this.holders = this.contract.holders
       this.contractLoading = false
     },
     async getSponsorsCount () {
@@ -252,10 +258,25 @@ export default {
 
   &-pst {
     &-title {
+      display: flex;
+      align-items: center;
+      margin: 0 0 18px;
+
       h3 {
         color: @dark;
         text-align: left;
-        margin-top: 0;
+        margin: 0;
+        flex: 1;
+      }
+
+      &-jump {
+        color: @primary;
+        text-decoration: none;
+        font-size: 15px;
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
     &-block {

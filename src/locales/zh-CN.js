@@ -181,6 +181,9 @@ export default {
     donationAndSponsorCount: '赞赏总数',
     custom: '自定义',
     customInputDescription: '本方案可自定义 PST 购买数量',
+    locked: '已锁定',
+    unlocked: '已解锁',
+    unlockValueNeed: '还需要 {0} {1}',
     myBalance: '已经持有'
   },
   donation: {
@@ -222,8 +225,8 @@ export default {
   },
   statistics: {
     historyIncome: '历史收入',
-    donationCount: '打赏人数',
-    sponsorCount: '赞助人数'
+    donationCount: '动态赞赏总数',
+    sponsorCount: 'PST 赞助总数'
   },
   flowCard: {
     loadMore: '加载全文',
@@ -246,7 +249,7 @@ export default {
   },
   home: {
     tabFlow: '最新动态',
-    tabAppreciated: '我赞赏的',
+    tabAppreciated: '我赞助的',
     flowLoading: '正在加载动态',
     creatorsLoading: '正在加载创作者',
     showMoreCreators: '显示更多',

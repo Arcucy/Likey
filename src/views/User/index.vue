@@ -194,7 +194,7 @@ export default {
       this.flowLoading = true
       try {
         // 获取数据
-        const res = await this.$api.gql.getUserStatusByAddress(address, this.endCursor, this.pageSize)
+        const res = await this.$api.gql.getUserStatusByAddress(address, this.endCursor, this.pageSize, true)
         // 将获取到的数据加入数组尾部，并且更新 hasNextPage 字段
         this.flow.push(...res.transactions.edges)
         this.hasNextPage = res.transactions.pageInfo.hasNextPage
@@ -204,9 +204,6 @@ export default {
       }
       // 结束加载状态
       this.flowLoading = false
-    },
-    load () {
-      console.log('load')
     },
     startPayment (data) {
       this.paymentData.type = '0'
