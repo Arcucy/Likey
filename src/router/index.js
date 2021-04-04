@@ -10,8 +10,6 @@ import UserIndex from '@/views/User'
 import Order from '@/views/Order'
 import StatisticsPanel from '@/views/StatisticsPanel.vue'
 
-import Flow from '@/views/Flow'
-
 import SettingCreator from '../views/Setting/Creator'
 import SettingToken from '../views/Setting/Token'
 
@@ -86,11 +84,6 @@ const routes = [
     path: '/setting/token',
     name: 'Setting-Token',
     component: SettingToken
-  },
-  {
-    path: '/flow',
-    name: 'Flow',
-    component: Flow
   },
   {
     path: '/status/:id',
