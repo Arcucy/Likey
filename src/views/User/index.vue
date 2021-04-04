@@ -205,9 +205,6 @@ export default {
       // 结束加载状态
       this.flowLoading = false
     },
-    load () {
-      console.log('load')
-    },
     startPayment (data) {
       this.paymentData.type = '0'
       this.paymentData.data = data
