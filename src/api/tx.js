@@ -1,7 +1,7 @@
 import Arweave from 'arweave'
 
 const TEST_MODE = false
-console.log('Is it TX test mode? :', TEST_MODE)
+if (TEST_MODE) console.warn('Is the TX test mode')
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,

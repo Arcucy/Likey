@@ -11,7 +11,7 @@ const DEVELOPER_TIP = String(process.env.VUE_APP_DEVELOPER_TIP)
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = false
-console.log('Is it test mode? :', TEST_MODE)
+if (TEST_MODE) console.warn('Is the contract test mode')
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
@@ -81,6 +81,7 @@ export default {
    * 读取 Likey 主合约
    */
   async readLikeyContract () {
+    console.log('合约地址：', process.env.VUE_APP_LIKEY_PROXY)
     const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
     const state = await SmartWeave.readContract(arweave, proxyState.contract)
 
