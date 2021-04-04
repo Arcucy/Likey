@@ -46,7 +46,8 @@ export default {
   overflow: hidden;
   width: 100%;
   white-space: pre-line;
-  word-break: break-word;
+  word-break: break-all;
+  word-wrap: break-word;
   line-height: 1.5;
   margin: 0 0 5px;
   /deep/ a {

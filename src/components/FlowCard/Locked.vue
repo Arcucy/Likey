@@ -240,6 +240,8 @@ a {
     margin: 0 0 5px;
     padding: 0;
     max-width: 100%;
+    word-break: break-all;
+    word-wrap: break-word;
   }
 
   &-boxbg {
