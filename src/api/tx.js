@@ -35,7 +35,7 @@ export default {
 
     // Add tag 添加标签
     tx.addTag('Content-Type', 'application/json')
-    tx.addTag('App-Name', 'likey-app-dev')
+    tx.addTag('App-Name', process.env.VUE_APP_APP_NAME)
     tx.addTag('Schema-Version', '0.1.0')
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', 'status')
@@ -104,7 +104,7 @@ export default {
 
     // Add tag 添加标签
     tx.addTag('Content-Type', file.type)
-    tx.addTag('App-Name', 'likey-app-dev')
+    tx.addTag('App-Name', process.env.VUE_APP_APP_NAME)
     tx.addTag('Schema-Version', '0.1.0')
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', type)
