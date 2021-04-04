@@ -301,7 +301,7 @@ export default {
         const data = await this.$api.gql.getAvatarByAddress(address)
         this.avatar = data
       } catch (err) {
-        this.$message.error(this.$t('failure.gettingAvatarTimeout'))
+        // this.$message.error(this.$t('failure.gettingAvatarTimeout'))
         console.error('getAvatar error: ', err)
       }
     },
@@ -312,7 +312,8 @@ export default {
         const data = await this.$api.gql.getIdByAddress(address)
         this.username = data.data
       } catch (err) {
-        this.$message.error(this.$t('failure.getUsername'))
+        // this.$message.error(this.$t('failure.getUsername'))
+        this.username = 'unknown'
         console.error('getUsername error: ', err)
       }
     },
@@ -320,6 +321,7 @@ export default {
     async getShortname () {
       const address = this.brief.node.owner.address
       const data = await this.$store.dispatch('getCreatorInfo', address)
+      if (!data) return console.error('无法获取 shortname，address:', address)
       this.selfLoadShortname = data.shortname
     },
     /** 加载更多 */
