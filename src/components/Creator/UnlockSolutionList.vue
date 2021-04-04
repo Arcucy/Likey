@@ -528,6 +528,12 @@ export default {
     padding: 0;
     margin: 0;
     color: @primary;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   &-title {
@@ -535,12 +541,24 @@ export default {
     padding: 0;
     margin: 5px 0 5px;
     font-weight: 500;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   &-desp {
     font-size: 14px;
     padding: 0;
     margin: 0 0 5px;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 17;
+    overflow: hidden;
   }
 
   &-unlock {
@@ -601,6 +619,7 @@ export default {
     margin: 0 5px;
     &-desp {
       flex: 1;
+      -webkit-line-clamp: 10;
     }
   }
 }
