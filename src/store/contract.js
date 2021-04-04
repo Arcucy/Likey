@@ -13,6 +13,8 @@ export default {
     admins: [],
     /** 创作者列表。是个对象，键是用户的钱包地址 */
     creators: {},
+    /** 用户持币列表 */
+    users: {},
     /** 合约持有者 */
     owner: '',
     /** 事例 */
@@ -36,6 +38,7 @@ export default {
     mSetLikeyContractStatus (state, {
       admins = state.admins,
       creators = state.creators,
+      users = state.users,
       owner = state.owner,
       schema: {
         categories = state.schema.categories,
@@ -45,6 +48,7 @@ export default {
     }) {
       state.admins = admins
       state.creators = creators
+      state.users = users
       state.owner = owner
       state.schema = {
         categories,
@@ -136,6 +140,12 @@ export default {
         if (value.shortname === shortname) return key
       }
       return ''
+    },
+
+    /** 获取用户持有的 PST 列表 */
+    async getUserPstList ({ state, dispatch }, address) {
+      await checkCache(state, dispatch)
+      return state.users[address] || []
     },
 
     // **************
