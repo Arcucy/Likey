@@ -287,6 +287,7 @@ export default {
   width: 100%;
   text-align: center;
   padding: 20px;
+  box-sizing: border-box;
 
   &-text {
     transition: all 200ms;
@@ -326,7 +327,7 @@ export default {
         margin-bottom: 20px;
       }
     }
-    .col-header {
+    .home-title {
       padding: 0 16px;
     }
     .flow-card {
