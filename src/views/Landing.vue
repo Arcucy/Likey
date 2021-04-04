@@ -58,11 +58,11 @@ export default {
     .canvas-container {
       display: flex;
       align-items: center;
-      column-gap: 50px;
       padding: 0 20px;
 
       &-components {
         display: flex;
+        margin-right: 50px;
 
         .components {
           display: block;
@@ -154,6 +154,7 @@ export default {
         flex-direction: column;
 
         &-components {
+          margin-right: 0;
           .components {
             height: 250px;
             width: 400px;
@@ -164,6 +165,9 @@ export default {
           padding: 0 20px;
           max-width: 600px;
         }
+      }
+      .start-btn-container {
+        margin-top: 20px;
       }
     }
   }

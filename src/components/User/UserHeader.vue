@@ -178,7 +178,6 @@ export default {
       this.$emit('basic-info', this.basicInfo)
     },
     async updateBanner (data) {
-      console.log(data)
     }
   }
 }

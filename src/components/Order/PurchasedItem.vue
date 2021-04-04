@@ -133,15 +133,14 @@ export default {
     flex-direction: column;
     flex: 1;
     align-items: stretch;
-    row-gap: 5px;
     height: 100%;
 
     &-type {
       display: flex;
       align-items: center;
-      column-gap: 5px;
+      margin-bottom: 5px;
 
-       &-info {
+      &-info {
         display: flex;
         align-items: center;
         flex:1;
@@ -154,6 +153,7 @@ export default {
 
         &-tx {
           display: flex;
+          margin: 0 10px;
         }
 
         .address {
@@ -165,7 +165,6 @@ export default {
           -webkit-line-clamp: 1;
           overflow: hidden;
           word-break: break-all;
-          margin-left: 10px;
 
           &:hover {
             color: @primary;
@@ -188,6 +187,8 @@ export default {
     &-info {
       flex: 1;
       display: flex;
+      margin-bottom: 5px;
+
       &-item {
         flex: 1;
         font-weight: 400;
@@ -204,12 +205,12 @@ export default {
     &-recipient {
       display: flex;
       align-items: center;
-      column-gap: 5px;
 
       &-user {
         display: flex;
         align-items: center;
         flex: 1;
+        margin-right: 5px;
 
         &-info {
           display: flex;
@@ -292,6 +293,9 @@ export default {
             white-space: unset;
             word-break: break-all;
           }
+          &-tx {
+            margin: 0 0 0 10px;
+          }
         }
       }
       &-recipient {
@@ -301,6 +305,7 @@ export default {
         &-user {
           flex-direction: column;
           align-items: flex-start;
+          margin-right: 0;
 
           .address {
             margin-left: 0;
