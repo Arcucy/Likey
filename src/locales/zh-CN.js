@@ -116,6 +116,7 @@ export default {
     exchangeRatio: '代币兑换比率',
     exchangeRatioDescription: '初初始兑换率用于将用户赞助的 AR 数额转化为代币',
     exchangeRatioExceedsTheLimitation: '兑换比率小数点超出了限制',
+    exchangeRatioIsNotAValidNumber: '兑换比率值不是一个有效的数字',
     pleaseFillInTheExchangeRatio: '请输入兑换比率',
     unlockPlan: '解锁方案',
     ownBalance: '持有',
