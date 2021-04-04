@@ -636,10 +636,11 @@ export default {
     try {
       const purchases = await this.getAllPurchases(address, 'donations')
       purchases.transactions.edges.forEach((edge) => {
-        sponsoredStatusTxidList.push(edge.node.tags.find((it) => it.name === 'Donate-Status').value)
+        const donateStatus = edge.node.tags.find((it) => it.name === 'Donate-Status')
+        if (donateStatus) sponsoredStatusTxidList.push(donateStatus.value)
       })
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
     return await this.getStatusByTxid(sponsoredStatusTxidList, first, after, filterNoBlock)
   }

@@ -249,7 +249,7 @@ export default {
   },
   home: {
     tabFlow: '最新动态',
-    tabAppreciated: '我赞赏的',
+    tabAppreciated: '我赞助的',
     flowLoading: '正在加载动态',
     creatorsLoading: '正在加载创作者',
     showMoreCreators: '显示更多',
