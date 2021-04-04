@@ -172,7 +172,7 @@ export default {
     async getUserStatus () {
       if (this.flowLoading) return
       this.flowLoading = true
-      const res = await this.$api.gql.getUserStatus(this.flowCursor, 10)
+      const res = await this.$api.gql.getUserStatus(this.flowCursor, 10, true)
       this.flow.push(...res.transactions.edges)
       this.hasNextPage = res.transactions.pageInfo.hasNextPage
       this.flowLoading = false
