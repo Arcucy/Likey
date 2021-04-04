@@ -225,8 +225,8 @@ export default {
   },
   statistics: {
     historyIncome: '历史收入',
-    donationCount: '打赏人数',
-    sponsorCount: '赞助人数'
+    donationCount: '动态赞赏总数',
+    sponsorCount: 'PST 赞助总数'
   },
   flowCard: {
     loadMore: '加载全文',
