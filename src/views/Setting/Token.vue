@@ -52,10 +52,7 @@
         <div class="setting-creator-item-input">
           <span class="setting-creator-item-input-pst-ratio">1 {{ ticker || 'PST' }} =</span>
           <div class="setting-creator-item-input-ratio">
-            <el-input-number
-              v-model="ratio"
-              class="setting-creator-item-input-ratio-input"
-            />
+            <el-input v-model="exchangeRatio" :placeholder="1" />
             <span class="setting-creator-item-input-ratio-ticker">AR</span>
           </div>
         </div>
@@ -227,6 +224,17 @@ export default {
       },
       get () {
         return this.ticker
+      }
+    },
+    exchangeRatio: {
+      /** 输入过滤 */
+      set (val) {
+        // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
+        const regexp = new RegExp('([^0-9.])', 'g')
+        this.ratio = val.replace(regexp, '')
+      },
+      get () {
+        return this.ratio
       }
     },
     submitTips () {
@@ -412,12 +420,22 @@ export default {
         this.$message.warning(this.$t('setting.solutionEditingHasNotCompletedYet'))
         return 5
       }
-      if (new Bignumber(this.ratio).toString().length > String(1000000000000).length) {
-        this.$message.warning(this.$t('setting.exchangeRatioExceedsTheLimitation'))
+      const ratioRegexp = new RegExp('^[0-9]+(\\.[0-9]{0,11})?$', 'g')
+      if (!ratioRegexp.test(this.ratio)) {
+        this.$message.warning(this.$t('setting.exchangeRatioIsNotAValidNumber'))
         return 6
       }
-      if (this.ratio === '') {
+      Bignumber.set({ EXPONENTIAL_AT: 16 })
+      const ratio = new Bignumber(this.ratio)
+      if (!this.ratio ||
+          ratio.toString() === 'NaN' ||
+          ratio.isLessThanOrEqualTo(new Bignumber(0))) {
         this.$message.warning(this.$t('setting.pleaseFillInTheExchangeRatio'))
+        return 8
+      }
+      const decimals = ratio.toString().split('.')[1]
+      if (decimals && decimals.length > String(100000000000).length) {
+        this.$message.warning(this.$t('setting.exchangeRatioExceedsTheLimitation'))
         return 7
       }
       return 0
