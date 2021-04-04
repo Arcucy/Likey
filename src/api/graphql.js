@@ -400,6 +400,7 @@ export default {
             { name: "Schema-Version"  values: $schemaVersion },
             { name: "Type"            values: ["status"] }
           ]
+          block: { min: ${filterNoBlock ? 1 : 0} }
         ) {
           pageInfo { hasNextPage }
           edges {
@@ -423,13 +424,6 @@ export default {
       after: after || '',
       first: first || 10
     })
-
-    if (filterNoBlock) {
-      const edges = res.transactions.edges.filter(item => {
-        return item.node.block && item.node.block.timestamp
-      })
-      res.transactions.edges = edges
-    }
 
     return res
   },
@@ -455,6 +449,7 @@ export default {
             { name: "Schema-Version"  values: $schemaVersion },
             { name: "Type"            values: ["status"] }
           ]
+          block: { min: ${filterNoBlock ? 1 : 0} }
         ) {
           pageInfo { hasNextPage }
           edges {
@@ -475,13 +470,6 @@ export default {
       after: after || '',
       first: first || 10
     })
-
-    if (filterNoBlock) {
-      const edges = res.transactions.edges.filter(item => {
-        return item.node.block && item.node.block.timestamp
-      })
-      res.transactions.edges = edges
-    }
 
     return res
   },
