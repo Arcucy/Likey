@@ -4,6 +4,7 @@ import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import BigNumber from 'bignumber.js'
+import i18n from '../i18n'
 
 const DEVELOPER = process.env.VUE_APP_PORFIT_SHARE_DEVELOPER
 const PST_HOLDER_TIP = String(process.env.VUE_APP_PST_HOLDER_TIP)
@@ -82,6 +83,7 @@ export default {
    */
   async readLikeyContract () {
     const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    console.log(proxyState.contract)
     const state = await SmartWeave.readContract(arweave, proxyState.contract)
 
     return state
@@ -106,10 +108,13 @@ export default {
     const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, proxyState.contract, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
-      return {
+      const errorObj = {
         ...resDryRun,
         isTestMode: TEST_MODE
       }
+      Message({ message: i18n.tc('failure.contractWriteFailed'), type: 'error' })
+      console.error(errorObj)
+      return errorObj
     }
     const res = await SmartWeave.interactWrite(arweave, jwk, proxyState.contract, copy(input), tags, target, winstonQty)
     return {
@@ -130,10 +135,13 @@ export default {
     const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, contract, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
-      return {
+      const errorObj = {
         ...resDryRun,
         isTestMode: TEST_MODE
       }
+      Message({ message: i18n.tc('failure.contractWriteFailed'), type: 'error' })
+      console.error(errorObj)
+      return errorObj
     }
     const res = await SmartWeave.interactWrite(arweave, jwk, contract, copy(input), tags, target, winstonQty)
     return {
@@ -396,11 +404,20 @@ export default {
 
       try {
         const res = await this.interactWritePst(jwk, contract, obj, tags, pstState.owner, creator.toString())
-        await this.updateHoldingTicker(jwk, contract)
         if (!res.isTestMode) {
           status = 'onSponsorAdded'
           callback(status, res.data)
         }
+        const res2 = await this.updateHoldingTicker(jwk, contract)
+        if (!res2) {
+          status = 'onUpdatedTicker'
+          callback(status, '')
+        }
+        if (!res2.isTestMode) {
+          status = 'onUpdatedTicker'
+          callback(status, '')
+        }
+
         return res
       } catch (err) {
         status = 'onSponsorAddedCatchError'
@@ -463,18 +480,21 @@ export default {
     const paymentAddress = await arweave.wallets.getAddress(jwk)
     if (likeyState && likeyState.users[paymentAddress]) {
       for (const item of likeyState.users[paymentAddress]) {
-        if (item.contract === contract) return
+        if (item.contract === contract) return false
       }
     }
 
     const updateObj = LikeyContract.updateHoldingTicker(contract)
+
     const tags2 = [
       { name: 'Update-Type', value: 'Ticker-Holding' },
       { name: 'Ticker-Holding', value: contract },
       { name: 'App-Base-Name', value: process.env.VUE_APP_APP_NAME },
       { name: 'Unix-Time', value: Date.now() }
     ]
-    await this.interactWrite(jwk, updateObj, tags2)
+
+    const res = await this.interactWrite(jwk, updateObj, tags2)
+    return res
   },
 
   /**

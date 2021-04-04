@@ -305,7 +305,6 @@ export default {
 
       this.showReceipt = false
       this.showReceipt = true
-      this.loading = true
       this.receiptLoading = true
       this.paymentType = 1
 
@@ -329,7 +328,6 @@ export default {
       }
       this.paymentData.balance = balance
       this.receiptLoading = false
-      this.loading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
@@ -353,11 +351,13 @@ export default {
         return
       }
 
+      this.loading = true
       this.showKeyReader = false
       const callback = (event, id) => {
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
+        if (event === 'onUpdateTicker') this.openSuccessNotify('update', '', 30000)
 
         if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
         if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
@@ -407,23 +407,27 @@ export default {
     },
     openSuccessNotify (type, id, duration) {
       let title = ''
+      let message = this.$t('payment.txPosted')
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
 
       switch (type) {
         case 'distribution':
-          title = this.$t('success.profitSharingTxSuccess')
+          title = this.$t('success.profitSharingTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'developer':
-          title = this.$t('success.developerTipTxSuccess')
+          title = this.$t('success.developerTipTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'sponsor':
-          title = this.$t('success.sponsorTxSuccess')
+          title = this.$t('success.sponsorTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
+          break
+        case 'update':
+          title = this.$t('success.tickerHoldingUpdateSuccess')
+          message = ''
           break
         default:
           title = this.$t('success.txSuccess')
       }
 
-      let message = this.$t('payment.txPosted')
-      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
@@ -434,6 +438,7 @@ export default {
     },
     openFailureNotify (type, id, duration) {
       let title = ''
+      this.loading = false
 
       switch (type) {
         case 'distribution':

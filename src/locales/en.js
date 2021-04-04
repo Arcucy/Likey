@@ -9,7 +9,8 @@ export default {
     sponsorTxSuccess: 'Sponsor Successful',
     donateTxSuccess: 'Donation Successful',
     txSuccess: 'Transaction Successful',
-    statusPublished: 'Status published successfully'
+    statusPublished: 'Status published successful',
+    tickerHoldingUpdateSuccess: 'Ticker holding update successful'
   },
   failure: {
     login: 'Login failed',
@@ -33,6 +34,7 @@ export default {
     donateTxFailed: 'Donation Failed',
     txFailed: 'Transaction Failed',
     txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
+    contractWriteFailed: 'Write contract failed',
     dynamicUploadFailed: 'Status upload failed',
     dynamicEncryptFailed: 'Status encryption failed',
     dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
@@ -207,7 +209,8 @@ export default {
     transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time',
     currentBalance: 'Current balance',
     afterBalance: 'New balance',
-    dataLoadingPleaseTryLater: 'Loading data, please try again later'
+    dataLoadingPleaseTryLater: 'Loading data, please try again later',
+    nextTransactionInProgress: 'next transaction is in progress'
   },
   progressText: {
     status: 'Uploading status',

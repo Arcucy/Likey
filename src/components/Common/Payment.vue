@@ -211,6 +211,7 @@ export default {
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
         if (event === 'onDonationAdded') this.openSuccessNotify('donation', id, 30000)
+        if (event === 'onUpdateTicker') this.openSuccessNotify('update', '', 30000)
 
         if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
         if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
@@ -267,25 +268,30 @@ export default {
     openSuccessNotify (type, id, duration) {
       let title = ''
 
+      let message = this.$t('payment.txPosted')
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
+
       switch (type) {
         case 'distribution':
-          title = this.$t('success.profitSharingTxSuccess')
+          title = this.$t('success.profitSharingTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'developer':
-          title = this.$t('success.developerTipTxSuccess')
+          title = this.$t('success.developerTipTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'sponsor':
-          title = this.$t('success.sponsorTxSuccess')
+          title = this.$t('success.sponsorTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'donation':
           title = this.$t('success.donateTxSuccess')
+          break
+        case 'update':
+          title = this.$t('success.tickerHoldingUpdateSuccess')
+          message = ''
           break
         default:
           title = this.$t('success.txSuccess')
       }
 
-      let message = this.$t('payment.txPosted')
-      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
