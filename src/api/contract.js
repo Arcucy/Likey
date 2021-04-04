@@ -4,12 +4,9 @@ import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import BigNumber from 'bignumber.js'
 
-// PST 合约 zNR-5J9CJERI2s4rFnvCHOo85GY3L66prbFygB-5hFg
-const LIKEY_CREATOR_PST_CONTRACT = 'fdCi9eHLKBF4jnH98tbMzSi-VRDBp_Vzs8M5f8Z6JgQ'
-const LIKEY_CONTRACT = 'XUc8q12a_Me80D4TJopM0ruW4McTPTk1EChVHzNk1lM'
-const DEVELOPER = 't1YdNMmOJFaUwtraiM1I3vJPqhU9QxiWjjiprOPo9aA'
-const PST_HOLDER_TIP = '0.15'
-const DEVELOPER_TIP = '0.05'
+const DEVELOPER = process.env.VUE_APP_PORFIT_SHARE_DEVELOPER
+const PST_HOLDER_TIP = String(process.env.VUE_APP_PST_HOLDER_TIP)
+const DEVELOPER_TIP = String(process.env.VUE_APP_DEVELOPER_TIP)
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = false
@@ -83,7 +80,9 @@ export default {
    * 读取 Likey 主合约
    */
   async readLikeyContract () {
-    const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const state = await SmartWeave.readContract(arweave, proxyState.contract)
+
     return state
   },
   /**
@@ -102,7 +101,8 @@ export default {
    * @param {*} winstonQty ？
    */
   async interactWrite (jwk, input, tags, target, winstonQty) {
-    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, proxyState.contract, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
       return {
@@ -110,7 +110,7 @@ export default {
         isTestMode: TEST_MODE
       }
     }
-    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    const res = await SmartWeave.interactWrite(arweave, jwk, proxyState.contract, copy(input), tags, target, winstonQty)
     return {
       ...resDryRun,
       data: res,
@@ -164,7 +164,8 @@ export default {
       { name: 'Unix-Time', value: Date.now() }
     ]
 
-    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst), tags)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, proxyState.pstContractSrc, JSON.stringify(LikeyPst), tags)
     return { id: tx.id, fee: tx.reward }
   },
   /**
@@ -190,7 +191,8 @@ export default {
       { name: 'Unix-Time', value: Date.now() }
     ]
 
-    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst), tags)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, proxyState.pstContractSrc, JSON.stringify(LikeyPst), tags)
     return contractId
   },
   /** 创建创作者 */
