@@ -11,9 +11,9 @@
         <router-link :to="{ name: 'Home' }">
           {{ $t('pageTitle.home') }}
         </router-link>
-        <router-link :to="{ name: 'ThemesTest' }">
+        <!-- <router-link :to="{ name: 'ThemesTest' }">
           {{ $t('pageTitle.themesTest') }}
-        </router-link>
+        </router-link> -->
       </div>
       <div class="header-option">
         <LanguageSwitch />
@@ -238,7 +238,8 @@ export default {
       const ls = localStorage || window.localStorage
 
       // 主题样式 Theme
-      const themes = ['light-theme', 'dark-theme', 'pink-theme']
+      // const themes = ['light-theme', 'dark-theme', 'pink-theme']
+      const themes = ['light-theme', 'pink-theme']
       const current = document.getElementById('app').classList
       const currentTheme = [...current].filter(name => /^.*-theme$/i.test(name)).pop()
 
