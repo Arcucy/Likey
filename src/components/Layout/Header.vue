@@ -59,7 +59,6 @@
 // import Axios from 'axios'
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 
-import API from '@/api/api'
 import FileUtil from '@/util/file'
 // import jwkUtil from '@/util/jwk'
 import { getCookie, setCookie, removeCookie } from '@/util/cookie'
@@ -108,7 +107,6 @@ export default {
   },
   async mounted () {
     this.initJwkLogin()
-    this.initWalletPlugin()
     this.initTheme()
     this._initLikeyContract()
   },
@@ -260,44 +258,6 @@ export default {
           ls.setItem('theme', themeName)
           this.mSetThemeName(themeName)
           this.$switchElementTheme(themeName)
-        }
-      }
-    },
-    /** 初始化钱包插件 */
-    initWalletPlugin () {
-      // 获取当前使用的钱包的地址。"arweave-js "将处理所有的幕后工作（权限等）。
-      // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
-      addEventListener('arweaveWalletLoaded', async () => {
-        const addr = await API.ArweaveNative.wallets.getAddress()
-        // 设定地址
-        this.setMyAddress(addr)
-      })
-      // 当用户切换钱包时获得新的钱包
-      // 你也可以监听钱包切换事件（当用户选择使用另一个钱包时）。
-      addEventListener('walletSwitch', (e) => {
-        const newAddr = e.detail.address
-        // 获得地址
-        console.log(newAddr)
-      // 设定地址
-      })
-    },
-    /** 使用插件登录时进行签名请求 */
-    async signForLogin (verifyCode) {
-      if (window.arweaveWallet) {
-        try {
-          const existingPermissions = await window.arweaveWallet.getPermissions()
-
-          if (!existingPermissions.includes('SIGN_TRANSACTION')) await window.arweaveWallet.connect(['SIGN_TRANSACTION'])
-        } catch {
-          // Permission is already granted
-        }
-
-        const tx = { format: 2, data: verifyCode }
-        try {
-          const signedResult = await window.arweaveWallet.sign(tx)
-          return { data: signedResult }
-        } catch (e) {
-          console.error(e)
         }
       }
     }
