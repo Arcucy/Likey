@@ -14,15 +14,15 @@
             <span class="donation-container-ar"> {{ balance | winstonToAr | finalize(loading) }}</span>
           </div>
           <div class="donation-container-input">
-            <el-input
-              v-model="arInput"
+            <el-input-number
+              v-model="input"
               class="donation-container-input-input"
+              :precision="11"
               :placeholder="$t('donation.pleaseInputDonationAmount')"
-            >
-              <template slot="append">
-                AR
-              </template>
-            </el-input>
+            />
+            <span class="donation-container-input-ticker">
+              AR
+            </span>
           </div>
           <el-button
             class="donation-confirm-button"
@@ -64,18 +64,7 @@ export default {
     ...mapState({
       myAddress: state => state.user.myInfo.address
     }),
-    ...mapGetters(['isLoggedIn']),
-    arInput: {
-      /** 输入过滤 */
-      set (val) {
-        // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
-        const regexp = new RegExp('([^0-9.])|((?<=(\\d+)?\\.\\d+)\\.+(.+)?)|((?<=\\.)\\.+)', 'g')
-        this.input = val.replace(regexp, '')
-      },
-      get () {
-        return this.input
-      }
-    }
+    ...mapGetters(['isLoggedIn'])
   },
   watch: {
     value (val) {
@@ -138,6 +127,16 @@ export default {
     &-input {
       display: flex;
       align-items: center;
+
+      &-input {
+        width: 100%;
+      }
+      &-ticker {
+        white-space: nowrap;
+        font-size: 20px;
+        font-weight: 500;
+        margin-left: 10px;
+      }
     }
 
     .donation-confirm-button {
