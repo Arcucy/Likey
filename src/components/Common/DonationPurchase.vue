@@ -16,6 +16,8 @@
           <div class="donation-container-input">
             <el-input-number
               v-model="input"
+              :min="0"
+              :step="0.01"
               class="donation-container-input-input"
               :precision="11"
               :placeholder="$t('donation.pleaseInputDonationAmount')"
