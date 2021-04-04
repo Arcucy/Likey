@@ -336,13 +336,19 @@ a {
         flex-direction: row;
         right: 0;
         padding: 5px 5px 0;
-        column-gap: 10px;
+
         &-item {
-        font-size: 12px;
-        span {
-          font-size: 15px;
+          font-size: 12px;
+          margin-right: 10px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          span {
+            font-size: 15px;
+          }
         }
-      }
       }
     }
   }

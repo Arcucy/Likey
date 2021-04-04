@@ -16,7 +16,7 @@
           {{ $t('setting.contractAddress') }}
         </h4>
         <div class="setting-creator-item-contract">
-          <span>{{ tickerContract || 'Invalid Contract' }}</span>
+          <span class="setting-creator-item-contract-address">{{ tickerContract || 'Invalid Contract' }}</span>
           <span class="mdi mdi-content-copy copy-icon" @click="() => copyContractAddress(tickerContract)" />
         </div>
       </div>
@@ -539,9 +539,16 @@ export default {
 
       &-contract {
         display: flex;
-        column-gap: 10px;
         align-items: center;
         margin-top: 10px;
+
+        &-address {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          overflow: hidden;
+          word-break: break-all;
+        }
 
         .copy-icon {
           display: flex;
@@ -572,7 +579,6 @@ export default {
         font-size: 15px;
         display: flex;
         align-items: center;
-        column-gap: 5px;
         color: @dark;
 
         /deep/ .el-select {
@@ -597,9 +603,13 @@ export default {
           display: flex;
           flex-direction: row;
           align-items: center;
-          column-gap: 10px;
           width: 250px;
           min-width: 250px;
+          margin-left: 5px;
+
+          &-ticker {
+            margin-left: 5px;
+          }
         }
       }
 
@@ -635,9 +645,12 @@ export default {
       display: flex;
       justify-content: center;
       margin: 0 0 20px;
-      column-gap: 20px;
       button {
         min-width: 130px;
+        margin-right: 20px;
+        &:last-child {
+          margin-right: 0;
+        }
       }
     }
   }
@@ -685,7 +698,6 @@ export default {
         &-control {
           display: flex;
           justify-content: flex-end;
-          column-gap: 5px;
           span {
             font-size: 24px;
             color: @gray3;
@@ -700,6 +712,10 @@ export default {
             overflow: hidden;
             border-radius: 6px;
             background: @background;
+            margin-right: 5px;
+            &:last-child {
+              margin-right: 0;
+            }
             &:hover {
               color: @primary;
               background: @gray1;
@@ -755,7 +771,6 @@ export default {
         &-control {
           display: flex;
           justify-content: flex-end;
-          column-gap: 5px;
           span {
             font-size: 24px;
             color: @gray3;
@@ -770,6 +785,11 @@ export default {
             overflow: hidden;
             border-radius: 6px;
             background: @background;
+            margin-right: 5px;
+            &:last-child {
+              margin-right: 0;
+            }
+
             &:hover {
               color: @primary;
               background: @gray1;

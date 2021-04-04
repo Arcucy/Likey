@@ -92,9 +92,13 @@ footer {
           margin-top: 10px;
           display: flex;
           flex-direction: column;
-          row-gap: 10px;
 
           a {
+            margin-bottom: 10px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+
             &:hover {
               color: @light;
             }
@@ -108,7 +112,6 @@ footer {
         &-links {
           display: flex;
           flex-direction: row;
-          column-gap: 10px;
           justify-content: flex-end;
 
           a {
@@ -118,6 +121,11 @@ footer {
             box-sizing: border-box;
             border-radius: 50%;
             border: 1px solid @gray2;
+            margin-right: 10px;
+            &:last-child {
+              margin-right: 0;
+            }
+
             &:hover {
               color: @light;
               border-color: @light;
@@ -173,8 +181,15 @@ footer {
           max-width: fit-content;
           &-content {
             flex-direction: row;
-            column-gap: 10px;
             margin-top: 5px;
+
+            a {
+              margin-right: 10px;
+              margin-bottom: 0;
+              &:last-child {
+                margin-right: 0;
+              }
+            }
           }
         }
       }
