@@ -58,7 +58,6 @@ export default {
       lock,
       extra
     }) {
-      console.log('发布！', extra.medias && extra.medias[0] && extra.medias[0].data)
       commit('mPushUploaderQueue', {
         title,
         content,
