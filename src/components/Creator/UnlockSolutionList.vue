@@ -133,7 +133,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isLoggedIn']),
+    ...mapGetters(['isLoggedIn', 'isMe']),
     ...mapState({
       creators: state => state.contract.creators,
       creatorPst: state => state.contract.creatorPst,
@@ -159,16 +159,29 @@ export default {
       if (!this.creator) return []
       if (!this.contract.ticker) return this.creator.items
       if (!this.myAddress) return this.creator.items
-      const items = JSON.parse(JSON.stringify(this.creator.items))
+      const newItems = []
+      const oldItems = JSON.parse(JSON.stringify(this.creator.items))
+      oldItems.forEach(item => {
+        newItems.push({ ...item })
+      })
+
       const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
+      const resItems = []
       if (balance.toString() === 'NaN') return this.creator.items
-      for (let i = 0; i < items.length; i++) {
-        const currentValue = new BigNumber(items[i].value)
+      for (let i = 0; i < newItems.length; i++) {
+        const currentValue = new BigNumber(newItems[i].value)
         const resultValue = currentValue.minus(balance)
-        if (resultValue.isLessThanOrEqualTo(0)) items[i].value = '0'
-        else items[i].value = resultValue.toString()
+        if (resultValue.isLessThanOrEqualTo(0)) {
+          const obj = newItems[i]
+          obj.value = '0'
+          resItems.push(obj)
+        } else {
+          const obj = newItems[i]
+          obj.value = resultValue.toString()
+          resItems.push(obj)
+        }
       }
-      return items
+      return resItems
     },
     contract () {
       if (!this.creator) return {}
@@ -202,6 +215,7 @@ export default {
     },
     /** 传入解锁所需的金额，判断是否已经解锁 */
     isUnlocked (value) {
+      if (this.address === this.myAddress) return true
       return value === '0'
     },
     /** 传入解锁所需的金额，返回按钮的文字 */
