@@ -10,7 +10,7 @@ const PST_HOLDER_TIP = String(process.env.VUE_APP_PST_HOLDER_TIP)
 const DEVELOPER_TIP = String(process.env.VUE_APP_DEVELOPER_TIP)
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
-const TEST_MODE = true
+const TEST_MODE = false
 if (TEST_MODE) console.warn('Is the contract test mode')
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
