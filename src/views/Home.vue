@@ -209,6 +209,7 @@ export default {
         const pstList = await this.getUserPstList(this.userAddress)
         if (!pstList.length) {
           this.sponsoredStatusLoading = false
+          this.sponsoredStatusHasNextPage = false
           return
         }
         this.pstList = pstList
