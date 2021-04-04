@@ -322,19 +322,20 @@ export default {
 
       // 整理配对顺序
       info.items.sort((a, b) => a.id - b.id)
-      this.solutions.sort((a, b) => a.id - b.id)
+      let solutions = this.solutions.sort((a, b) => a.id - b.id)
 
       // 统一数据结构
-      this.solutions.forEach((e, i) => {
-        delete e.editing
-        e.id = i
-        e.value = String(e.value)
-        e.title = String(e.title)
-        e.description = String(e.description)
+      solutions = solutions.filter(item => !item.editing).map((e, i) => {
+        return {
+          id: i,
+          value: String(e.value),
+          title: String(e.title),
+          description: String(e.description)
+        }
       })
 
-      if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
-        await this.$api.contract.editCreatorItems(jwk, this.solutions)
+      if (JSON.stringify(solutions) !== JSON.stringify(info.items)) {
+        await this.$api.contract.editCreatorItems(jwk, solutions)
       }
       const pstState = await this.$api.contract.readLikeyCreatorPstContract(info.ticker.contract)
       if ('1:' + this.ratio !== pstState.ratio) {
