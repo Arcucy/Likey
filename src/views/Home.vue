@@ -29,7 +29,6 @@
             class="flow-card"
           />
           <InfiniteScroll
-            class="flow-card"
             tag="sponsored-infinite-scroll"
             :no-data="!sponsoredStatus || !sponsoredStatus.length"
             :loading="sponsoredStatusLoading"
@@ -50,7 +49,6 @@
             class="flow-card"
           />
           <InfiniteScroll
-            class="flow-card"
             tag="home-infinite-scroll"
             :no-data="!flow || !flow.length"
             :loading="flowLoading"
@@ -173,13 +171,16 @@ export default {
   },
   watch: {
     isLoggedIn (val) {
-      if (this.showingSponsored) {
-        if (val) {
+      if (val) {
+        if (this.showingSponsored) {
           this.sponsoredStatus = []
           this.sponsoredStatusHasNextPage = true
           this.sponsoredStatusLoading = false
           this.getSponsoredStatus()
-        } else this.sponsoredStatus = []
+        }
+      } else {
+        this.sponsoredStatus = []
+        this.pstList = []
       }
     }
   },
@@ -280,16 +281,15 @@ export default {
   .row {
     max-width: 1220px;
     width: 100%;
-    margin: 20px auto 0;
+    margin: 20px auto 100px;
+    display: flex;
     .col-6 {
       width: 66.6%;
-      float: left;
       padding: 0 10px;
       box-sizing: border-box;
     }
     .col-3 {
       width: 33.3%;
-      float: right;
       padding: 0 10px;
       box-sizing: border-box;
     }
