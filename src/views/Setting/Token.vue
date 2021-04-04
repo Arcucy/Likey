@@ -54,6 +54,8 @@
           <div class="setting-creator-item-input-ratio">
             <el-input-number
               v-model="ratio"
+              :min="0"
+              :step="0.01"
               class="setting-creator-item-input-ratio-input"
             />
             <span class="setting-creator-item-input-ratio-ticker">AR</span>
