@@ -157,7 +157,6 @@ export default {
     async getList (tab) {
       if (this.dataLoading || this.loading) return
       this.dataLoading = true
-      console.log('进来啦')
       const tx = await this.$api.gql.getAllPurchases(this.myAddress, tab, this.pagesize, this.endCursor)
       this.parseTags(tx)
 

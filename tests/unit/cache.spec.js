@@ -49,7 +49,6 @@ describe('cache.js', () => {
     await cache.cacheTheTransaction(txid, transaction)
     const cachedTransaction = await cache.getCachedTransactionByTxid(txid)
     expect(cachedTransaction).toEqual(transaction)
-    console.log(transaction)
   }, 20000)
 
   it('should be undefined', async () => {

@@ -78,17 +78,6 @@ export default {
         ...state.creatorPst[contractId],
         loading
       })
-    },
-    /** TODO:测试方法，请勿在生产模式使用 */
-    mTestCreatorsAdd (state) {
-      console.log('Add!')
-      const index = Object.keys(state.creators).length
-      const values = Object.values(state.creators)[Math.floor(Math.random() * Object.keys(state.creators).length - 1)]
-      const key = 'text' + index
-      state.creators = {
-        ...state.creators,
-        [key]: values
-      }
     }
   },
   actions: {

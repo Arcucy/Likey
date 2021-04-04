@@ -209,7 +209,7 @@ export default {
         const res = await this.initLikeyContract()
         console.log('Likey contract version:', res.version)
       } catch (err) {
-        console.log('Failed to obtain contract status, error:', err)
+        console.error('Failed to obtain contract status, error:', err)
         this.$message.error(this.$t('failure.failedToObtainContractStatus'))
       }
     },
@@ -268,8 +268,6 @@ export default {
       // 重要的是：这个函数返回一个 Promise，在用户登录之前不会被解析。
       addEventListener('arweaveWalletLoaded', async () => {
         const addr = await API.ArweaveNative.wallets.getAddress()
-        // 获得地址
-        console.log(addr)
         // 设定地址
         this.setMyAddress(addr)
       })

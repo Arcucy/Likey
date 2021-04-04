@@ -81,7 +81,6 @@ export default {
    * 读取 Likey 主合约
    */
   async readLikeyContract () {
-    console.log('合约地址：', process.env.VUE_APP_LIKEY_PROXY)
     const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
     const state = await SmartWeave.readContract(arweave, proxyState.contract)
 
@@ -464,15 +463,10 @@ export default {
 
   async updateHoldingTicker (jwk, contract) {
     const likeyState = await this.readLikeyContract()
-    console.log(likeyState.users)
     const paymentAddress = await arweave.wallets.getAddress(jwk)
     if (likeyState && likeyState.users[paymentAddress]) {
       for (const item of likeyState.users[paymentAddress]) {
-        console.log(item)
-        if (item.contract === contract) {
-          console.log('no need to record')
-          return
-        }
+        if (item.contract === contract) return
       }
     }
 
