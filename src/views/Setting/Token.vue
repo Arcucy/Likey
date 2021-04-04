@@ -219,7 +219,8 @@ export default {
     tickerInput: {
       /** 输入过滤 */
       set (val) {
-        this.ticker = val.replace(/[^a-zA-Z]/g, '').toUpperCase()
+        const regexp = new RegExp('[^a-zA-Z]', 'g')
+        this.ticker = val.replace(regexp, '').toUpperCase()
       },
       get () {
         return this.ticker
@@ -229,7 +230,8 @@ export default {
       /** 输入过滤 */
       set (val) {
         // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
-        this.ratio = val.replace(/([^0-9.])|((?<=(\d+)?\.\d+)\.+(.+)?)|((?<=\.)\.+)/g, '')
+        const regexp = new RegExp('([^0-9.])|((?<=(\\d+)?\\.\\d+)\\.+(.+)?)|((?<=\\.)\\.+)', 'g')
+        this.ratio = val.replace(regexp, '')
       },
       get () {
         return this.ratio
