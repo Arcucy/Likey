@@ -18,9 +18,8 @@
             {{ $t('home.tabAppreciated') }}
           </div>
         </div>
-        <div
-          v-if="showingSponsored"
-        >
+        <!-- 赞助列表 -->
+        <div v-if="showingSponsored">
           <FlowCard
             v-for="(data, index) in sponsoredStatus"
             :brief="data"
@@ -31,16 +30,17 @@
           />
           <InfiniteScroll
             class="flow-card"
+            tag="sponsored-infinite-scroll"
             :no-data="!sponsoredStatus || !sponsoredStatus.length"
             :loading="sponsoredStatusLoading"
             :distance="200"
             :disable="!sponsoredStatusHasNextPage"
+            :immediate="false"
             @load="() => getSponsoredStatus()"
           />
         </div>
-        <div
-          v-else
-        >
+        <!-- 主页列表 -->
+        <div v-if="!showingSponsored">
           <FlowCard
             v-for="(data, index) in flow"
             :brief="data"
@@ -51,10 +51,12 @@
           />
           <InfiniteScroll
             class="flow-card"
+            tag="home-infinite-scroll"
             :no-data="!flow || !flow.length"
             :loading="flowLoading"
             :distance="200"
             :disable="!hasNextPage"
+            :immediate="false"
             @load="() => getUserStatus()"
           />
         </div>
@@ -103,7 +105,7 @@ import InfiniteScroll from '@/components/InfiniteScroll'
 import Payment from '@/components/Common/Payment'
 import DonationPurchase from '@/components/Common/DonationPurchase'
 
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -114,11 +116,12 @@ export default {
     Payment,
     DonationPurchase
   },
+  inject: ['updateQuery'],
   data () {
     return {
       // 记录用户点了多少次展开
       showMore: 1,
-      showingSponsored: false,
+      showingSponsored: this.$route.query.tab === 'sponsored',
       // 动态列表
       flow: [],
       flowLoading: false,
@@ -129,6 +132,8 @@ export default {
       sponsoredStatusHasNextPage: true,
       showPaymentDialog: false,
       showDonationInput: false,
+      // 用户持有的 PST 列表
+      pstList: [],
       donateData: {
         contract: {},
         status: {},
@@ -149,6 +154,7 @@ export default {
       creatorPst: state => state.contract.creatorPst,
       userAddress: state => state.user.myInfo.address
     }),
+    ...mapGetters(['isLoggedIn']),
     shownCreators () {
       return this.creatorsAddress.slice(0, this.showMore * 5)
     },
@@ -159,15 +165,31 @@ export default {
     sponsoredStatusCursor () {
       if (!this.sponsoredStatus || !this.sponsoredStatus.length) return ''
       return this.sponsoredStatus[this.sponsoredStatus.length - 1].cursor
+    },
+    pstOwnerList () {
+      if (!this.pstList || !this.pstList.length) return []
+      return this.pstList.map(item => item.owner)
     }
   },
-  async mounted () {
-    await this.initLikeyContract()
+  watch: {
+    isLoggedIn (val) {
+      if (this.showingSponsored) {
+        if (val) {
+          this.sponsoredStatus = []
+          this.sponsoredStatusHasNextPage = true
+          this.sponsoredStatusLoading = false
+          this.getSponsoredStatus()
+        } else this.sponsoredStatus = []
+      }
+    }
+  },
+  mounted () {
+    this.initLikeyContract()
+    if (this.showingSponsored) this.getSponsoredStatus()
+    else this.getUserStatus()
   },
   methods: {
-    // TODO:在每次提交前记得删掉这个mutations的引用
-    ...mapMutations(['mTestCreatorsAdd']),
-    ...mapActions(['initLikeyContract', 'getPstContract']),
+    ...mapActions(['initLikeyContract', 'getPstContract', 'getUserPstList']),
     /** 获取所有用户动态列表 */
     async getUserStatus () {
       if (this.flowLoading) return
@@ -180,8 +202,18 @@ export default {
     /** 获取已赞赏的动态 */
     async getSponsoredStatus () {
       if (this.sponsoredStatusLoading) return
+      if (!this.isLoggedIn) return
       this.sponsoredStatusLoading = true
-      const res = await this.$api.gql.getSponsoredStatus(this.userAddress, 10, this.sponsoredStatusCursor)
+      // 获取用户持有的 PST 列表
+      if (!this.pstList || !this.pstList.length) {
+        const pstList = await this.getUserPstList(this.userAddress)
+        if (!pstList.length) {
+          this.sponsoredStatusLoading = false
+          return
+        }
+        this.pstList = pstList
+      }
+      const res = await this.$api.gql.getUserStatusByAddress(this.pstOwnerList, this.sponsoredStatusCursor, 10, true)
       this.sponsoredStatus.push(...res.transactions.edges)
       this.sponsoredStatusHasNextPage = res.transactions.pageInfo.hasNextPage
       this.sponsoredStatusLoading = false
@@ -211,18 +243,29 @@ export default {
       this.showDonationInput = false
     },
     async toggleSponsored (showingSponsored) {
-      this.showingSponsored = showingSponsored
       if (showingSponsored) {
-        this.sponsoredStatus = []
-        this.sponsoredStatusHasNextPage = true
-        this.sponsoredStatusLoading = false
-        await this.getSponsoredStatus()
+        if (showingSponsored === this.showingSponsored) {
+          this.pstList = []
+          this.sponsoredStatus = []
+        }
+        if (!this.sponsoredStatus || !this.sponsoredStatus.length) {
+          this.sponsoredStatus = []
+          this.sponsoredStatusHasNextPage = true
+          this.sponsoredStatusLoading = false
+          this.updateQuery('tab', 'sponsored')
+          this.getSponsoredStatus()
+        }
       } else {
-        this.flow = []
-        this.flowLoading = false
-        this.hasNextPage = true
-        await this.getUserStatus()
+        if (showingSponsored === this.showingSponsored) this.flow = []
+        if (!this.flow || !this.flow.length) {
+          this.flow = []
+          this.flowLoading = false
+          this.hasNextPage = true
+          this.updateQuery('tab', 'all')
+          this.getUserStatus()
+        }
       }
+      this.showingSponsored = showingSponsored
     }
   }
 }
