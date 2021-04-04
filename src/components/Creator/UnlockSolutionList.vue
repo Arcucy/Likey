@@ -354,6 +354,7 @@ export default {
 
       this.showKeyReader = false
       const callback = (event, id) => {
+        console.log(event, id)
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)

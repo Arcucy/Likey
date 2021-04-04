@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-useless-catch */
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
@@ -293,11 +294,12 @@ export default {
 
             // 分润的金额
             quantityBig = quantityBig.plus(pstHolderQuantity)
+          } else {
+            console.warn('Wont send Developer Tip')
           }
         } catch (err) {
           status = 'onDistributionCatchError'
           callback(status, '')
-          console.error(err)
           throw err
         }
       }
@@ -339,6 +341,8 @@ export default {
 
             // 分润的金额
             quantityBig = quantityBig.plus(developerQuantity)
+          } else {
+            console.warn('Wont send Developer Tip')
           }
         } catch (err) {
           status = 'onDeveloperCatchError'
@@ -375,13 +379,14 @@ export default {
     if (!data) {
       return
     }
+
     try {
       let status = 'onSponsorAddedStarted'
       callback(status, '')
       const pstState = await this.readLikeyCreatorPstContract(contract)
       const obj = LikeyCreatorPst.sponsorAdded()
 
-      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, undefined, callback)
       const tags = [
         { name: 'Purchase-Type', value: 'Likey-Sponsor' },
         { name: 'Purchase-Number', value: data.number || '1' },
@@ -394,6 +399,7 @@ export default {
 
       try {
         const res = await this.interactWritePst(jwk, contract, obj, tags, pstState.owner, creator.toString())
+        await this.updateHoldingTicker(jwk, contract)
         if (!res.isTestMode) {
           status = 'onSponsorAdded'
           callback(status, res.data)
@@ -426,7 +432,7 @@ export default {
       const pstState = await this.readLikeyCreatorPstContract(contract)
       const obj = LikeyCreatorPst.donationAdded(statusId)
 
-      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, undefined, callback)
       const tags = [
         { name: 'Donate-Status', value: statusId || '' },
         { name: 'Purchase-Type', value: 'Likey-Donation' },
@@ -454,6 +460,31 @@ export default {
       throw err
     }
   },
+
+  async updateHoldingTicker (jwk, contract) {
+    const likeyState = await this.readLikeyContract()
+    console.log(likeyState.users)
+    const paymentAddress = await arweave.wallets.getAddress(jwk)
+    if (likeyState && likeyState.users[paymentAddress]) {
+      for (const item of likeyState.users[paymentAddress]) {
+        console.log(item)
+        if (item.contract === contract) {
+          console.log('no need to record')
+          return
+        }
+      }
+    }
+
+    const updateObj = LikeyContract.updateHoldingTicker(contract)
+    const tags2 = [
+      { name: 'Update-Type', value: 'Ticker-Holding' },
+      { name: 'Ticker-Holding', value: contract },
+      { name: 'App-Base-Name', value: process.env.VUE_APP_APP_NAME },
+      { name: 'Unix-Time', value: Date.now() }
+    ]
+    await this.interactWrite(jwk, updateObj, tags2)
+  },
+
   /**
    * 铸币
    * @param {*} jwk         - JWK 密钥
@@ -678,6 +709,15 @@ const LikeyContract = {
       target,
       data: {
         items
+      }
+    }
+  },
+
+  updateHoldingTicker (address) {
+    return {
+      function: 'updateHoldingTicker',
+      data: {
+        address
       }
     }
   }
