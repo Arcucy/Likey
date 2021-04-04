@@ -127,8 +127,9 @@ export default {
     titleInput: {
       set (val) {
         /** 限制，开头不能有空白，空白字符不能连续超过两个 */
-        const regexp = new RegExp('((?<=\\s\\s)\\s+)|(^\\s+.*?)', 'g')
-        this.title = val.replace(regexp, '')
+        const regexp = new RegExp('(^\\s+.*?)', 'g')
+        const regexp2 = new RegExp('(\\s{3,})', 'g')
+        this.title = val.replace(regexp, '').replace(regexp2, '  ')
       },
       get () {
         return this.title
@@ -136,10 +137,16 @@ export default {
     },
     contentInput: {
       set (val) {
-        // 限制，开头不能有空白，空白字符不能连续超过两个
-        // 为了避免打了两个空格后不能打回车造成的用户困惑，将这部分判断分离
-        const regexp = new RegExp('((?<=[\\n\\r]{2})[\\n\\r]+)|((?<= {2}) +)|(^\\s+.*?)', 'g')
-        this.content = val.replace(regexp, '')
+        // 开头不能有空白
+        const regexp = new RegExp('(^\\s+.*?)', 'g')
+        let newVal = val.replace(regexp, '')
+        // 空格不能超过两个
+        const regexp2 = new RegExp('( {3,})', 'g')
+        newVal = newVal.replace(regexp2, '  ')
+        // 换行不能超过两个
+        const regexp3 = new RegExp('[\\n\\r]{3,}', 'g')
+        newVal = newVal.replace(regexp3, '\n\n')
+        this.content = newVal
       },
       get () {
         return this.content
