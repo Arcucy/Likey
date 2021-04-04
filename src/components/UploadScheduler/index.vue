@@ -116,7 +116,8 @@ export default {
     },
     /** 显示正在上传中的消息提示 */
     startUploadingMessage (data) {
-      const text = (data.title || data.content || '').replace(/\s+/g, ' ')
+      const regexp = new RegExp('\\s+', 'g')
+      const text = (data.title || data.content || '').replace(regexp, ' ')
       const maxCount = 20
       this.$notify({
         title: this.$t('statusInput.uploadingStatus'),

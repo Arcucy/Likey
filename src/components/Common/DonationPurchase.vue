@@ -69,7 +69,8 @@ export default {
       /** 输入过滤 */
       set (val) {
         // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
-        this.input = val.replace(/([^0-9.])|((?<=(\d+)?\.\d+)\.+(.+)?)|((?<=\.)\.+)/g, '')
+        const regexp = new RegExp('([^0-9.])|((?<=(\\d+)?\\.\\d+)\\.+(.+)?)|((?<=\\.)\\.+)', 'g')
+        this.input = val.replace(regexp, '')
       },
       get () {
         return this.input
@@ -107,7 +108,8 @@ export default {
         this.$message.error(this.$t('donation.donationAmountShouldnotBeNone'))
         return
       }
-      if (!/^[0-9]+(\.[0-9]{0,11})?$/.test(this.input)) {
+      const regexp = new RegExp('^[0-9]+(\\.[0-9]{0,11})?$')
+      if (!regexp.test(this.input)) {
         this.$message.error(this.$t('donation.pleaseInputValidDonationAmount'))
         return
       }

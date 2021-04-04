@@ -175,7 +175,8 @@ export default {
     async inputFilter (newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // 过滤不是图片后缀的文件
-        if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
+        const regexp = new RegExp('\\.(gif|jpg|jpeg|png|webp)$', 'i')
+        if (!regexp.test(newFile.name)) {
           this.$message.error({
             duration: 1000,
             message: this.$t('selectImage')

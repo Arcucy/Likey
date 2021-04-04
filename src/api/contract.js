@@ -307,7 +307,8 @@ export default {
 
     status = 'onDeveloper'
     callback(status, '')
-    if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1) {
+    const regexp = new RegExp('^([a-zA-Z0-9]|_|-){43}$')
+    if (DEVELOPER && regexp.test(DEVELOPER) && developerQuantity.toString() >= 1) {
       if (paymentAddress === DEVELOPER) {
         developerQuantity = new BigNumber('0')
       } else {

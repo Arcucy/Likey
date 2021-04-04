@@ -53,7 +53,8 @@ const Decode = {
 
   /** 拆分换算比率 */
   getRatio (ratio) {
-    if (!/^1:\d*\.?\d*$/.test(ratio)) {
+    const regexp = new RegExp('^1:\\d*\\.?\\d*$')
+    if (!regexp.test(ratio)) {
       return { from: '1', to: '0' }
     }
     let from = 1

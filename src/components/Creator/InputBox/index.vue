@@ -127,7 +127,8 @@ export default {
     titleInput: {
       set (val) {
         /** 限制，开头不能有空白，空白字符不能连续超过两个 */
-        this.title = val.replace(/((?<=\s\s)\s+)|(^\s+.*?)/g, '')
+        const regexp = new RegExp('((?<=\\s\\s)\\s+)|(^\\s+.*?)', 'g')
+        this.title = val.replace(regexp, '')
       },
       get () {
         return this.title
@@ -137,7 +138,8 @@ export default {
       set (val) {
         // 限制，开头不能有空白，空白字符不能连续超过两个
         // 为了避免打了两个空格后不能打回车造成的用户困惑，将这部分判断分离
-        this.content = val.replace(/((?<=[\n\r]{2})[\n\r]+)|((?<= {2}) +)|(^\s+.*?)/g, '')
+        const regexp = new RegExp('((?<=[\\n\\r]{2})[\\n\\r]+)|((?<= {2}) +)|(^\\s+.*?)', 'g')
+        this.content = val.replace(regexp, '')
       },
       get () {
         return this.content

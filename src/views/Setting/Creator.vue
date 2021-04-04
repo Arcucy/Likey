@@ -247,7 +247,7 @@ export default {
       }
 
       // 主页地址格式错误
-      const profileAddressRegular = /^[a-zA-Z][a-zA-Z0-9]{4,41}$/
+      const profileAddressRegular = new RegExp('^[a-zA-Z][a-zA-Z0-9]{4,41}$')
       if (!profileAddressRegular.test(this.profileAddress)) {
         this.$message.warning(this.$t('setting.profileAddressFormatError'))
         return 4
