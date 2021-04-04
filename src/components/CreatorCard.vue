@@ -68,7 +68,7 @@ a {
   color: @dark;
   box-shadow: 0 0 2px 0 #0000001a;
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -99,7 +99,7 @@ a {
 }
 
 /deep/.el-loading-mask {
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
 @media screen and (max-width: 640px) {

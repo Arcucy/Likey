@@ -98,6 +98,7 @@ export default {
   justify-content: center;
   overflow: hidden;
   border-radius: 6px;
+  box-shadow: 0 0 2px 0 #0000001a;
 
   p {
     margin: 0;
