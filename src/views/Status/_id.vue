@@ -314,7 +314,6 @@ export default {
     /** 初始化数据 */
     async initData () {
       this.detailsLoading = true
-      console.log('开始获取动态详情')
       try {
         const transaction = await this.$api.gql.getTransactionDetail(this.preview.id)
         this.creatorAdd = await this.$api.gql.getAddressByOwner(transaction.owner)
@@ -322,7 +321,6 @@ export default {
         const data = JSON.parse(decode.uint8ArrayToString(transaction.data))
         if (data.isLock) data.content = this.decryptText(data.content)
         this.details = data
-        console.log('动态详情：', this.details)
         this.getAvatar()
         this.getUsername()
         this.getShortname()

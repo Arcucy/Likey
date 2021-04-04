@@ -1,32 +1,60 @@
+![](https://i.loli.net/2021/04/04/Lut4iN6QMEaJxwj.jpg)
+
+
+
+
 <h1 align="center">Likey</h1>
-<p align="center">An Arweave Project</p>
+<p align="center">A community works for anyone, any creation</p>
 
-## Project setup
-```
-yarn install
-```
+<p align="center">
+  <a href="https://t.me/ArclightMusic">
+    <img src="https://img.shields.io/badge/Chat%20on-Telegram-%235AA9E6?logo=telegram" />
+  </a>
+  <a href="https://discord.gg/bGZ2ZQ">
+    <img src="https://img.shields.io/discord/766689493435678770.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
+  </a><br>
+  <img src="https://github.com/Arcucy/ArcLight/workflows/Node%20Build%20Test/badge.svg" />
+  <img src="https://github.com/Arcucy/ArcLight/workflows/Production%20CI%20Build%20Test/badge.svg">
+</p>
 
-### Compiles and hot-reloads for development
-```
-yarn dev
-```
+## Likey
 
-### Compiles and minifies for production
-```
-yarn build
-```
+Likey provides powerful tools from blockchain technologies to help integrate your creation together and gain more attractions from your fans and interested people while giving the income management back to you
 
-### Run your unit tests
-```
-yarn test:unit
-```
+#### We Provide
 
-### Lints and fixes files
-```
-yarn lint
-```
+1. You can build your **unique token** for your community/creation in Arweave blockchain
 
-### Svgo
-```
-yarn svgo
-```
+2. Create different **solutions** for supporters to purchase, they will earn your unique token in return
+
+3. **Post** your creation working progress just like Twitter
+
+4. **Lock** your posts, and bind the **unlock** requirements to solutions, supporters grants access by earning tokens
+
+5. Your supporters will have the abilities to exchange their tokens, even selling them
+
+6. For supporters, you will get tip (~15%) from later transactions for profit sharing
+
+   
+
+**Build your community. Profit with your fans. Make your work forever stored.**
+
+**Thank you for choosing Likey!**
+
+## Credits
+
+[@AyakaNeko](https://github.com/nekomeowww) - Major Developer
+
+[@LittleSound](https://github.com/LittleSound) - Major Developer   
+
+[@LemonNeko](https://github.com/LemonNekoGH) - Minor Developer   
+
+[@Garfield550](https://github.com/Garfield550) - Minor Developer   
+
+### Reference
+[arweave interface](https://www.arweave.org/build)   
+[SmartWeave](https://github.com/ArweaveTeam/Smartweave)     
+[Arweave.js](https://github.com/ArweaveTeam/arweave-js): A library for interacting with the Arweave network from web applications and node.js programs.    
+[Arweave Deploy](https://github.com/ArweaveTeam/arweave-deploy): A simple command line tool for deploying web apps, pages, and other files to the permaweb.    
+
+

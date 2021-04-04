@@ -6,7 +6,8 @@
       <div class="user-header-cover-pillar" />
       <!-- 图片主体 -->
       <div class="user-header-cover-main">
-        <div class="user-header-cover-main-setting">
+        <!-- 更换封面图片 -->
+        <!-- <div class="user-header-cover-main-setting">
           <el-tooltip
             class="item"
             effect="dark"
@@ -17,7 +18,7 @@
               <span class="mdi mdi-image-area" />
             </div>
           </el-tooltip>
-        </div>
+        </div> -->
         <img src="@/assets/img/default/myProfileCover.jpg" alt="cover">
       </div>
       <!-- <ImageUpload

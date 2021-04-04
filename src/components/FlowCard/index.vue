@@ -326,13 +326,11 @@ export default {
     async loadMore () {
       if (this.detailsLoading) return
       this.detailsLoading = true
-      console.log('开始获取动态详情')
       try {
         const transaction = await this.$api.gql.getTransactionDetail(this.preview.id)
         const data = JSON.parse(decode.uint8ArrayToString(transaction.data))
         if (data.isLock) data.content = this.decryptText(data.content)
         this.details = data
-        console.log('动态详情：', this.details)
       } catch (err) {
         this.$message.error(this.$t('failure.getStatusDetails'))
         console.error('loadMore error: ', err)
