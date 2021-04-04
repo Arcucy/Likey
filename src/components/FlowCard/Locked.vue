@@ -287,6 +287,13 @@ a {
       P {
         margin: 0 0 10px;
         font-size: 15px;
+        word-break: break-all;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        text-align: center;
       }
 
       &-btn {

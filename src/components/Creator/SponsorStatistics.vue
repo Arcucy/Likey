@@ -156,11 +156,23 @@ export default {
       font-size: 20px;
       color: @dark;
       margin: 0 0 5px;
+      word-break: break-all;
+      word-wrap: break-word;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
     }
     p {
       font-size: 15px;
       color: @dark;
       margin: 0 0 0;
+      word-break: break-all;
+      word-wrap: break-word;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
     }
   }
 
