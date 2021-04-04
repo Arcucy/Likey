@@ -21,7 +21,7 @@
           <span class="mdi mdi-brightness-6 theme-switch" />
         </div>
         <!-- 成为创作者按钮 -->
-        <router-link v-if="!hideStartCreatingButton" :to="{ name: 'Setting-Creator' }">
+        <router-link class="creator-btn" v-if="!hideStartCreatingButton" :to="{ name: 'Setting-Creator' }">
           <el-button
             v-if="isLoggedIn"
             class="header-option-btn btn-mobile-hide"
@@ -333,7 +333,6 @@ header {
     &-links {
       flex: 1;
       display: flex;
-      column-gap: 20px;
       align-items: center;
       justify-content: flex-start;
       user-select: none;
@@ -343,6 +342,11 @@ header {
         text-decoration: none;
         font-size: 16px;
         font-weight: 500;
+        margin-right: 20px;
+        &:last-child {
+          margin-right: 0;
+        }
+
         &:hover {
           color: @primary;
         }
@@ -382,10 +386,12 @@ header {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      column-gap: 20px;
 
       &-items {
         user-select: none;
+
+        margin: 0 20px;
+
         cursor: pointer;
         .theme-switch {
           display: flex;
@@ -399,6 +405,10 @@ header {
       &-btn {
         padding: 12px 20px;
         min-width: 130px;
+      }
+
+      .creator-btn {
+        margin-right: 20px;
       }
     }
   }
@@ -415,18 +425,28 @@ header {
         margin-right: 20px;
       }
       &-links {
-        column-gap: 10px;
 
         a {
           font-size: 15px;
+          margin-right: 10px;
+          &:last-child {
+            margin-right: 0;
+          }
         }
       }
       &-option {
-        column-gap: 10px;
+
+        &-items {
+          margin: 0 10px;
+        }
+
         &-btn {
           padding: 10px 5px;
           min-width: 50px;
           font-size: 12px;
+        }
+        .creator-btn {
+          margin-right: 10px;
         }
       }
     }
@@ -449,14 +469,12 @@ header {
         }
       }
       &-links {
-        column-gap: 10px;
 
         a {
           font-size: 15px;
         }
       }
       &-option {
-        column-gap: 10px;
         &-btn {
           &.btn-mobile-hide {
             display: none;

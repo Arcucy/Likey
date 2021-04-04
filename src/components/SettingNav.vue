@@ -46,7 +46,6 @@ export default {
 .setting-header {
   display: flex;
   margin: 0 0 20px;
-  column-gap: 20px;
   a {
     color: @gray3;
     margin: 0;
@@ -54,6 +53,12 @@ export default {
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
+
+    margin-right: 20px;
+    &:last-child {
+      margin-right: 0;
+    }
+
     &:hover {
       color: @primary;
     }
