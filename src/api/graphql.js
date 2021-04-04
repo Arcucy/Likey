@@ -218,11 +218,12 @@ export default {
    */
   async getAllPurchasesStats (address, mode, first = 100) {
     const query = gql`
-      query getAllPurchasesStats($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
+      query getAllPurchasesStats($address: String!, $first: Int, $after: String, $purchaseType: [String!]!, $appName: String!) {
         transactions (
           after: $after,
           first: $first,
           tags: [
+            { name: "App-Base-Name", values: [$appName] }
             { name: "Purchase-Type", values: $purchaseType },
             { name: "Contract", values: [$address] }
           ],
@@ -262,7 +263,7 @@ export default {
     let hasNextPage = true
     let after = ''
     while (hasNextPage) {
-      const res = await graph.request(query, { address, purchaseType, first, after })
+      const res = await graph.request(query, { address, purchaseType, first, after, appName: process.env.VUE_APP_APP_NAME })
       hasNextPage = res.transactions.pageInfo.hasNextPage
       if (!hasNextPage && res.transactions.edges.length === 0) return 0
       res.transactions.edges.forEach(() => count++)
@@ -280,12 +281,13 @@ export default {
    */
   async getAllPurchases (address, mode, first = 10, after = '') {
     const query = gql`
-      query getAllPurchases($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
+      query getAllPurchases($address: String!, $first: Int, $after: String, $purchaseType: [String!]!, $appName: String!) {
         transactions (
           owners: [$address],
           after: $after,
           first: $first,
           tags: [
+            { name: "App-Base-Name", values: [$appName] }
             { name: "Purchase-Type", values: $purchaseType }
           ],
           block: { min: 1 }
@@ -321,7 +323,7 @@ export default {
         break
     }
     // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address, first, after, purchaseType })
+    const res = await graph.request(query, { address, first, after, purchaseType, appName: process.env.VUE_APP_APP_NAME })
     return res
   },
   /**
@@ -334,12 +336,13 @@ export default {
    */
   async getAllSponsorAndDonation (address, mode, first = 10, after = '') {
     const query = gql`
-      query getAllSponsorAndDonation($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
+      query getAllSponsorAndDonation($address: String!, $first: Int, $after: String, $purchaseType: [String!]!, $appName: String!) {
         transactions (
           recipients: [$address],
           after: $after,
           first: $first,
           tags: [
+            { name: "App-Base-Name", values: [$appName] }
             { name: "Purchase-Type", values: $purchaseType }
           ],
           block: { min: 1 }
@@ -372,7 +375,7 @@ export default {
         break
     }
     // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address, first, after, purchaseType })
+    const res = await graph.request(query, { address, first, after, purchaseType, appName: process.env.VUE_APP_APP_NAME })
     return res
   },
   /**
