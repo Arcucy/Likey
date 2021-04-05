@@ -91,12 +91,11 @@ export default {
     },
     holdersValue () {
       if (!this.receipt.holders) return new BigNumber('0')
-      if (this.receipt.holders.isLessThan(1)) return '0'
       return this.receipt.holders.toString()
     },
     developerValue () {
       if (!this.receipt.developer) return new BigNumber('0')
-      if (this.receipt.developer.isLessThan(1)) return '0'
+      console.log(this.receipt.developer.toString())
       return this.receipt.developer.toString()
     },
     feeValue () {

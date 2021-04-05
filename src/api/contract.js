@@ -83,7 +83,6 @@ export default {
    */
   async readLikeyContract () {
     const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
-    console.log(proxyState.contract)
     const state = await SmartWeave.readContract(arweave, proxyState.contract)
 
     return state
@@ -258,10 +257,12 @@ export default {
     }
 
     let quantityBig = new BigNumber(quantity)
-    let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
-    let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(12))
+    let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(0))
+    let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(0))
     if (pstHolderQuantity.isLessThan(1)) pstHolderQuantity = new BigNumber(1)
+    console.log(pstHolderQuantity.toFixed(0))
     if (developerQuantity.isLessThan(1)) developerQuantity = new BigNumber(1)
+    console.log(developerQuantity.toFixed(0))
 
     let selected = ''
     let reward = new BigNumber('0')
@@ -366,6 +367,7 @@ export default {
     }, jwk)
 
     reward = reward.plus(creatorTransaction.reward)
+    console.log(selected)
     return {
       creator: new BigNumber(quantity),
       holders: pstHolderQuantity,
