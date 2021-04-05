@@ -371,7 +371,7 @@ export default {
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
-        if (event === 'onUpdateTicker') this.openSuccessNotify('update', '', 30000)
+        if (event === 'onUpdatedTicker') this.openSuccessNotify('update', '', 30000)
 
         if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
         if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)

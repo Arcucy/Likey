@@ -260,9 +260,7 @@ export default {
     let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(0))
     let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(0))
     if (pstHolderQuantity.isLessThan(1)) pstHolderQuantity = new BigNumber(1)
-    console.log(pstHolderQuantity.toFixed(0))
     if (developerQuantity.isLessThan(1)) developerQuantity = new BigNumber(1)
-    console.log(developerQuantity.toFixed(0))
 
     let selected = ''
     let reward = new BigNumber('0')
@@ -367,7 +365,6 @@ export default {
     }, jwk)
 
     reward = reward.plus(creatorTransaction.reward)
-    console.log(selected)
     return {
       creator: new BigNumber(quantity),
       holders: pstHolderQuantity,
