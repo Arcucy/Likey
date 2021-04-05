@@ -10,7 +10,7 @@
           {{ ticker || 'PST' }}/{{ $t('setting.unlock') }}
         </span>
       </div>
-      <p v-if="!isUnlocked(requiredItems[index].value) && !initLoading" class="solution-left">
+      <p v-if="isShowDifference(requiredItems[index].value) && !initLoading" class="solution-left">
         {{ $t('sponsor.unlockValueNeed' , [requiredItems[index].value, ticker]) }}
       </p>
       <p class="solution-title">
@@ -20,19 +20,35 @@
         {{ item.description }}
       </p>
       <div class="solution-unlock">
-        <span class="solution-unlock-status">
-          <span v-if="!isUnlocked(requiredItems[index].value)" class="mdi mdi-lock" />
-          <span v-if="!isUnlocked(requiredItems[index].value)" class="mdi mdi-lock-open" />
-          <span v-else class="mdi mdi-lock-open-variant" />
-          {{ unlockedText(requiredItems[index].value) }}
+        <!-- 未解锁 -->
+        <span v-if="!isUnlocked(requiredItems[index].value)" class="solution-unlock-status">
+          <span class="mdi mdi-lock" />
+          <span class="mdi mdi-lock-open" />
+          {{ $t('sponsor.locked') }}
         </span>
+        <!-- 已解锁 -->
+        <span v-else class="solution-unlock-status">
+          <span class="mdi mdi-lock-open-variant" />
+          {{ $t('sponsor.unlocked') }}
+        </span>
+        <!-- 支付按钮 -->
         <el-button
+          v-if="!isUnlockedIgnoreCreator(requiredItems[index].value)"
           class="solution-unlock-btn"
           type="primary"
           @click="buyUnlockSolution(requiredItems[index])"
           :loading="loading"
         >
-          {{ convertPstToWinston(requiredItems[index].value) | winstonToAr | finalize(loading) | unlocked(isUnlocked(requiredItems[index].value)) }}
+          {{ convertPstToWinston(requiredItems[index].value) | winstonToAr | finalize(loading) }}
+        </el-button>
+        <!-- 已解锁按钮 -->
+        <el-button
+          v-else
+          class="solution-unlock-btn"
+          type="primary"
+          disabled
+        >
+          {{ $t('flowCard.unlocked') }}
         </el-button>
       </div>
     </div>
@@ -185,7 +201,7 @@ export default {
     },
     contract () {
       if (!this.creator) return {}
-      return this.creatorPst[this.creator.ticker.contract]
+      return this.creatorPst[this.creator.ticker.contract] || {}
     },
     disableBtn () {
       return this.customPstInput === '0' || this.customPstInput === 0 || !this.customPstInput
@@ -218,9 +234,15 @@ export default {
       if (this.address === this.myAddress) return true
       return value === '0'
     },
-    /** 传入解锁所需的金额，返回按钮的文字 */
-    unlockedText (value) {
-      return value === '0' ? this.$t('sponsor.unlocked') : this.$t('sponsor.locked')
+    /** 判断是否已经解锁，忽略是创作者的情况 */
+    isUnlockedIgnoreCreator (value) {
+      return value === '0'
+    },
+    isShowDifference (value) {
+      if (!this.contract.ticker) return false
+      const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
+      if (balance.toString() === 'NaN' || balance.toString() === '0') return false
+      return !this.isUnlocked(value)
     },
     /** 转换 PST 为 Winston */
     convertPstToWinston (value) {
@@ -260,12 +282,16 @@ export default {
     },
     /** 开始进行交易 */
     buyUnlockSolution (item) {
-      if (this.isUnlocked(item.value)) {
-        // 不需要购买解锁方案的时候执行的逻辑写在这里
-      } else {
-        // 如果未解锁，则开始执行交易
-        this.proceedToBuyUnlockSolution(item)
+      if (this.address === this.myAddress) {
+        this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+        return
       }
+      if (this.isUnlocked(item.value)) {
+        this.$message.warning(this.$t('sponsor.unlocked'))
+        return
+      }
+      // 如果未解锁，则开始执行交易
+      this.proceedToBuyUnlockSolution(item)
     },
     /** 开始购买解锁方案 */
     async proceedToBuyUnlockSolution (item) {
