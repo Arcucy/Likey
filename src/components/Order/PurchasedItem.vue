@@ -19,9 +19,13 @@
       </div>
       <div class="purchased-item-left-recipient">
         <div class="purchased-item-left-recipient-user">
-          <div class="purchased-item-left-recipient-user-info">
+          <div v-if="username" class="purchased-item-left-recipient-user-info">
             <span class="mdi mdi-account-arrow-right" />
             <span class="username">{{ username }}</span>
+          </div>
+          <div v-else class="purchased-item-left-recipient-user-info">
+            <i class="el-icon-loading" />
+            <span class="username">{{ $t('flowCard.nmaeLoading') }}</span>
           </div>
           <div class="purchased-item-left-recipient-user-tx">
             <a class="address" target="_blank" :href="`https://viewblock.io/arweave/tx/${purchase.node.target}`">{{ purchase.node.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.target)" />
@@ -81,19 +85,24 @@ export default {
     }
   },
   async mounted () {
-    this.loading = true
     await this.initHistoryData()
-    this.loading = false
   },
   methods: {
-    ...mapActions(['getPstContract', 'getCreatorInfo']),
+    ...mapActions(['getPstBasicInfo']),
     /** 初始化卡片 */
     async initHistoryData () {
-      await this.getCreatorInfo()
-      this.tickerContract = { ...await this.getPstContract(this.purchase.node.parsedTag.contract) }
-      if (!this.purchase.username) {
-        const res = await this.$api.gql.getIdByAddress(this.purchase.node.target)
-        this.username = res.data
+      this.loading = true
+      try {
+        this.tickerContract = { ...await this.getPstBasicInfo(this.purchase.node.parsedTag.contract) }
+        this.loading = false
+        if (!this.purchase.username) {
+          const res = await this.$api.gql.getIdByAddress(this.purchase.node.target)
+          this.username = (res && res.data) ? res.data : 'Unknown'
+        }
+      } catch (err) {
+        console.error(err)
+        this.loading = false
+        this.username = 'Unknown'
       }
     },
     /** 复制合约地址 */

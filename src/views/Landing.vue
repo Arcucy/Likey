@@ -92,6 +92,7 @@ export default {
         background-color: @primary;
         border: none;
         outline: none;
+        cursor: pointer;
 
         &:hover {
           background-color: #3bb7ec;
