@@ -76,7 +76,7 @@ export default {
       return time.format('YYYY MMMDo')
     },
     indicator () {
-      if (this.purchase.txType === 'Out') return '-'
+      if (this.purchase.node.txType === 'Out') return '-'
       else return '+'
     }
   },
