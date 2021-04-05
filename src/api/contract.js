@@ -260,6 +260,8 @@ export default {
     let quantityBig = new BigNumber(quantity)
     let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
     let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(12))
+    if (pstHolderQuantity.isLessThan(1)) pstHolderQuantity = new BigNumber(1)
+    if (developerQuantity.isLessThan(1)) developerQuantity = new BigNumber(1)
 
     let selected = ''
     let reward = new BigNumber('0')
