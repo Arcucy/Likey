@@ -23,7 +23,7 @@
               :loading="pstLoading"
               @click="buyPst"
             >
-              {{ unlockPstValue | winstonToAr | finalize(pstLoading) }}
+              {{ this.convertPstToWinston(unlockPstValue, pstRatio) | winstonToAr | finalize(pstLoading) }}
             </el-button>
           </div>
           <!-- 已解锁 -->
@@ -161,7 +161,7 @@ export default {
         const requiredValue = new BigNumber(this.preview.lockValue)
         returnValue = requiredValue.minus(balanceBig).toString()
       }
-      return this.convertPstToWinston(returnValue, this.pstRatio)
+      return returnValue
     },
     creator () {
       return this.creators ? this.creators[this.preview.creator] : null
