@@ -10,7 +10,7 @@ export default {
     donateTxSuccess: 'Donation Successful',
     txSuccess: 'Transaction Successful',
     statusPublished: 'Status published successful',
-    tickerHoldingUpdateSuccess: 'Ticker holding update successful'
+    tickerHoldingUpdateSuccess: 'Holding tickers update successful'
   },
   failure: {
     login: 'Login failed',
@@ -42,7 +42,8 @@ export default {
     youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address',
     getStatusDetails: 'Unable to get status details',
     load: 'Failed to load',
-    download: 'Failed to download'
+    download: 'Failed to download',
+    tickerHoldingUpdateFailed: 'Failed to update holding tickers'
   },
   app: {
     loading: 'Loading'
