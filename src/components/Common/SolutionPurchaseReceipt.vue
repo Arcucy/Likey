@@ -95,7 +95,6 @@ export default {
     },
     developerValue () {
       if (!this.receipt.developer) return new BigNumber('0')
-      console.log(this.receipt.developer.toString())
       return this.receipt.developer.toString()
     },
     feeValue () {

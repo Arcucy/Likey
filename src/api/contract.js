@@ -413,8 +413,7 @@ export default {
         if (!res2) {
           status = 'onUpdatedTicker'
           callback(status, '')
-        }
-        if (!res2.isTestMode) {
+        } else if (!res2.isTestMode) {
           status = 'onUpdatedTicker'
           callback(status, '')
         }
