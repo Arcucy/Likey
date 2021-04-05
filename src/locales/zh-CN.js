@@ -42,7 +42,8 @@ export default {
     youCanOnlyPayForYourSelf: '你只能使用与你当前登录地址相同的钱包进行支付',
     getStatusDetails: '无法获取动态详情',
     load: '加载失败',
-    download: '下载失败'
+    download: '下载失败',
+    tickerHoldingUpdateFailed: '持币状态更新失败'
   },
   app: {
     loading: '加载中'

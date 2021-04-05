@@ -23,7 +23,7 @@
               :loading="pstLoading"
               @click="buyPst"
             >
-              {{ unlockPstValue | winstonToAr | finalize(pstLoading) }}
+              {{ this.convertPstToWinston(unlockPstValue, pstRatio) | winstonToAr | finalize(pstLoading) }}
             </el-button>
           </div>
           <!-- 已解锁 -->
@@ -161,7 +161,7 @@ export default {
         const requiredValue = new BigNumber(this.preview.lockValue)
         returnValue = requiredValue.minus(balanceBig).toString()
       }
-      return this.convertPstToWinston(returnValue, this.pstRatio)
+      return returnValue
     },
     creator () {
       return this.creators ? this.creators[this.preview.creator] : null
@@ -287,6 +287,13 @@ a {
         font-size: 20px;
         color: @dark;
         margin: 0 0 5px;
+        word-break: break-all;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-align: center;
       }
 
       P {
