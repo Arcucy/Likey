@@ -126,7 +126,7 @@ export default {
     async getAddressByShortname ({ state, dispatch }, shortname) {
       await checkCache(state, dispatch)
       for (const [key, value] of Object.entries(state.creators)) {
-        if (value.shortname === shortname) return key
+        if (value.shortname.toLowerCase() === shortname.toLowerCase()) return key
       }
       return ''
     },
