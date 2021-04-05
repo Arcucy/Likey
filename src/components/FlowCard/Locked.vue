@@ -187,9 +187,11 @@ export default {
     }
   },
   async mounted () {
+    this.pstLoading = true
     this.getPostStatus()
     if (!this.owner) await this.getCreatorInfo(this.preview.creator)
     if (!this.contract) await this.getPstContract(this.creator.ticker.contract)
+    this.pstLoading = false
   },
   methods: {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
