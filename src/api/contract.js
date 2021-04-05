@@ -413,6 +413,9 @@ export default {
         if (!res2) {
           status = 'onUpdatedTicker'
           callback(status, '')
+        } else if (res2.type !== 'ok') {
+          status = 'onUpdatedTickerError'
+          callback(status, res2.result)
         } else if (!res2.isTestMode) {
           status = 'onUpdatedTicker'
           callback(status, '')
