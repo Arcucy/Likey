@@ -213,10 +213,11 @@ export default {
         if (event === 'onDonationAdded') this.openSuccessNotify('donation', id, 30000)
         if (event === 'onUpdatedTicker') this.openSuccessNotify('update', '', 30000)
 
-        if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
-        if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
-        if (event === 'onSponsorAddedCatchError') this.openFailureNotify('sponsor', id, 10000)
-        if (event === 'onDonationAddedCatchError') this.openFailureNotify('donation', id, 10000)
+        if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 30000)
+        if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 30000)
+        if (event === 'onSponsorAddedCatchError') this.openFailureNotify('sponsor', '', 30000)
+        if (event === 'onDonationAddedCatchError') this.openFailureNotify('donation', '', 30000)
+        if (event === 'onUpdatedTickerError') this.openFailureNotify('update', id, 30000)
       }
       this.openTransactionInProgressNotify()
       switch (this.paymentData.type) {
@@ -301,8 +302,9 @@ export default {
       })
     },
     /** 打开失败通知 */
-    openFailureNotify (type, duration) {
+    openFailureNotify (type, id, duration) {
       let title = ''
+      let message = this.$t('failure.txFailMessage')
 
       switch (type) {
         case 'distribution':
@@ -314,6 +316,10 @@ export default {
         case 'sponsor':
           title = this.$t('failure.sponsorTxFailed')
           break
+        case 'update':
+          title = this.$t('failure.tickerHoldingUpdateFailed')
+          message = id
+          break
         default:
           title = this.$t('failure.txFailed')
       }
@@ -321,7 +327,7 @@ export default {
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
-        message: this.$t('failure.txFailMessage'),
+        message: `<span class="transaction-message-text ${this.themeName}-theme">${message}</span>`,
         type: 'error',
         duration: Number(duration)
       })
