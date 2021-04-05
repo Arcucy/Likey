@@ -19,6 +19,7 @@
     "core-js": "^3.6.5",
     "cropperjs": "^1.5.11",
     "element-ui": "^2.4.5",
+    "geopattern": "^1.2.3",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
     "hls.js": "^0.14.17",

@@ -39,7 +39,7 @@
           @click="buyUnlockSolution(requiredItems[index])"
           :loading="loading"
         >
-          {{ convertPstToWinston(requiredItems[index].value) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(requiredItems[index].value, ratio) | winstonToAr | finalize(loading) }}
         </el-button>
         <!-- 已解锁按钮 -->
         <el-button
@@ -84,7 +84,7 @@
           :loading="loading"
           :disabled="disableBtn"
         >
-          {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(customPstInput, ratio) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -106,6 +106,8 @@
 <script>
 import BigNumber from 'bignumber.js'
 import { mapActions, mapGetters, mapState } from 'vuex'
+
+import decode from '@/util/decode'
 
 import PaymentKeyReader from '@/components/Common/PaymentKeyReader'
 import SolutionPurchaseReceipt from '@/components/Common/SolutionPurchaseReceipt'
@@ -145,7 +147,9 @@ export default {
         developer: new BigNumber('0'),
         owner: ''
       },
-      pstContract: {}
+      pstContract: {},
+      // import convertPstToWinston
+      convertPstToWinston: decode.convertPstToWinston
     }
   },
   computed: {
@@ -244,42 +248,6 @@ export default {
       if (balance.toString() === 'NaN' || balance.toString() === '0') return false
       return !this.isUnlocked(value)
     },
-    /** 转换 PST 为 Winston */
-    convertPstToWinston (value) {
-      const { from, to } = this.getRatio(this.ratio)
-      value = new BigNumber(String(value)).div(from).multipliedBy(to).multipliedBy(1000000000000)
-      value = value.toFixed(12)
-
-      if (value === 'Infinity' || value === 'NaN') {
-        return '0'
-      }
-      return value
-    },
-    /** 拆分换算比率 */
-    getRatio (ratio) {
-      const regexp = new RegExp('^1:\\d*\\.?\\d*$')
-      if (!regexp.test(ratio)) {
-        return { from: '1', to: '0' }
-      }
-      let from = 1
-      let to = new BigNumber(ratio.split(':').pop()).toFixed(12)
-      let iteration = 0
-
-      while (true) {
-        if (!Number.isInteger(to)) {
-          to = new BigNumber(to).multipliedBy(10).toNumber()
-          iteration++
-          continue
-        }
-        break
-      }
-
-      for (let i = 0; i < iteration; i++) {
-        from = new BigNumber(from).multipliedBy(10)
-      }
-      to = BigNumber(to)
-      return { from, to }
-    },
     /** 开始进行交易 */
     buyUnlockSolution (item) {
       if (this.address === this.myAddress) {
@@ -311,7 +279,7 @@ export default {
       this.paymentType = 0
 
       // 换算为具体支付的金额
-      let value = this.convertPstToWinston(item.value)
+      let value = this.convertPstToWinston(item.value, this.ratio)
       value = new BigNumber(value).toFixed(0)
 
       const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
@@ -349,7 +317,7 @@ export default {
       this.paymentType = 1
 
       // 换算为具体支付的金额
-      value = this.convertPstToWinston(String(value))
+      value = this.convertPstToWinston(String(value), this.ratio)
       const paymentValue = new BigNumber(value).toFixed(0)
 
       const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
