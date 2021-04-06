@@ -43,7 +43,7 @@ const Decode = {
   convertPstToWinston (value, ratio) {
     const { from, to } = Decode.getRatio(ratio)
     value = new BigNumber(String(value)).div(from).multipliedBy(to).multipliedBy(1000000000000)
-    value = value.toFixed(12)
+    value = value.toFixed(0)
 
     if (value === 'Infinity' || value === 'NaN') {
       return '0'
