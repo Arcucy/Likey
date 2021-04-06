@@ -15,7 +15,7 @@
             :class="showingSponsored ? '' : 'home-title-not-active'"
             @click="toggleSponsored(true)"
           >
-            {{ $t('home.tabAppreciated') }}
+            {{ $t('home.tabSponsored') }}
           </div>
         </div>
         <!-- 赞助列表 -->
@@ -79,7 +79,7 @@
             @click="showMore ++"
             v-if="creatorsAddress.length !== shownCreators.length"
             class="show-more-btn-text"
-          >{{ $t('home.showMore') }}</span>
+          >{{ $t('home.showMoreCreators') }}</span>
         </div>
       </div>
     </div>
