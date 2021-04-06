@@ -124,7 +124,7 @@ export default {
         this.src = res
       } catch (err) {
         console.error(err)
-        this.$message.error('failure.load')
+        this.$message.error(this.$t('failure.load'))
       }
       this.loading = false
     },

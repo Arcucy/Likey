@@ -1,10 +1,10 @@
-![](https://i.loli.net/2021/04/04/Lut4iN6QMEaJxwj.jpg)
+![](https://i.loli.net/2021/04/06/EjTf9Jm6MrtRVAH.png)
 
 
 
 
 <h1 align="center">Likey</h1>
-<p align="center">A community works for anyone, any creation</p>
+<p align="center">A community that works for anyone, any creation</p>
 
 <p align="center">
   <a href="https://t.me/ArclightMusic">
