@@ -16,7 +16,7 @@ export default {
   },
 
   urlAddATag (text) {
-    var regexp = /(http:\/\/|https:\/\/)((\w|=|\?|\.|\/|&|%|@|-)+)/g
+    var regexp = new RegExp('(http:\\/\\/|https:\\/\\/)((\\w|=|\\?|\\.|\\/|&|%|@|-)+)', 'g')
     return text.replace(regexp, function (url) {
       return `<router-link :to="{}" onclick="window.open('${url}', '_blank')" >${url}</router-link>`
     })

@@ -2,15 +2,13 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/views/Home.vue'
 import Landing from '@/views/Landing.vue'
-import ThemesTest from '@/views/ThemesTest'
+// import ThemesTest from '@/views/ThemesTest'
 
 import User from '@/views/User/_id'
 import UserIndex from '@/views/User'
 
 import Order from '@/views/Order'
 import StatisticsPanel from '@/views/StatisticsPanel.vue'
-
-import Flow from '@/views/Flow'
 
 import SettingCreator from '../views/Setting/Creator'
 import SettingToken from '../views/Setting/Token'
@@ -38,11 +36,11 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  {
-    path: '/themes-test',
-    name: 'ThemesTest',
-    component: ThemesTest
-  },
+  // {
+  //   path: '/themes-test',
+  //   name: 'ThemesTest',
+  //   component: ThemesTest
+  // },
   {
     path: '/order',
     name: 'Order',
@@ -86,11 +84,6 @@ const routes = [
     path: '/setting/token',
     name: 'Setting-Token',
     component: SettingToken
-  },
-  {
-    path: '/flow',
-    name: 'Flow',
-    component: Flow
   },
   {
     path: '/status/:id',

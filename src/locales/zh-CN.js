@@ -9,7 +9,8 @@ export default {
     sponsorTxSuccess: '赞助成功',
     donateTxSuccess: '打赏成功',
     txSuccess: '交易成功',
-    statusPublished: '动态发布成功'
+    statusPublished: '动态发布成功',
+    tickerHoldingUpdateSuccess: '持币状态更新成功'
   },
   failure: {
     login: '登录失败',
@@ -33,6 +34,7 @@ export default {
     donateTxFailed: '打赏失败',
     txFailed: '交易失败',
     txFailMessage: '可能是出现了网络问题或是 Arweave 网关不稳定，请稍后再试',
+    contractWriteFailed: '合约调用失败',
     dynamicUploadFailed: '动态上传失败，请检查网络后重试',
     dynamicEncryptFailed: '动态加密失败',
     dynamicEncryptFailedMessage: '动态加密失败，出现了重大严重错误，如果屡次出现请反馈指开发者',
@@ -40,7 +42,8 @@ export default {
     youCanOnlyPayForYourSelf: '你只能使用与你当前登录地址相同的钱包进行支付',
     getStatusDetails: '无法获取动态详情',
     load: '加载失败',
-    download: '下载失败'
+    download: '下载失败',
+    tickerHoldingUpdateFailed: '持币状态更新失败'
   },
   app: {
     loading: '加载中'
@@ -116,6 +119,7 @@ export default {
     exchangeRatio: '代币兑换比率',
     exchangeRatioDescription: '初初始兑换率用于将用户赞助的 AR 数额转化为代币',
     exchangeRatioExceedsTheLimitation: '兑换比率小数点超出了限制',
+    exchangeRatioIsNotAValidNumber: '兑换比率值不是一个有效的数字',
     pleaseFillInTheExchangeRatio: '请输入兑换比率',
     unlockPlan: '解锁方案',
     ownBalance: '持有',
@@ -181,6 +185,9 @@ export default {
     donationAndSponsorCount: '赞赏总数',
     custom: '自定义',
     customInputDescription: '本方案可自定义 PST 购买数量',
+    locked: '已锁定',
+    unlocked: '已解锁',
+    unlockValueNeed: '还需要 {0} {1}',
     myBalance: '已经持有'
   },
   donation: {
@@ -200,7 +207,11 @@ export default {
     total: '总计',
     txPosted: '交易已经提交至 Arweave 区块链，你可以点击以访问交易：{0}',
     transactionInProgres: '交易正在进行',
-    transactionInProgress: '你的交易正在进行，请不要关闭本页面。在此等待期间，你可以继续浏览本页的其他内容'
+    transactionInProgress: '你的交易正在进行，请不要关闭本页面。在此等待期间，你可以继续浏览本页的其他内容',
+    currentBalance: '当前余额',
+    afterBalance: '结余',
+    dataLoadingPleaseTryLater: '数据正在加载中，请稍后重试',
+    nextTransactionInProgress: '正在执行下一笔交易'
   },
   progressText: {
     status: '上传动态中',
@@ -219,8 +230,8 @@ export default {
   },
   statistics: {
     historyIncome: '历史收入',
-    donationCount: '打赏人数',
-    sponsorCount: '赞助人数'
+    donationCount: '动态赞赏总数',
+    sponsorCount: 'PST 赞助总数'
   },
   flowCard: {
     loadMore: '加载全文',
@@ -237,11 +248,13 @@ export default {
     downloading: '下载中',
     downloaded: '已下载',
     ifYourDownloadDidnotStarted: '如果你的下载没有开始，',
-    clickHere: '请点击这里'
+    clickHere: '请点击这里',
+    shortnameLoading: '地址加载中...',
+    nmaeLoading: '昵称加载中...'
   },
   home: {
     tabFlow: '最新动态',
-    tabAppreciated: '我赞赏的',
+    tabAppreciated: '我赞助的',
     flowLoading: '正在加载动态',
     creatorsLoading: '正在加载创作者',
     showMoreCreators: '显示更多',

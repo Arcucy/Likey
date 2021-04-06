@@ -5,8 +5,9 @@
       <!-- 自适应宽高比 -->
       <div class="user-header-cover-pillar" />
       <!-- 图片主体 -->
-      <div class="user-header-cover-main">
-        <div class="user-header-cover-main-setting">
+      <div :style="{ backgroundImage: banner }" class="user-header-cover-main">
+        <!-- 更换封面图片 -->
+        <!-- <div class="user-header-cover-main-setting">
           <el-tooltip
             class="item"
             effect="dark"
@@ -17,8 +18,8 @@
               <span class="mdi mdi-image-area" />
             </div>
           </el-tooltip>
-        </div>
-        <img src="@/assets/img/default/myProfileCover.jpg" alt="cover">
+        </div> -->
+        <!-- <img :src="banner" alt="cover"> -->
       </div>
       <!-- <ImageUpload
         :aspect-ratio="4"
@@ -57,8 +58,11 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import GeoPattern from 'geopattern'
+
 import Avatar from '@/components/User/Avatar'
 // import ImageUpload from '@/components/imgUpload/imgUpload'
+import defaultBanner from '@/assets/img/default/myProfileCover.jpg'
 
 export default {
   components: {
@@ -88,12 +92,15 @@ export default {
         },
         items: []
       },
-      imgUploadDone: 0
+      imgUploadDone: 0,
+      banner: defaultBanner,
+      primaryColor: ''
     }
   },
   computed: {
     ...mapState({
-      myInfo: state => state.user.myInfo
+      myInfo: state => state.user.myInfo,
+      themeName: state => state.app.themeName
     }),
     ...mapGetters(['isMe']),
     loading () {
@@ -104,9 +111,17 @@ export default {
     }
   },
   watch: {
+    themeName: {
+      handler () {
+        this.primaryColor = getComputedStyle(document.getElementById('app')).getPropertyValue('--primary')
+      },
+      immediate: true
+    }
   },
   async mounted () {
+    this.initBanner('Likey')
     this.address = await this.getAddress()
+    this.initBanner(this.address)
     this.initBasicInfo(this.address)
     this.initAvatar(this.address)
     this.initCreatorInfo(this.address)
@@ -140,6 +155,10 @@ export default {
         console.warn('uncaught error: ' + err)
         this.$message.error(this.$t('failure.unknownErrorCausedLoadingFailure'))
       }
+    },
+    initBanner (address) {
+      const banner = GeoPattern.generate(address).toDataUrl()
+      this.banner = banner
     },
     /** 初始化获取头像 */
     async initAvatar (address) {
@@ -177,7 +196,6 @@ export default {
       this.$emit('basic-info', this.basicInfo)
     },
     async updateBanner (data) {
-      console.log(data)
     }
   }
 }
@@ -202,6 +220,7 @@ export default {
       overflow: hidden;
       display: flex;
       justify-content: center;
+      background-size: 35%;
 
       &-setting {
         margin-top: 15px;

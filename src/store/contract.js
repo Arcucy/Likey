@@ -13,6 +13,8 @@ export default {
     admins: [],
     /** 创作者列表。是个对象，键是用户的钱包地址 */
     creators: {},
+    /** 用户持币列表 */
+    users: {},
     /** 合约持有者 */
     owner: '',
     /** 事例 */
@@ -36,6 +38,7 @@ export default {
     mSetLikeyContractStatus (state, {
       admins = state.admins,
       creators = state.creators,
+      users = state.users,
       owner = state.owner,
       schema: {
         categories = state.schema.categories,
@@ -45,6 +48,7 @@ export default {
     }) {
       state.admins = admins
       state.creators = creators
+      state.users = users
       state.owner = owner
       state.schema = {
         categories,
@@ -74,17 +78,6 @@ export default {
         ...state.creatorPst[contractId],
         loading
       })
-    },
-    /** TODO:测试方法，请勿在生产模式使用 */
-    mTestCreatorsAdd (state) {
-      console.log('Add!')
-      const index = Object.keys(state.creators).length
-      const values = Object.values(state.creators)[Math.floor(Math.random() * Object.keys(state.creators).length - 1)]
-      const key = 'text' + index
-      state.creators = {
-        ...state.creators,
-        [key]: values
-      }
     }
   },
   actions: {
@@ -133,9 +126,15 @@ export default {
     async getAddressByShortname ({ state, dispatch }, shortname) {
       await checkCache(state, dispatch)
       for (const [key, value] of Object.entries(state.creators)) {
-        if (value.shortname === shortname) return key
+        if (value.shortname.toLowerCase() === shortname.toLowerCase()) return key
       }
       return ''
+    },
+
+    /** 获取用户持有的 PST 列表 */
+    async getUserPstList ({ state, dispatch }, address) {
+      await checkCache(state, dispatch)
+      return state.users[address] || []
     },
 
     // **************

@@ -136,27 +136,39 @@ export default {
 
       // 换算为具体支付的金额
       this.receiptLoading = true
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
       let value
+      let contract
       switch (this.data.type) {
         // 0 为解锁
         case '0':
-          value = this.convertPstToWinston(this.data.data.unlock.value, this.data.data.contract.ratio)
+          contract = await this.getPstContract(this.data.data.contract)
+          if (!contract.ratio) {
+            this.openFailureNotify('sponsor', 6000)
+          }
+          value = this.convertPstToWinston(this.data.data.unlock.value, contract.ratio)
           value = new BigNumber(value).toFixed(0)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.status.lockContract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = this.data.data.unlock
+          this.paymentData.data.balance = balance
           break
         // 1 为打赏
         case '1':
+          contract = await this.getPstContract(this.data.data.contract)
+          if (!contract.ratio) {
+            this.openFailureNotify('sponsor', 6000)
+          }
           value = this.$api.ArweaveNative.ar.arToWinston(this.data.data.donation.value)
-          this.paymentData.data = { ...await this.$api.contract.distributeTokens(this.data.data.contract, value, undefined, false) }
+          this.paymentData.data = { ...await this.$api.contract.distributeTokens(contract, value, undefined, false, this.myAddress) }
           this.paymentData.data.contract = this.data.data.contract
           this.paymentData.data.owner = this.data.data.status.creator
           this.paymentData.data.item = {
             statusId: this.data.data.status.id,
             value: value
           }
+          this.paymentData.data.balance = balance
           break
       }
       this.receiptLoading = false
@@ -199,19 +211,30 @@ export default {
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
         if (event === 'onDonationAdded') this.openSuccessNotify('donation', id, 30000)
+        if (event === 'onUpdatedTicker') this.openSuccessNotify('update', '', 30000)
 
-        if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
-        if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
-        if (event === 'onSponsorAddedCatchError') this.openFailureNotify('sponsor', id, 10000)
-        if (event === 'onDonationAddedCatchError') this.openFailureNotify('donation', id, 10000)
+        if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 30000)
+        if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 30000)
+        if (event === 'onSponsorAddedCatchError') this.openFailureNotify('sponsor', '', 30000)
+        if (event === 'onDonationAddedCatchError') this.openFailureNotify('donation', '', 30000)
+        if (event === 'onUpdatedTickerError') this.openFailureNotify('update', id, 30000)
       }
       this.openTransactionInProgressNotify()
       switch (this.paymentData.type) {
         case '0':
-          await this.$api.contract.sponsorAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.total, this.paymentData.data.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.paymentData.data.contract,
+            this.paymentData.data.total.toString(),
+            this.paymentData.data.item, callback
+          )
           break
         case '1':
-          await this.$api.contract.donationAdded(jwk, this.data.data.status.lockContract, this.paymentData.data.item.statusId, this.paymentData.data.total, this.paymentData.data.item.value, callback)
+          await this.$api.contract.donationAdded(jwk,
+            this.paymentData.data.contract,
+            this.paymentData.data.item.statusId,
+            this.paymentData.data.total.toString(),
+            this.paymentData.data.item.value, callback
+          )
           break
       }
       this.setLoading(false)
@@ -239,32 +262,36 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 0
+        duration: 30000
       })
     },
     /** 打开成功通知 */
     openSuccessNotify (type, id, duration) {
       let title = ''
 
+      let message = this.$t('payment.txPosted')
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
+
       switch (type) {
         case 'distribution':
-          title = this.$t('success.profitSharingTxSuccess')
+          title = this.$t('success.profitSharingTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'developer':
-          title = this.$t('success.developerTipTxSuccess')
+          title = this.$t('success.developerTipTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'sponsor':
-          title = this.$t('success.sponsorTxSuccess')
+          title = this.$t('success.sponsorTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'donation':
           title = this.$t('success.donateTxSuccess')
           break
+        case 'update':
+          title = this.$t('success.tickerHoldingUpdateSuccess')
+          message = ''
+          break
         default:
           title = this.$t('success.txSuccess')
       }
-
-      let message = this.$t('payment.txPosted')
-      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
 
       this.$notify({
         title: title,
@@ -275,8 +302,9 @@ export default {
       })
     },
     /** 打开失败通知 */
-    openFailureNotify (type, duration) {
+    openFailureNotify (type, id, duration) {
       let title = ''
+      let message = this.$t('failure.txFailMessage')
 
       switch (type) {
         case 'distribution':
@@ -288,6 +316,10 @@ export default {
         case 'sponsor':
           title = this.$t('failure.sponsorTxFailed')
           break
+        case 'update':
+          title = this.$t('failure.tickerHoldingUpdateFailed')
+          message = id
+          break
         default:
           title = this.$t('failure.txFailed')
       }
@@ -295,7 +327,7 @@ export default {
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
-        message: this.$t('failure.txFailMessage'),
+        message: `<span class="transaction-message-text ${this.themeName}-theme">${message}</span>`,
         type: 'error',
         duration: Number(duration)
       })

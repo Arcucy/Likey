@@ -44,7 +44,12 @@
         </h4>
         <div class="setting-creator-item-input">
           https://likey.arcucy.io/@
-          <el-input v-model="profileAddress" :placeholder="$t('setting.profileAddressPlaceholder')" :disabled="!newAuthor" />
+          <el-input
+            class="address-input"
+            v-model="profileAddress"
+            :placeholder="$t('setting.profileAddressPlaceholder')"
+            :disabled="!newAuthor"
+          />
         </div>
         <p class="setting-creator-item-desp">
           {{ $t('setting.canNotBeModified') }}
@@ -247,7 +252,7 @@ export default {
       }
 
       // 主页地址格式错误
-      const profileAddressRegular = /^[a-zA-Z][a-zA-Z0-9]{4,41}$/
+      const profileAddressRegular = new RegExp('^[a-zA-Z][a-zA-Z0-9]{4,41}$')
       if (!profileAddressRegular.test(this.profileAddress)) {
         this.$message.warning(this.$t('setting.profileAddressFormatError'))
         return 4
@@ -322,8 +327,11 @@ export default {
         font-size: 15px;
         display: flex;
         align-items: center;
-        column-gap: 5px;
         color: @dark;
+
+        .address-input {
+          margin-left: 5px;
+        }
 
         /deep/ .el-select {
           display: block;

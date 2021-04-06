@@ -53,7 +53,6 @@ export default {
   /**
    * Get transaction detail entirely based on given txid
    * 根据给定的 txid (交易ID) 获取完整的交易明细
-   * !!获取到的data字段已在这一步完成解码，无需再次解码!!
    * @param {String} txid     - 交易编号
    */
   async getTransactionDetail (txid) {
@@ -83,6 +82,20 @@ export default {
       ret[key] = value
     }
     return ret
+  },
+
+  /**
+   * 将 Arweave 交易中 owner 字段的值转换为 Arweave 钱包地址
+   * @param {String} owner - Arweave 交易中 owner 字段的值
+   * @returns         - Arweave 钱包地址
+   */
+  async getAddressByOwner (owner) {
+    const pubJwk = {
+      kty: 'RSA',
+      e: 'AQAB',
+      n: owner
+    }
+    return await arweave.wallets.getAddress(pubJwk)
   },
 
   /**
@@ -205,11 +218,12 @@ export default {
    */
   async getAllPurchasesStats (address, mode, first = 100) {
     const query = gql`
-      query getAllPurchasesStats($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
+      query getAllPurchasesStats($address: String!, $first: Int, $after: String, $purchaseType: [String!]!, $appName: String!) {
         transactions (
           after: $after,
           first: $first,
           tags: [
+            { name: "App-Base-Name", values: [$appName] }
             { name: "Purchase-Type", values: $purchaseType },
             { name: "Contract", values: [$address] }
           ],
@@ -249,7 +263,7 @@ export default {
     let hasNextPage = true
     let after = ''
     while (hasNextPage) {
-      const res = await graph.request(query, { address, purchaseType, first, after })
+      const res = await graph.request(query, { address, purchaseType, first, after, appName: process.env.VUE_APP_APP_NAME })
       hasNextPage = res.transactions.pageInfo.hasNextPage
       if (!hasNextPage && res.transactions.edges.length === 0) return 0
       res.transactions.edges.forEach(() => count++)
@@ -267,12 +281,13 @@ export default {
    */
   async getAllPurchases (address, mode, first = 10, after = '') {
     const query = gql`
-      query getAllPurchases($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
+      query getAllPurchases($address: String!, $first: Int, $after: String, $purchaseType: [String!]!, $appName: String!) {
         transactions (
           owners: [$address],
           after: $after,
           first: $first,
           tags: [
+            { name: "App-Base-Name", values: [$appName] }
             { name: "Purchase-Type", values: $purchaseType }
           ],
           block: { min: 1 }
@@ -308,7 +323,7 @@ export default {
         break
     }
     // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address, first, after, purchaseType })
+    const res = await graph.request(query, { address, first, after, purchaseType, appName: process.env.VUE_APP_APP_NAME })
     return res
   },
   /**
@@ -321,12 +336,13 @@ export default {
    */
   async getAllSponsorAndDonation (address, mode, first = 10, after = '') {
     const query = gql`
-      query getAllSponsorAndDonation($address: String!, $first: Int, $after: String, $purchaseType: [String!]!) {
+      query getAllSponsorAndDonation($address: String!, $first: Int, $after: String, $purchaseType: [String!]!, $appName: String!) {
         transactions (
           recipients: [$address],
           after: $after,
           first: $first,
           tags: [
+            { name: "App-Base-Name", values: [$appName] }
             { name: "Purchase-Type", values: $purchaseType }
           ],
           block: { min: 1 }
@@ -359,7 +375,7 @@ export default {
         break
     }
     // 使用 GraphQL 获取 Ar 链上的交易
-    const res = await graph.request(query, { address, first, after, purchaseType })
+    const res = await graph.request(query, { address, first, after, purchaseType, appName: process.env.VUE_APP_APP_NAME })
     return res
   },
   /**
@@ -387,6 +403,7 @@ export default {
             { name: "Schema-Version"  values: $schemaVersion },
             { name: "Type"            values: ["status"] }
           ]
+          block: { min: ${filterNoBlock ? 1 : 0} }
         ) {
           pageInfo { hasNextPage }
           edges {
@@ -410,13 +427,6 @@ export default {
       after: after || '',
       first: first || 10
     })
-
-    if (filterNoBlock) {
-      const edges = res.transactions.edges.filter(item => {
-        return item.node.block && item.node.block.timestamp
-      })
-      res.transactions.edges = edges
-    }
 
     return res
   },
@@ -442,6 +452,7 @@ export default {
             { name: "Schema-Version"  values: $schemaVersion },
             { name: "Type"            values: ["status"] }
           ]
+          block: { min: ${filterNoBlock ? 1 : 0} }
         ) {
           pageInfo { hasNextPage }
           edges {
@@ -462,13 +473,6 @@ export default {
       after: after || '',
       first: first || 10
     })
-
-    if (filterNoBlock) {
-      const edges = res.transactions.edges.filter(item => {
-        return item.node.block && item.node.block.timestamp
-      })
-      res.transactions.edges = edges
-    }
 
     return res
   },
@@ -555,7 +559,6 @@ export default {
         cancelToken,
         onDownloadProgress
       }).then(res => {
-        console.log('res:', res)
         const type = res.headers['content-type']
         const uint8View = new Uint8Array(res.data)
         const data = isEncrypt ? decryptBuffer(uint8View) : uint8View
@@ -566,5 +569,82 @@ export default {
         reject(err)
       })
     })
+  },
+  /**
+   * 通过交易ID获取动态列表
+   * @param txid            - 交易ID，可传入字符串数组
+   * @param first           - 分页限制
+   * @param after           - 指定cursor，可获取cursor之后的数据
+   * @param filterNoBlock   - 过滤没有block的交易
+   * @return {Promise<any>} - 动态列表
+   */
+  async getStatusByTxid (txid, first = 10, after, filterNoBlock = false) {
+    const query = gql`
+    query getStatus(
+      $appName: String!,
+      $schemaVersion: [String!]!,
+      $ids: [ID!],
+      $first: Int,
+      $after: String,
+    ) {
+      transactions(
+        first: $first
+        after: $after
+        ids: $ids
+        tags: [
+          { name: "App-Name"        values: [$appName] },
+          { name: "Schema-Version"  values: $schemaVersion },
+          { name: "Type"            values: ["status"] }
+        ]
+      ) {
+        pageInfo { hasNextPage }
+        edges {
+          cursor
+          node {
+            id
+            owner { address }
+            tags { name value }
+            block { timestamp }
+         }
+        }
+      }
+    }
+  `
+    const txidList = typeof txid === 'string' ? [txid] : [...txid]
+    const res = await graph.request(query, {
+      appName: process.env.VUE_APP_APP_NAME,
+      schemaVersion: process.env.VUE_APP_SCHEMA_VERSION_SUPPORTED,
+      ids: txidList,
+      first: first,
+      after: after
+    })
+    if (filterNoBlock) {
+      const edges = res.transactions.edges.filter(item => {
+        return item.node.block && item.node.block.timestamp
+      })
+      res.transactions.edges = edges
+    }
+    return res
+  },
+  /**
+   * 获取指定用户赞赏的动态
+   * @param address       - 用户地址
+   * @param first         - 分页限制
+   * @param after         - 传入cursor，可获取指定cursor之后的内容
+   * @param filterNoBlock - 是否过滤掉没有block的内容
+   * @return {Promise<*>} - 动态列表
+   */
+  async getSponsoredStatus (address, first = 10, after, filterNoBlock = false) {
+    const sponsoredStatusTxidList = []
+    try {
+      const purchases = await this.getAllPurchases(address, 'donations')
+      purchases.transactions.edges.forEach((edge) => {
+        const donateStatus = edge.node.tags.find((it) => it.name === 'Donate-Status')
+        if (donateStatus) sponsoredStatusTxidList.push(donateStatus.value)
+      })
+    } catch (e) {
+      console.error(e)
+    }
+    return await this.getStatusByTxid(sponsoredStatusTxidList, first, after, filterNoBlock)
   }
 }

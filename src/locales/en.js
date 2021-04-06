@@ -9,7 +9,8 @@ export default {
     sponsorTxSuccess: 'Sponsor Successful',
     donateTxSuccess: 'Donation Successful',
     txSuccess: 'Transaction Successful',
-    statusPublished: 'Status published successfully'
+    statusPublished: 'Status published successful',
+    tickerHoldingUpdateSuccess: 'Holding tickers update successful'
   },
   failure: {
     login: 'Login failed',
@@ -33,6 +34,7 @@ export default {
     donateTxFailed: 'Donation Failed',
     txFailed: 'Transaction Failed',
     txFailMessage: 'There may be a network problem or the Arweave gateway unstable issue, please try again later',
+    contractWriteFailed: 'Write contract failed',
     dynamicUploadFailed: 'Status upload failed',
     dynamicEncryptFailed: 'Status encryption failed',
     dynamicEncryptFailedMessage: 'Status encryption failed, please contact developers if this is happening often',
@@ -40,7 +42,8 @@ export default {
     youCanOnlyPayForYourSelf: 'You can only pay with the wallet having same address as your current logged in address',
     getStatusDetails: 'Unable to get status details',
     load: 'Failed to load',
-    download: 'Failed to download'
+    download: 'Failed to download',
+    tickerHoldingUpdateFailed: 'Failed to update holding tickers'
   },
   app: {
     loading: 'Loading'
@@ -116,6 +119,7 @@ export default {
     exchangeRatio: 'Exchange Ratio',
     exchangeRatioDescription: 'Initial exchange ratio is used to convert the AR sponsored by the user to token',
     exchangeRatioExceedsTheLimitation: 'Exchang ratio decimals should not beyond the token',
+    exchangeRatioIsNotAValidNumber: 'Exchange ratio is not a valid number',
     pleaseFillInTheExchangeRatio: 'Please fill in the exchange ratio',
     unlockPlan: 'Unlock Solution',
     ownBalance: 'Own',
@@ -181,6 +185,9 @@ export default {
     donationAndSponsorCount: 'Purchased',
     custom: 'Custom',
     customInputDescription: 'You can specify you purchase amount here',
+    locked: 'Locked',
+    unlocked: 'Unlocked',
+    unlockValueNeed: '{0} {1} is required',
     myBalance: 'Already Own'
   },
   donation: {
@@ -200,7 +207,11 @@ export default {
     total: 'Total',
     txPosted: 'The transaction has been submitted to the Arweave blockchain. Click to view the transaction: {0}',
     transactionInProgres: 'Transaction in progress',
-    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time'
+    transactionInProgress: 'Your transaction is in progress, <strong>please do not close this page</strong>. And feel free to browse this page during this time',
+    currentBalance: 'Current balance',
+    afterBalance: 'New balance',
+    dataLoadingPleaseTryLater: 'Loading data, please try again later',
+    nextTransactionInProgress: 'next transaction is in progress'
   },
   progressText: {
     status: 'Uploading status',
@@ -237,12 +248,14 @@ export default {
     downloading: 'Downloading',
     downloaded: 'Downloaded',
     ifYourDownloadDidnotStarted: 'If your download didn\'t started,',
-    clickHere: 'click here'
+    clickHere: 'click here',
+    shortnameLoading: 'Shortname loading...',
+    nmaeLoading: 'Nmae loading...'
   },
   home: {
     // 部分翻译存疑
     tabFlow: 'Flow',
-    tabAppreciated: 'Appreciated',
+    tabAppreciated: 'Sponsored',
     flowLoading: 'Flow loading...',
     creatorsLoading: 'Creators loading...',
     showMoreCreators: 'Show more',

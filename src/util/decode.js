@@ -42,7 +42,7 @@ const Decode = {
   /** 转换 PST 为 Winston */
   convertPstToWinston (value, ratio) {
     const { from, to } = Decode.getRatio(ratio)
-    value = new BigNumber(String(value)).multipliedBy(to).div(from).multipliedBy(1000000000000)
+    value = new BigNumber(String(value)).div(from).multipliedBy(to).multipliedBy(1000000000000)
     value = value.toFixed(12)
 
     if (value === 'Infinity' || value === 'NaN') {
@@ -53,16 +53,17 @@ const Decode = {
 
   /** 拆分换算比率 */
   getRatio (ratio) {
-    if (!/^1:\d*\.?\d*$/.test(ratio)) {
+    const regexp = new RegExp('^1:\\d*\\.?\\d*$')
+    if (!regexp.test(ratio)) {
       return { from: '1', to: '0' }
     }
     let from = 1
-    let to = parseFloat(parseFloat(ratio.split(':').pop()).toFixed(12))
+    let to = new BigNumber(ratio.split(':').pop()).toFixed(12)
     let iteration = 0
 
     while (true) {
       if (!Number.isInteger(to)) {
-        to = to * 10
+        to = new BigNumber(to).multipliedBy(10).toNumber()
         iteration++
         continue
       }
@@ -73,7 +74,7 @@ const Decode = {
       from = new BigNumber(from).multipliedBy(10)
     }
     to = BigNumber(to)
-    return { from: new BigNumber(String(from)), to }
+    return { from, to }
   }
 }
 

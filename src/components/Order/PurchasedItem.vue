@@ -5,7 +5,7 @@
         <div class="purchased-item-left-type-info">
           <span class="purchased-item-left-type-info-title">{{ purchaseType }}</span>
           <div class="purchased-item-left-type-info-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.id}`">{{ purchase.node.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.id)" />
+            <a class="address" target="_blank" :href="`https://viewblock.io/arweave/tx/${purchase.node.id}`">{{ purchase.node.id }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.id)" />
           </div>
         </div>
         <span class="purchased-item-left-type-info-spend">{{ indicator }}{{ purchase.node.quantity.winston | winstonToAr }} AR</span>
@@ -19,12 +19,16 @@
       </div>
       <div class="purchased-item-left-recipient">
         <div class="purchased-item-left-recipient-user">
-          <div class="purchased-item-left-recipient-user-info">
+          <div v-if="username" class="purchased-item-left-recipient-user-info">
             <span class="mdi mdi-account-arrow-right" />
             <span class="username">{{ username }}</span>
           </div>
+          <div v-else class="purchased-item-left-recipient-user-info">
+            <i class="el-icon-loading" />
+            <span class="username">{{ $t('flowCard.nmaeLoading') }}</span>
+          </div>
           <div class="purchased-item-left-recipient-user-tx">
-            <a class="address" :href="`https://viewblock.io/arweave/tx/${purchase.node.target}`">{{ purchase.node.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.target)" />
+            <a class="address" target="_blank" :href="`https://viewblock.io/arweave/tx/${purchase.node.target}`">{{ purchase.node.target }}</a><span class="mdi mdi-content-copy copy-icon" @click="() => copyAddress(purchase.node.target)" />
           </div>
         </div>
         <span class="purchased-item-right-time">{{ createTime }}</span>
@@ -76,24 +80,29 @@ export default {
       return time.format('YYYY MMMDo')
     },
     indicator () {
-      if (this.purchase.txType === 'Out') return '-'
+      if (this.purchase.node.txType === 'Out') return '-'
       else return '+'
     }
   },
   async mounted () {
-    this.loading = true
     await this.initHistoryData()
-    this.loading = false
   },
   methods: {
-    ...mapActions(['getPstContract', 'getCreatorInfo']),
+    ...mapActions(['getPstBasicInfo']),
     /** 初始化卡片 */
     async initHistoryData () {
-      await this.getCreatorInfo()
-      this.tickerContract = { ...await this.getPstContract(this.purchase.node.parsedTag.contract) }
-      if (!this.purchase.username) {
-        const res = await this.$api.gql.getIdByAddress(this.purchase.node.target)
-        this.username = res.data
+      this.loading = true
+      try {
+        this.tickerContract = { ...await this.getPstBasicInfo(this.purchase.node.parsedTag.contract) }
+        this.loading = false
+        if (!this.purchase.username) {
+          const res = await this.$api.gql.getIdByAddress(this.purchase.node.target)
+          this.username = (res && res.data) ? res.data : 'Unknown'
+        }
+      } catch (err) {
+        console.error(err)
+        this.loading = false
+        this.username = 'Unknown'
       }
     },
     /** 复制合约地址 */
@@ -117,6 +126,7 @@ export default {
 
 <style lang="less" scoped>
 .purchased-item {
+  color: @dark;
   display: flex;
   width: 100%;
   margin: 20px 0px;
@@ -132,15 +142,14 @@ export default {
     flex-direction: column;
     flex: 1;
     align-items: stretch;
-    row-gap: 5px;
     height: 100%;
 
     &-type {
       display: flex;
       align-items: center;
-      column-gap: 5px;
+      margin-bottom: 5px;
 
-       &-info {
+      &-info {
         display: flex;
         align-items: center;
         flex:1;
@@ -153,6 +162,7 @@ export default {
 
         &-tx {
           display: flex;
+          margin: 0 10px;
         }
 
         .address {
@@ -164,7 +174,6 @@ export default {
           -webkit-line-clamp: 1;
           overflow: hidden;
           word-break: break-all;
-          margin-left: 10px;
 
           &:hover {
             color: @primary;
@@ -181,12 +190,14 @@ export default {
           font-weight: 600;
           white-space: nowrap;
         }
-       }
+      }
     }
 
     &-info {
       flex: 1;
       display: flex;
+      margin-bottom: 5px;
+
       &-item {
         flex: 1;
         font-weight: 400;
@@ -203,12 +214,12 @@ export default {
     &-recipient {
       display: flex;
       align-items: center;
-      column-gap: 5px;
 
       &-user {
         display: flex;
         align-items: center;
         flex: 1;
+        margin-right: 5px;
 
         &-info {
           display: flex;
@@ -279,6 +290,23 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     &-left {
+      &-type {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        &-info {
+          &-spend {
+            font-size: 20px;
+            font-weight: 600;
+            white-space: unset;
+            word-break: break-all;
+          }
+          &-tx {
+            margin: 0 0 0 10px;
+          }
+        }
+      }
       &-recipient {
         flex-direction: column;
         align-items: flex-start;
@@ -286,6 +314,7 @@ export default {
         &-user {
           flex-direction: column;
           align-items: flex-start;
+          margin-right: 0;
 
           .address {
             margin-left: 0;

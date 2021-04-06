@@ -10,6 +10,9 @@
           {{ ticker || 'PST' }}/{{ $t('setting.unlock') }}
         </span>
       </div>
+      <p v-if="isShowDifference(requiredItems[index].value) && !initLoading" class="solution-left">
+        {{ $t('sponsor.unlockValueNeed' , [requiredItems[index].value, ticker]) }}
+      </p>
       <p class="solution-title">
         {{ item.title }}
       </p>
@@ -17,18 +20,35 @@
         {{ item.description }}
       </p>
       <div class="solution-unlock">
-        <span class="solution-unlock-status">
+        <!-- 未解锁 -->
+        <span v-if="!isUnlocked(requiredItems[index].value)" class="solution-unlock-status">
           <span class="mdi mdi-lock" />
           <span class="mdi mdi-lock-open" />
-          Locked
+          {{ $t('sponsor.locked') }}
         </span>
+        <!-- 已解锁 -->
+        <span v-else class="solution-unlock-status">
+          <span class="mdi mdi-lock-open-variant" />
+          {{ $t('sponsor.unlocked') }}
+        </span>
+        <!-- 支付按钮 -->
         <el-button
+          v-if="!isUnlockedIgnoreCreator(requiredItems[index].value)"
           class="solution-unlock-btn"
           type="primary"
-          @click="buyUnlockSolution(item, index)"
+          @click="buyUnlockSolution(requiredItems[index])"
           :loading="loading"
         >
-          {{ convertPstToWinston(item.value) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(requiredItems[index].value, ratio) | winstonToAr | finalize(loading) }}
+        </el-button>
+        <!-- 已解锁按钮 -->
+        <el-button
+          v-else
+          class="solution-unlock-btn"
+          type="primary"
+          disabled
+        >
+          {{ $t('flowCard.unlocked') }}
         </el-button>
       </div>
     </div>
@@ -62,8 +82,9 @@
           type="primary"
           @click="buyCustomSolution(customPstInput)"
           :loading="loading"
+          :disabled="disableBtn"
         >
-          {{ convertPstToWinston(customPstInput) | winstonToAr | finalize(loading) }}
+          {{ convertPstToWinston(customPstInput, ratio) | winstonToAr | finalize(loading) }}
         </el-button>
       </div>
     </div>
@@ -86,6 +107,8 @@
 import BigNumber from 'bignumber.js'
 import { mapActions, mapGetters, mapState } from 'vuex'
 
+import decode from '@/util/decode'
+
 import PaymentKeyReader from '@/components/Common/PaymentKeyReader'
 import SolutionPurchaseReceipt from '@/components/Common/SolutionPurchaseReceipt'
 
@@ -104,7 +127,8 @@ export default {
     return {
       customPstInput: 1,
       ratio: '',
-      loading: false,
+      loading: true,
+      initLoading: true,
       receiptLoading: false,
       showReceipt: false,
       showKeyReader: false,
@@ -122,11 +146,14 @@ export default {
         holder: new BigNumber('0'),
         developer: new BigNumber('0'),
         owner: ''
-      }
+      },
+      pstContract: {},
+      // import convertPstToWinston
+      convertPstToWinston: decode.convertPstToWinston
     }
   },
   computed: {
-    ...mapGetters(['isLoggedIn']),
+    ...mapGetters(['isLoggedIn', 'isMe']),
     ...mapState({
       creators: state => state.contract.creators,
       creatorPst: state => state.contract.creatorPst,
@@ -148,60 +175,94 @@ export default {
       if (!this.creator) return []
       return this.creator.items
     },
+    requiredItems () {
+      if (!this.creator) return []
+      if (!this.contract.ticker) return this.creator.items
+      if (!this.myAddress) return this.creator.items
+      const newItems = []
+      const oldItems = JSON.parse(JSON.stringify(this.creator.items))
+      oldItems.forEach(item => {
+        newItems.push({ ...item })
+      })
+
+      const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
+      const resItems = []
+      if (balance.toString() === 'NaN') return this.creator.items
+      for (let i = 0; i < newItems.length; i++) {
+        const currentValue = new BigNumber(newItems[i].value)
+        const resultValue = currentValue.minus(balance)
+        if (resultValue.isLessThanOrEqualTo(0)) {
+          const obj = newItems[i]
+          obj.value = '0'
+          resItems.push(obj)
+        } else {
+          const obj = newItems[i]
+          obj.value = resultValue.toString()
+          resItems.push(obj)
+        }
+      }
+      return resItems
+    },
     contract () {
       if (!this.creator) return {}
-      return this.creatorPst[this.creator.ticker.contract]
+      return this.creatorPst[this.creator.ticker.contract] || {}
+    },
+    disableBtn () {
+      return this.customPstInput === '0' || this.customPstInput === 0 || !this.customPstInput
     }
   },
-  async mounted () {
-    await this.initContractInfo()
+  watch: {
+    creator: {
+      handler (val) {
+        if (val) {
+          this.initContractInfo()
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     ...mapActions(['getPstContract']),
     /** 初始化合约状态 */
     async initContractInfo () {
       this.loading = true
+      this.initLoading = true
       await this.getPstContract(this.creator.ticker.contract)
-      this.ratio = this.contract.ratio
+      if (!this.contract.ratio) this.ratio = '1:1'
+      else this.ratio = this.contract.ratio
       this.loading = false
+      this.initLoading = false
     },
-    /** 转换 PST 为 Winston */
-    convertPstToWinston (value) {
-      const { from, to } = this.getRatio(this.ratio)
-      value = new BigNumber(String(value)).multipliedBy(to).div(from).multipliedBy(1000000000000)
-      value = value.toFixed(12)
-
-      if (value === 'Infinity' || value === 'NaN') {
-        return '0'
-      }
-      return value
+    /** 传入解锁所需的金额，判断是否已经解锁 */
+    isUnlocked (value) {
+      if (this.address === this.myAddress) return true
+      return value === '0'
     },
-    /** 拆分换算比率 */
-    getRatio (ratio) {
-      if (!/^1:\d*\.?\d*$/.test(ratio)) {
-        return { from: '1', to: '0' }
-      }
-      let from = 1
-      let to = parseFloat(parseFloat(ratio.split(':').pop()).toFixed(12))
-      let iteration = 0
-
-      while (true) {
-        if (!Number.isInteger(to)) {
-          to = to * 10
-          iteration++
-          continue
-        }
-        break
-      }
-
-      for (let i = 0; i < iteration; i++) {
-        from = new BigNumber(from).multipliedBy(10)
-      }
-      to = BigNumber(to)
-      return { from: new BigNumber(String(from)), to }
+    /** 判断是否已经解锁，忽略是创作者的情况 */
+    isUnlockedIgnoreCreator (value) {
+      return value === '0'
     },
-    /** 购买解锁方案 */
-    async buyUnlockSolution (item, index) {
+    isShowDifference (value) {
+      if (!this.contract.ticker) return false
+      const balance = new BigNumber(this.contract.balances[this.myAddress]).div(this.contract.divisibility)
+      if (balance.toString() === 'NaN' || balance.toString() === '0') return false
+      return !this.isUnlocked(value)
+    },
+    /** 开始进行交易 */
+    buyUnlockSolution (item) {
+      if (this.address === this.myAddress) {
+        this.$message.warning(this.$t('failure.shouldnotSponsorYourSelf'))
+        return
+      }
+      if (this.isUnlocked(item.value)) {
+        this.$message.warning(this.$t('sponsor.unlocked'))
+        return
+      }
+      // 如果未解锁，则开始执行交易
+      this.proceedToBuyUnlockSolution(item)
+    },
+    /** 开始购买解锁方案 */
+    async proceedToBuyUnlockSolution (item) {
       if (!this.isLoggedIn) {
         this.$message.warning(this.$t('login.pleaseLogInFirst'))
         return
@@ -218,10 +279,16 @@ export default {
       this.paymentType = 0
 
       // 换算为具体支付的金额
-      let value = this.convertPstToWinston(item.value)
+      let value = this.convertPstToWinston(item.value, this.ratio)
       value = new BigNumber(value).toFixed(0)
 
-      this.paymentData = await this.$api.contract.distributeTokens(this.contract, value, undefined, false)
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
+      this.paymentData = await this.$api.contract.distributeTokens(this.contract,
+        value,
+        undefined,
+        false,
+        this.myAddress
+      )
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
       this.paymentData.item = {
@@ -229,6 +296,7 @@ export default {
         value: item.value,
         number: '1'
       }
+      this.paymentData.balance = balance
       this.receiptLoading = false
       this.loading = false
     },
@@ -245,15 +313,20 @@ export default {
 
       this.showReceipt = false
       this.showReceipt = true
-      this.loading = true
       this.receiptLoading = true
       this.paymentType = 1
 
       // 换算为具体支付的金额
-      value = this.convertPstToWinston(String(value))
+      value = this.convertPstToWinston(String(value), this.ratio)
       const paymentValue = new BigNumber(value).toFixed(0)
 
-      this.paymentData = await this.$api.contract.distributeTokens(this.contract, paymentValue, undefined, false)
+      const balance = await this.$api.ArweaveNative.wallets.getBalance(this.myAddress)
+      this.paymentData = await this.$api.contract.distributeTokens(this.contract,
+        paymentValue,
+        undefined,
+        false,
+        this.myAddress
+      )
       this.paymentData.contract = this.creator.ticker.contract
       this.paymentData.owner = this.address
       this.paymentData.item = {
@@ -261,8 +334,8 @@ export default {
         value: '1',
         number: '1'
       }
+      this.paymentData.balance = balance
       this.receiptLoading = false
-      this.loading = false
     },
     /** 在确认费用后打开钱包 */
     openKeyReader () {
@@ -286,25 +359,36 @@ export default {
         return
       }
 
+      this.loading = true
       this.showKeyReader = false
       const callback = (event, id) => {
         if (event === 'onDistributionPosted') this.openSuccessNotify('distribution', id, 30000)
         if (event === 'onDeveloperPosted') this.openSuccessNotify('developer', id, 30000)
         if (event === 'onSponsorAdded') this.openSuccessNotify('sponsor', id, 30000)
+        if (event === 'onUpdatedTicker') this.openSuccessNotify('update', '', 30000)
 
-        if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 10000)
-        if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 10000)
-        if (event === 'onSponsorAddedCatchError') this.openSuccessNotify('sponsor', id, 10000)
+        if (event === 'onDistributionError') this.openFailureNotify('distribution', '', 30000)
+        if (event === 'onDeveloperCatchError') this.openFailureNotify('developer', '', 30000)
+        if (event === 'onSponsorAddedCatchError') this.openSuccessNotify('sponsor', id, 30000)
+        if (event === 'onUpdatedTickerError') this.openFailureNotify('update', id, 30000)
       }
       this.openTransactionInProgressNotify()
       switch (this.paymentType) {
         case 0:
           // 执行合约
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.creator.ticker.contract,
+            this.paymentData.total.toString(),
+            this.paymentData.item, callback
+          )
           this.loading = false
           break
         case 1:
-          await this.$api.contract.sponsorAdded(jwk, this.creator.ticker.contract, this.paymentData.total, this.paymentData.item, callback)
+          await this.$api.contract.sponsorAdded(jwk,
+            this.creator.ticker.contract,
+            this.paymentData.total.toString(),
+            this.paymentData.item, callback
+          )
           this.loading = false
           break
       }
@@ -327,28 +411,31 @@ export default {
         dangerouslyUseHTMLString: true,
         message: `<span class="transaction-message-text">${message}</span>`,
         type: 'info',
-        duration: 0
+        duration: 30000
       })
     },
     openSuccessNotify (type, id, duration) {
       let title = ''
+      let message = this.$t('payment.txPosted')
+      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
 
       switch (type) {
         case 'distribution':
-          title = this.$t('success.profitSharingTxSuccess')
+          title = this.$t('success.profitSharingTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'developer':
-          title = this.$t('success.developerTipTxSuccess')
+          title = this.$t('success.developerTipTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
           break
         case 'sponsor':
-          title = this.$t('success.sponsorTxSuccess')
+          title = this.$t('success.sponsorTxSuccess') + ', ' + this.$t('payment.nextTransactionInProgress')
+          break
+        case 'update':
+          title = this.$t('success.tickerHoldingUpdateSuccess')
+          message = ''
           break
         default:
           title = this.$t('success.txSuccess')
       }
-
-      let message = this.$t('payment.txPosted')
-      message = message.replace('{0}', `<a target="_blank" href="https://viewblock.io/arweave/tx/${id}" class="transaction-message-id">${id}</a>`)
 
       this.$notify({
         title: title,
@@ -360,6 +447,8 @@ export default {
     },
     openFailureNotify (type, id, duration) {
       let title = ''
+      this.loading = false
+      let message = this.$t('failure.txFailMessage')
 
       switch (type) {
         case 'distribution':
@@ -371,6 +460,10 @@ export default {
         case 'sponsor':
           title = this.$t('failure.sponsorTxFailed')
           break
+        case 'update':
+          title = this.$t('failure.tickerHoldingUpdateFailed')
+          message = id
+          break
         default:
           title = this.$t('failure.txFailed')
       }
@@ -378,7 +471,7 @@ export default {
       this.$notify({
         title: title,
         dangerouslyUseHTMLString: true,
-        message: this.$t('failure.txFailMessage'),
+        message: `<span class="transaction-message-text ${this.themeName}-theme">${message}</span>`,
         type: 'error',
         duration: Number(duration)
       })
@@ -407,7 +500,6 @@ export default {
     font-weight: 500;
     color: @gray3;
     padding: 0;
-    margin: 0 0 5px;
     display: flex;
     align-items: flex-start;
     white-space:nowrap;
@@ -428,7 +520,7 @@ export default {
         border-radius: 6px;
         font-weight: 500;
         &:focus {
-          color: @primary
+          color: @primary;
         }
       }
     }
@@ -449,17 +541,43 @@ export default {
       flex: 1;
     }
   }
+
+  &-left {
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+    color: @primary;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
   &-title {
     font-size: 15px;
     padding: 0;
-    margin: 0 0 5px;
+    margin: 5px 0 5px;
     font-weight: 500;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   &-desp {
     font-size: 14px;
     padding: 0;
     margin: 0 0 5px;
+    word-break: break-all;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 17;
+    overflow: hidden;
   }
 
   &-unlock {
@@ -520,6 +638,7 @@ export default {
     margin: 0 5px;
     &-desp {
       flex: 1;
+      -webkit-line-clamp: 10;
     }
   }
 }

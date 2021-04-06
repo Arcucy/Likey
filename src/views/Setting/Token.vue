@@ -16,7 +16,7 @@
           {{ $t('setting.contractAddress') }}
         </h4>
         <div class="setting-creator-item-contract">
-          <span>{{ tickerContract || 'Invalid Contract' }}</span>
+          <span class="setting-creator-item-contract-address">{{ tickerContract || 'Invalid Contract' }}</span>
           <span class="mdi mdi-content-copy copy-icon" @click="() => copyContractAddress(tickerContract)" />
         </div>
       </div>
@@ -50,10 +50,10 @@
           {{ $t('setting.exchangeRatio') }}
         </h4>
         <div class="setting-creator-item-input">
-          <span>1 {{ ticker || 'PST' }} =</span>
+          <span class="setting-creator-item-input-pst-ratio">1 {{ ticker || 'PST' }} =</span>
           <div class="setting-creator-item-input-ratio">
             <el-input v-model="exchangeRatio" :placeholder="1" />
-            <span>AR</span>
+            <span class="setting-creator-item-input-ratio-ticker">AR</span>
           </div>
         </div>
         <p class="setting-creator-item-desp">
@@ -219,7 +219,8 @@ export default {
     tickerInput: {
       /** 输入过滤 */
       set (val) {
-        this.ticker = val.replace(/[^a-zA-Z]/g, '').toUpperCase()
+        const regexp = new RegExp('[^a-zA-Z]', 'g')
+        this.ticker = val.replace(regexp, '').toUpperCase()
       },
       get () {
         return this.ticker
@@ -229,7 +230,8 @@ export default {
       /** 输入过滤 */
       set (val) {
         // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
-        this.ratio = val.replace(/([^0-9.])|((?<=(\d+)?\.\d+)\.+(.+)?)|((?<=\.)\.+)/g, '')
+        const regexp = new RegExp('([^0-9.])', 'g')
+        this.ratio = val.replace(regexp, '')
       },
       get () {
         return this.ratio
@@ -270,7 +272,8 @@ export default {
           this.name = this.tokenFormBackup.name
           this.ticker = this.tokenFormBackup.ticker
           this.solutions = this.tokenFormBackup.items
-          this.ratio = this.tokenFormBackup.ratio
+          Bignumber.set({ EXPONENTIAL_AT: 16 })
+          this.ratio = new Bignumber(this.tokenFormBackup.ratio).toString()
         }
         this.authorInfoLoading = false
         return
@@ -282,6 +285,8 @@ export default {
         // 初始化兑换比率
         const halfRatio = String(parseFloat(String(this.creatorPst[res.ticker.contract].ratio).split(':')[1]))
         this.ratio = !halfRatio ? '' : halfRatio
+        Bignumber.set({ EXPONENTIAL_AT: 26 })
+        this.ratio = new Bignumber(this.ratio).toString()
       } catch (e) {
         this.ratio = '1'
       }
@@ -306,6 +311,11 @@ export default {
       // 新来的调用创建创作者方法，已经是创作者的调用编辑方法
       this.submitting = true
       if (this.newAuthor) {
+        if (!this.creatorFormBackup) {
+          this.$message.warning(this.$t('setting.pleaseReturnToThePreviousStepToFillInTheCreatorForm'))
+          this.submitting = false
+          return false
+        }
         await this.createCreatorContract()
         this.createCreator()
       } else {
@@ -320,19 +330,20 @@ export default {
 
       // 整理配对顺序
       info.items.sort((a, b) => a.id - b.id)
-      this.solutions.sort((a, b) => a.id - b.id)
+      let solutions = this.solutions.sort((a, b) => a.id - b.id)
 
       // 统一数据结构
-      this.solutions.forEach((e, i) => {
-        delete e.editing
-        e.id = i
-        e.value = String(e.value)
-        e.title = String(e.title)
-        e.description = String(e.description)
+      solutions = solutions.filter(item => !item.editing).map((e, i) => {
+        return {
+          id: i,
+          value: String(e.value),
+          title: String(e.title),
+          description: String(e.description)
+        }
       })
 
-      if (JSON.stringify(this.solutions) !== JSON.stringify(info.items)) {
-        await this.$api.contract.editCreatorItems(jwk, this.solutions)
+      if (JSON.stringify(solutions) !== JSON.stringify(info.items)) {
+        await this.$api.contract.editCreatorItems(jwk, solutions)
       }
       const pstState = await this.$api.contract.readLikeyCreatorPstContract(info.ticker.contract)
       if ('1:' + this.ratio !== pstState.ratio) {
@@ -373,7 +384,7 @@ export default {
           ticker: this.ticker,
           contract: this.tickerContract,
           ratio: '1:' + this.ratio
-        }, this.solutions.filter(item => !item.editor).map(item => {
+        }, this.solutions.filter(item => !item.editing).map(item => {
           return {
             title: item.title,
             value: String(item.value),
@@ -418,12 +429,22 @@ export default {
         this.$message.warning(this.$t('setting.solutionEditingHasNotCompletedYet'))
         return 5
       }
-      if (this.ratio.length > String(1000000000000).length) {
-        this.$message.warning(this.$t('setting.exchangeRatioExceedsTheLimitation'))
+      const ratioRegexp = new RegExp('^[0-9]+(\\.[0-9]{0,11})?$', 'g')
+      if (!ratioRegexp.test(this.ratio)) {
+        this.$message.warning(this.$t('setting.exchangeRatioIsNotAValidNumber'))
         return 6
       }
-      if (this.ratio === '') {
+      Bignumber.set({ EXPONENTIAL_AT: 16 })
+      const ratio = new Bignumber(this.ratio)
+      if (!this.ratio ||
+          ratio.toString() === 'NaN' ||
+          ratio.isLessThanOrEqualTo(new Bignumber(0))) {
         this.$message.warning(this.$t('setting.pleaseFillInTheExchangeRatio'))
+        return 8
+      }
+      const decimals = ratio.toString().split('.')[1]
+      if (decimals && decimals.length > String(100000000000).length) {
+        this.$message.warning(this.$t('setting.exchangeRatioExceedsTheLimitation'))
         return 7
       }
       return 0
@@ -545,9 +566,16 @@ export default {
 
       &-contract {
         display: flex;
-        column-gap: 10px;
         align-items: center;
         margin-top: 10px;
+
+        &-address {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          overflow: hidden;
+          word-break: break-all;
+        }
 
         .copy-icon {
           display: flex;
@@ -578,7 +606,6 @@ export default {
         font-size: 15px;
         display: flex;
         align-items: center;
-        column-gap: 5px;
         color: @dark;
 
         /deep/ .el-select {
@@ -590,12 +617,26 @@ export default {
           font-size: 20px;
         }
 
+        &-pst-ratio {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          overflow: hidden;
+          word-break: break-all;
+          white-space: normal;
+        }
+
         &-ratio {
           display: flex;
           flex-direction: row;
           align-items: center;
-          column-gap: 10px;
-          width: 150px;
+          width: 250px;
+          min-width: 250px;
+          margin-left: 5px;
+
+          &-ticker {
+            margin-left: 5px;
+          }
         }
       }
 
@@ -631,9 +672,12 @@ export default {
       display: flex;
       justify-content: center;
       margin: 0 0 20px;
-      column-gap: 20px;
       button {
         min-width: 130px;
+        margin-right: 20px;
+        &:last-child {
+          margin-right: 0;
+        }
       }
     }
   }
@@ -681,7 +725,6 @@ export default {
         &-control {
           display: flex;
           justify-content: flex-end;
-          column-gap: 5px;
           span {
             font-size: 24px;
             color: @gray3;
@@ -696,6 +739,10 @@ export default {
             overflow: hidden;
             border-radius: 6px;
             background: @background;
+            margin-right: 5px;
+            &:last-child {
+              margin-right: 0;
+            }
             &:hover {
               color: @primary;
               background: @gray1;
@@ -751,7 +798,6 @@ export default {
         &-control {
           display: flex;
           justify-content: flex-end;
-          column-gap: 5px;
           span {
             font-size: 24px;
             color: @gray3;
@@ -766,6 +812,11 @@ export default {
             overflow: hidden;
             border-radius: 6px;
             background: @background;
+            margin-right: 5px;
+            &:last-child {
+              margin-right: 0;
+            }
+
             &:hover {
               color: @primary;
               background: @gray1;

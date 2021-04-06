@@ -59,7 +59,7 @@ export default {
   },
   data () {
     return {
-      loading: false,
+      loading: true,
       ratio: '',
       sponsorAndDonationCount: '0',
       creatorInfo: {
@@ -114,15 +114,25 @@ export default {
     }
   },
   watch: {
+    creator: {
+      handler (val) {
+        if (val) {
+          this.initContractInfo()
+        }
+      },
+      immediate: true
+    }
   },
-  async mounted () {
-    this.loading = true
-    this.contract = await this.getPstContract(this.creators[this.address].ticker.contract)
-    this.sponsorAndDonationCount = await this.$api.gql.getAllPurchasesStats(this.creator.ticker.contract, 'all')
-    this.loading = false
+  mounted () {
   },
   methods: {
-    ...mapActions(['getPstContract'])
+    ...mapActions(['getPstContract']),
+    async initContractInfo () {
+      this.loading = true
+      this.contract = await this.getPstContract(this.creator.ticker.contract)
+      this.sponsorAndDonationCount = await this.$api.gql.getAllPurchasesStats(this.creator.ticker.contract, 'all')
+      this.loading = false
+    }
   }
 }
 </script>
@@ -146,11 +156,23 @@ export default {
       font-size: 20px;
       color: @dark;
       margin: 0 0 5px;
+      word-break: break-all;
+      word-wrap: break-word;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
     }
     p {
       font-size: 15px;
       color: @dark;
       margin: 0 0 0;
+      word-break: break-all;
+      word-wrap: break-word;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
     }
   }
 

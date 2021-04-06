@@ -29,13 +29,21 @@
           <span>{{ $t('payment.total') }}</span>
           <span>{{ totalValue | winstonToAr | finalize(loading) }}</span>
         </div>
+        <div class="solution-purchase-item">
+          <span>{{ $t('payment.currentBalance') }}</span>
+          <span> {{ receipt.balance | winstonToAr | finalize(loading) }}</span>
+        </div>
+        <div class="solution-purchase-item">
+          <span>{{ $t('payment.afterBalance') }}</span>
+          <span> {{ newBalance | winstonToAr | finalize(loading) }}</span>
+        </div>
       </div>
       <el-button
-        type="primary"
-        :disabled="loading"
+        :type="btnType"
+        :disabled="insufficientFunds || loading"
         @click="confirm"
       >
-        {{ $t('payment.checkout') }}
+        {{ disableBtnText }}
       </el-button>
     </div>
   </el-dialog>
@@ -60,7 +68,8 @@ export default {
           fee: '',
           total: '',
           owner: '',
-          selected: ''
+          selected: '',
+          balance: ''
         }
       }
     },
@@ -71,7 +80,8 @@ export default {
   },
   data () {
     return {
-      dialogVisible: this.value
+      dialogVisible: this.value,
+      balance: '0'
     }
   },
   computed: {
@@ -81,12 +91,10 @@ export default {
     },
     holdersValue () {
       if (!this.receipt.holders) return new BigNumber('0')
-      if (this.receipt.holders.toString() < 1) return '0'
       return this.receipt.holders.toString()
     },
     developerValue () {
       if (!this.receipt.developer) return new BigNumber('0')
-      if (this.receipt.developer.toString() < 1) return '0'
       return this.receipt.developer.toString()
     },
     feeValue () {
@@ -95,11 +103,28 @@ export default {
     },
     totalValue () {
       if (!this.receipt.total) return new BigNumber('0')
-      return this.receipt.total.plus(this.receipt.fee).toString()
+      const result = this.receipt.total.plus(this.receipt.fee).plus(this.receipt.holders).plus(this.receipt.developer)
+      return result
+    },
+    newBalance () {
+      if (!this.receipt.balance && !this.receipt.total) return new BigNumber('0')
+      const currentBalance = new BigNumber(this.receipt.balance)
+      const cost = this.receipt.total.plus(this.receipt.fee).plus(this.receipt.holders).plus(this.receipt.developer)
+      return currentBalance.minus(cost)
+    },
+    insufficientFunds () {
+      const currentBalance = new BigNumber(this.receipt.balance)
+      return this.totalValue.isGreaterThan(currentBalance)
+    },
+    disableBtnText () {
+      return this.insufficientFunds ? this.$t('failure.insufficientFunds') : this.$t('payment.checkout')
+    },
+    btnType () {
+      return this.insufficientFunds ? 'danger' : 'primary'
     }
   },
   watch: {
-    value (val) {
+    async value (val) {
       this.dialogVisible = val
     }
   },
@@ -130,11 +155,14 @@ export default {
     margin: 0px 0px 30px;
     display: flex;
     flex-direction: column;
-    row-gap: 5px;
 
     .solution-purchase-item {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 5px;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }

@@ -90,7 +90,6 @@ export default {
     queue: {
       handler (val) {
         if (!this.processing && val && val.length) {
-          console.log('发布！', val[0].extra.medias && val[0].extra.medias[0] && val[0].extra.medias[0].data)
           this.startUpload(val[0])
         }
       },
@@ -117,7 +116,8 @@ export default {
     },
     /** 显示正在上传中的消息提示 */
     startUploadingMessage (data) {
-      const text = (data.title || data.content || '').replace(/\s+/g, ' ')
+      const regexp = new RegExp('\\s+', 'g')
+      const text = (data.title || data.content || '').replace(regexp, ' ')
       const maxCount = 20
       this.$notify({
         title: this.$t('statusInput.uploadingStatus'),
@@ -271,7 +271,6 @@ export default {
     /** 执行子上传队列 */
     async executeUploadQueue (key) {
       const callback = (pctComplete, uploader, txId) => {
-        console.log('进度：', pctComplete, { uploader, txId })
         this.progress = pctComplete
         this.subqueue[this.queueIndex].uploader = uploader
         this.subqueue[this.queueIndex].txId = txId
@@ -320,7 +319,6 @@ export default {
         const { medias = [], audios = [], files = [] } = parameter.extra ? parameter.extra : {}
 
         const mediaTxIds = this.subqueue.filter(item => item.parameter.fileType === 'state-image').map(item => item.txId)
-        console.log('mediaTxIds:', mediaTxIds)
         medias.forEach((media, index) => { media.id = mediaTxIds[index] })
 
         const audioTxIds = this.subqueue.filter(item => item.parameter.fileType === 'state-audio').map(item => item.txId)
@@ -331,7 +329,6 @@ export default {
       }
 
       const res = await this.$api.tx.createNewStatus(parameter.status, parameter.extra, key, callback)
-      console.log('执行结果：', res)
       if (res && (res.status.status === 202 || res.status.status === 200)) {
         task.txId = res.id
         task.uploader = null

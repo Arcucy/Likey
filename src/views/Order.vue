@@ -31,7 +31,7 @@
           :no-data-text="$t('order.nodata')"
           :loading="dataLoading"
           :distance="500"
-          :disable="!hasNextPage"
+          :disable="!isLoggedIn || !hasNextPage"
           @load="getList"
         />
       </div>
@@ -77,7 +77,7 @@ export default {
         sponsors: [],
         donations: []
       },
-      hasNextPage: false,
+      hasNextPage: true,
       tabList: [],
       flash: false,
       pagesize: 10 // 每页数量
@@ -100,9 +100,8 @@ export default {
   },
   watch: {
     isLoggedIn: {
-      async handler (val) {
-        if (val) await this.initUserData()
-        else {
+      handler (val) {
+        if (!val) {
           // 对于没有登录的用户，检查 Cookie 中是否有 key，
           // 如果有的话，等待登录完成，没有则直接退回主页。
           const jwk = getCookie('arclight_userkey')
@@ -179,6 +178,7 @@ export default {
 
 <style lang="less" scoped>
 .my-order {
+  color: @dark;
   margin: 20px auto 0px;
   padding: 0 10px;
   box-sizing: border-box;

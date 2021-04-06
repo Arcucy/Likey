@@ -14,7 +14,7 @@ import '@/icons'
 import API from '../src/api/api'
 import Filters from '../src/filters/index'
 import './index.css'
-import '../public/element/theme/dark.css'
+// import '../public/element/theme/dark.css'
 import '../public/element/theme/pink.css'
 import '../public/element/theme/light.css'
 
@@ -48,9 +48,9 @@ const loadTheme = async (themeName) => {
     case 'pink':
       loadCSS('./element/theme/pink.css')
       break
-    case 'dark':
-      loadCSS('./element/theme/dark.css')
-      break
+    // case 'dark':
+    //   loadCSS('./element/theme/dark.css')
+    //   break
   }
 }
 loadTheme(themeName)

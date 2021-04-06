@@ -1,5 +1,5 @@
 <template>
-  <contentRender class="dynamic-text" :content="content || '&nbsp;'" />
+  <contentRender class="dynamic-text" :class="limitLines && 'limit-lines'" :content="content || '&nbsp;'" />
 </template>
 
 <script>
@@ -23,14 +23,18 @@ export default {
   },
   props: {
     // 卡片数据
-    card: {
-      type: Object,
-      default: null
+    text: {
+      type: String,
+      default: ''
+    },
+    limitLines: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
     content () {
-      return xssUtil.urlAddATag(xssUtil.escapeHtml(this.card.content.trim()))
+      return xssUtil.urlAddATag(xssUtil.escapeHtml(this.text.trim()))
     }
   }
 }
@@ -41,12 +45,10 @@ export default {
   color: #333;
   overflow: hidden;
   width: 100%;
-  word-break: break-word;
   white-space: pre-line;
+  word-break: break-all;
+  word-wrap: break-word;
   line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 20;
-  -webkit-box-orient: vertical;
   margin: 0 0 5px;
   /deep/ a {
     color: @primary;
@@ -54,6 +56,11 @@ export default {
     &:hover {
       text-decoration: underline;
     }
+  }
+  &.limit-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 20;
+    -webkit-box-orient: vertical;
   }
 }
 </style>

@@ -134,7 +134,6 @@ export default {
           if (!this.$refs.editImage) {
             return
           }
-          console.log(this.aspectRatio)
           const cropper = new Cropper(this.$refs.editImage, {
             aspectRatio: 1004 / 252,
             viewMode: 3,
@@ -176,7 +175,8 @@ export default {
     async inputFilter (newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // 过滤不是图片后缀的文件
-        if (!/\.(gif|jpg|jpeg|png|webp)$/i.test(newFile.name)) {
+        const regexp = new RegExp('\\.(gif|jpg|jpeg|png|webp)$', 'i')
+        if (!regexp.test(newFile.name)) {
           this.$message.error({
             duration: 1000,
             message: this.$t('selectImage')

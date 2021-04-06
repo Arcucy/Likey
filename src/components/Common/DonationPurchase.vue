@@ -9,6 +9,10 @@
     >
       <div class="donation-wrapper">
         <div class="donation-container">
+          <div class="donation-container-balacne">
+            <span class="donation-container-balacne">{{ $t('payment.currentBalance') }}:</span>
+            <span class="donation-container-ar"> {{ balance | winstonToAr | finalize(loading) }}</span>
+          </div>
           <div class="donation-container-input">
             <el-input
               v-model="arInput"
@@ -26,6 +30,7 @@
             block
             :precision="0"
             :min="1"
+            :disabled="loading"
             :max="9007199254740991"
             @click="step2"
           >
@@ -38,6 +43,8 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+import { mapGetters, mapState } from 'vuex'
 export default {
   props: {
     value: {
@@ -48,15 +55,22 @@ export default {
   data () {
     return {
       dialogVisible: this.value,
-      input: ''
+      input: '',
+      loading: false,
+      balance: '0'
     }
   },
   computed: {
+    ...mapState({
+      myAddress: state => state.user.myInfo.address
+    }),
+    ...mapGetters(['isLoggedIn']),
     arInput: {
       /** 输入过滤 */
       set (val) {
         // 过滤 不是数字或小数点 或者 正常小数结构结束后的小数点和数字 或者 连续重复出现的小数点 的结果
-        this.input = val.replace(/([^0-9.])|((?<=(\d+)?\.\d+)\.+(.+)?)|((?<=\.)\.+)/g, '')
+        const regexp = new RegExp('([^0-9.])', 'g')
+        this.input = val.replace(regexp, '')
       },
       get () {
         return this.input
@@ -66,24 +80,38 @@ export default {
   watch: {
     value (val) {
       this.dialogVisible = val
+      if (val) {
+        this.getUserBalance(this.myAddress)
+      }
     }
   },
   methods: {
-    step2 () {
-      if (!this.input) {
-        this.$message({
-          showClose: true,
-          message: this.$t('donation.donationAmountShouldnotBeNone'),
-          type: 'error'
-        })
+    async getUserBalance (address) {
+      if (!this.isLoggedIn) {
+        this.$message.error(this.$t('login.pleaseLogInFirst'))
         return
       }
-      if (!/^[0-9]+(\.[0-9]{0,11})?$/.test(this.input)) {
-        this.$message({
-          showClose: true,
-          message: this.$t('donation.pleaseInputValidDonationAmount'),
-          type: 'error'
-        })
+      this.loading = true
+      this.balance = await this.$api.ArweaveNative.wallets.getBalance(address)
+      this.loading = false
+    },
+    step2 () {
+      if (!this.isLoggedIn) {
+        this.$message.error(this.$t('login.pleaseLogInFirst'))
+        return
+      }
+      BigNumber.set({ EXPONENTIAL_AT: 16 })
+      if (!this.input ||
+          this.input === '0' ||
+          new BigNumber(this.input).toString() === 'NaN' ||
+          new BigNumber(this.input).isLessThanOrEqualTo(new BigNumber(0))
+      ) {
+        this.$message.error(this.$t('donation.donationAmountShouldnotBeNone'))
+        return
+      }
+      const regexp = new RegExp('^[0-9]+(\\.[0-9]{0,11})?$')
+      if (!regexp.test(this.input)) {
+        this.$message.error(this.$t('donation.pleaseInputValidDonationAmount'))
         return
       }
       this.$emit('confirm-donation', String(this.input))
@@ -104,9 +132,23 @@ export default {
     display: flex;
     flex-direction: column;
 
+    &-balacne {
+      margin-bottom: 10px;
+    }
+
     &-input {
       display: flex;
       align-items: center;
+
+      &-input {
+        width: 100%;
+      }
+      &-ticker {
+        white-space: nowrap;
+        font-size: 20px;
+        font-weight: 500;
+        margin-left: 10px;
+      }
     }
 
     .donation-confirm-button {

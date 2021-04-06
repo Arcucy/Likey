@@ -101,6 +101,15 @@ textarea {
   }
 }
 
+.el-notification__content {
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.el-notification__title {
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
 .transaction-message {
   &-text {
     display: block;

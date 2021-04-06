@@ -40,24 +40,28 @@
     </div>
     <div class="inputbox-func">
       <ImageUploader
+        class="inputbox-func-item"
         multiple
         @image-input="getImageFiles"
         :disabled="imageFiles.length >= imageFilesMaxLength"
       />
       <AudioUploader
+        class="inputbox-func-item"
         @audio-input="getAudioFiles"
         :disabled="audioFiles.length >= audioFilesMaxLength"
       />
       <FileUploader
+        class="inputbox-func-item"
         @file-input="getFiles"
         :disabled="files.length >= filesMaxLength"
       />
-      <div class="inputbox-func-count">
+      <div class="inputbox-func-count inputbox-func-item">
         <p :class="content.length > contentMaxLength && 'overflow'">
           {{ content.length }}/{{ contentMaxLength }}
         </p>
       </div>
       <LockOption
+        class="inputbox-func-item"
         v-model="lockMode"
         :address="address"
       />
@@ -127,7 +131,9 @@ export default {
     titleInput: {
       set (val) {
         /** 限制，开头不能有空白，空白字符不能连续超过两个 */
-        this.title = val.replace(/((?<=\s\s)\s+)|(^\s+.*?)/g, '')
+        const regexp = new RegExp('(^\\s+.*?)', 'g')
+        const regexp2 = new RegExp('(\\s{3,})', 'g')
+        this.title = val.replace(regexp, '').replace(regexp2, '  ')
       },
       get () {
         return this.title
@@ -135,9 +141,16 @@ export default {
     },
     contentInput: {
       set (val) {
-        // 限制，开头不能有空白，空白字符不能连续超过两个
-        // 为了避免打了两个空格后不能打回车造成的用户困惑，将这部分判断分离
-        this.content = val.replace(/((?<=[\n\r]{2})[\n\r]+)|((?<= {2}) +)|(^\s+.*?)/g, '')
+        // 开头不能有空白
+        const regexp = new RegExp('(^\\s+.*?)', 'g')
+        let newVal = val.replace(regexp, '')
+        // 空格不能超过两个
+        const regexp2 = new RegExp('( {3,})', 'g')
+        newVal = newVal.replace(regexp2, '  ')
+        // 换行不能超过两个
+        const regexp3 = new RegExp('[\\n\\r]{3,}', 'g')
+        newVal = newVal.replace(regexp3, '\n\n')
+        this.content = newVal
       },
       get () {
         return this.content
@@ -344,8 +357,11 @@ export default {
 
   &-func {
     display: flex;
-    column-gap: 5px;
     align-items: center;
+
+    &-item {
+      margin-right: 5px;
+    }
 
     &-count {
       flex: 1;

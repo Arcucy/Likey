@@ -1,19 +1,18 @@
+/* eslint-disable no-console */
 /* eslint-disable no-useless-catch */
 import Arweave from 'arweave'
 import * as SmartWeave from 'smartweave'
 import { Message } from 'element-ui'
 import BigNumber from 'bignumber.js'
+import i18n from '../i18n'
 
-// PST 合约 zNR-5J9CJERI2s4rFnvCHOo85GY3L66prbFygB-5hFg
-const LIKEY_CREATOR_PST_CONTRACT = process.env.VUE_APP_LIKEY_PST_CONTRACT_SRC
-const LIKEY_CONTRACT = process.env.VUE_APP_LIKEY_CONTRACT
-const DEVELOPER = process.env.VUE_APP_DEVELOPER_ADDRESS
-const PST_HOLDER_TIP = '0.15'
-const DEVELOPER_TIP = '0.05'
+const DEVELOPER = process.env.VUE_APP_PORFIT_SHARE_DEVELOPER
+const PST_HOLDER_TIP = String(process.env.VUE_APP_PST_HOLDER_TIP)
+const DEVELOPER_TIP = String(process.env.VUE_APP_DEVELOPER_TIP)
 
 /** 测试模式开关，开启后不会调用 interactWrite 方法，只会模拟运行 */
 const TEST_MODE = false
-console.log('Is it test mode? :', TEST_MODE)
+if (TEST_MODE) console.warn('Is the contract test mode')
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
   port: 443,
@@ -83,7 +82,9 @@ export default {
    * 读取 Likey 主合约
    */
   async readLikeyContract () {
-    const state = await SmartWeave.readContract(arweave, LIKEY_CONTRACT)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const state = await SmartWeave.readContract(arweave, proxyState.contract)
+
     return state
   },
   /**
@@ -102,15 +103,19 @@ export default {
    * @param {*} winstonQty ？
    */
   async interactWrite (jwk, input, tags, target, winstonQty) {
-    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, proxyState.contract, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
-      return {
+      const errorObj = {
         ...resDryRun,
         isTestMode: TEST_MODE
       }
+      Message({ message: i18n.tc('failure.contractWriteFailed'), type: 'error' })
+      console.error(errorObj)
+      return errorObj
     }
-    const res = await SmartWeave.interactWrite(arweave, jwk, LIKEY_CONTRACT, copy(input), tags, target, winstonQty)
+    const res = await SmartWeave.interactWrite(arweave, jwk, proxyState.contract, copy(input), tags, target, winstonQty)
     return {
       ...resDryRun,
       data: res,
@@ -129,10 +134,13 @@ export default {
     const resDryRun = await SmartWeave.interactWriteDryRun(arweave, jwk, contract, copy(input), tags, target, winstonQty)
     if (TEST_MODE) Message({ message: '正在使用测试模式', type: 'warning' })
     if (resDryRun.type !== 'ok' || TEST_MODE) {
-      return {
+      const errorObj = {
         ...resDryRun,
         isTestMode: TEST_MODE
       }
+      Message({ message: i18n.tc('failure.contractWriteFailed'), type: 'error' })
+      console.error(errorObj)
+      return errorObj
     }
     const res = await SmartWeave.interactWrite(arweave, jwk, contract, copy(input), tags, target, winstonQty)
     return {
@@ -164,7 +172,8 @@ export default {
       { name: 'Unix-Time', value: Date.now() }
     ]
 
-    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst), tags)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const tx = await SmartWeave.simulateCreateContractFromTx(arweave, jwk, proxyState.pstContractSrc, JSON.stringify(LikeyPst), tags)
     return { id: tx.id, fee: tx.reward }
   },
   /**
@@ -190,7 +199,8 @@ export default {
       { name: 'Unix-Time', value: Date.now() }
     ]
 
-    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, LIKEY_CREATOR_PST_CONTRACT, JSON.stringify(LikeyPst), tags)
+    const proxyState = await SmartWeave.readContract(arweave, process.env.VUE_APP_LIKEY_PROXY)
+    const contractId = await SmartWeave.createContractFromTx(arweave, jwk, proxyState.pstContractSrc, JSON.stringify(LikeyPst), tags)
     return contractId
   },
   /** 创建创作者 */
@@ -233,15 +243,24 @@ export default {
    * @param {*} callback      - 回调函数
    * @returns                 - 分润后的金额
    */
-  async distributeTokens (pstState, quantity, jwk, confirm, callback = () => {}) {
+  async distributeTokens (pstState, quantity, jwk, confirm, originPaymentAddress, callback = () => {}) {
+    let paymentAddress = ''
     if (!confirm) {
-      jwk = await arweave.wallets.generate()
+      if (!originPaymentAddress) {
+        jwk = await arweave.wallets.generate()
+        paymentAddress = await arweave.wallets.getAddress(jwk)
+      } else {
+        paymentAddress = originPaymentAddress
+      }
+    } else {
+      paymentAddress = await arweave.wallets.getAddress(jwk)
     }
-    const paymentAddress = await arweave.wallets.getAddress(jwk)
 
     let quantityBig = new BigNumber(quantity)
-    let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(12))
-    let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(12))
+    let pstHolderQuantity = new BigNumber(quantityBig.multipliedBy(PST_HOLDER_TIP).toFixed(0))
+    let developerQuantity = new BigNumber(quantityBig.multipliedBy(DEVELOPER_TIP).toFixed(0))
+    if (pstHolderQuantity.isLessThan(1)) pstHolderQuantity = new BigNumber(1)
+    if (developerQuantity.isLessThan(1)) developerQuantity = new BigNumber(1)
 
     let selected = ''
     let reward = new BigNumber('0')
@@ -253,6 +272,7 @@ export default {
       selected = this.selectWeightedPstHolder(pstState.balances)
       if (paymentAddress === selected) {
         pstHolderQuantity = new BigNumber('0')
+        selected = ''
       } else {
         try {
           const pstTransaction = await arweave.createTransaction({
@@ -287,7 +307,6 @@ export default {
         } catch (err) {
           status = 'onDistributionCatchError'
           callback(status, '')
-          console.error(err)
           throw err
         }
       }
@@ -295,7 +314,8 @@ export default {
 
     status = 'onDeveloper'
     callback(status, '')
-    if (DEVELOPER && /^([a-zA-Z0-9]|_|-){43}$/.test(DEVELOPER) && developerQuantity.toString() >= 1) {
+    const regexp = new RegExp('^([a-zA-Z0-9]|_|-){43}$')
+    if (DEVELOPER && regexp.test(DEVELOPER) && developerQuantity.toString() >= 1) {
       if (paymentAddress === DEVELOPER) {
         developerQuantity = new BigNumber('0')
       } else {
@@ -345,7 +365,14 @@ export default {
     }, jwk)
 
     reward = reward.plus(creatorTransaction.reward)
-    return { creator: quantityBig, holders: pstHolderQuantity, selected, developer: developerQuantity, fee: reward, total: new BigNumber(quantity) }
+    return {
+      creator: new BigNumber(quantity),
+      holders: pstHolderQuantity,
+      selected,
+      developer: developerQuantity,
+      fee: reward,
+      total: quantityBig
+    }
   },
   /**
    * 赞赏创作者
@@ -358,13 +385,14 @@ export default {
     if (!data) {
       return
     }
+
     try {
       let status = 'onSponsorAddedStarted'
       callback(status, '')
       const pstState = await this.readLikeyCreatorPstContract(contract)
       const obj = LikeyCreatorPst.sponsorAdded()
 
-      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, undefined, callback)
       const tags = [
         { name: 'Purchase-Type', value: 'Likey-Sponsor' },
         { name: 'Purchase-Number', value: data.number || '1' },
@@ -381,6 +409,18 @@ export default {
           status = 'onSponsorAdded'
           callback(status, res.data)
         }
+        const res2 = await this.updateHoldingTicker(jwk, contract)
+        if (!res2) {
+          status = 'onUpdatedTicker'
+          callback(status, '')
+        } else if (res2.type !== 'ok') {
+          status = 'onUpdatedTickerError'
+          callback(status, res2.result)
+        } else if (!res2.isTestMode) {
+          status = 'onUpdatedTicker'
+          callback(status, '')
+        }
+
         return res
       } catch (err) {
         status = 'onSponsorAddedCatchError'
@@ -409,7 +449,7 @@ export default {
       const pstState = await this.readLikeyCreatorPstContract(contract)
       const obj = LikeyCreatorPst.donationAdded(statusId)
 
-      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, callback)
+      const { creator } = await this.distributeTokens(pstState, quantity, jwk, true, undefined, callback)
       const tags = [
         { name: 'Donate-Status', value: statusId || '' },
         { name: 'Purchase-Type', value: 'Likey-Donation' },
@@ -437,6 +477,29 @@ export default {
       throw err
     }
   },
+
+  async updateHoldingTicker (jwk, contract) {
+    const likeyState = await this.readLikeyContract()
+    const paymentAddress = await arweave.wallets.getAddress(jwk)
+    if (likeyState && likeyState.users[paymentAddress]) {
+      for (const item of likeyState.users[paymentAddress]) {
+        if (item.contract === contract) return false
+      }
+    }
+
+    const updateObj = LikeyContract.updateHoldingTicker(contract)
+
+    const tags2 = [
+      { name: 'Update-Type', value: 'Ticker-Holding' },
+      { name: 'Ticker-Holding', value: contract },
+      { name: 'App-Base-Name', value: process.env.VUE_APP_APP_NAME },
+      { name: 'Unix-Time', value: Date.now() }
+    ]
+
+    const res = await this.interactWrite(jwk, updateObj, tags2)
+    return res
+  },
+
   /**
    * 铸币
    * @param {*} jwk         - JWK 密钥
@@ -661,6 +724,15 @@ const LikeyContract = {
       target,
       data: {
         items
+      }
+    }
+  },
+
+  updateHoldingTicker (address) {
+    return {
+      function: 'updateHoldingTicker',
+      data: {
+        address
       }
     }
   }

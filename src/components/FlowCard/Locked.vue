@@ -23,7 +23,7 @@
               :loading="pstLoading"
               @click="buyPst"
             >
-              {{ unlockPstValue | winstonToAr | finalize(pstLoading) }}
+              {{ this.convertPstToWinston(unlockPstValue, pstRatio) | winstonToAr | finalize(pstLoading) }}
             </el-button>
           </div>
           <!-- 已解锁 -->
@@ -137,26 +137,31 @@ export default {
       if (this.isMe(this.preview.creator)) return true
       // 合约没有加载好，不解锁
       if (!this.contract) return false
+      if (!this.contract.balances) return false
       // 没有余额，不解锁
       const balance = this.contract.balances[this.myAddress]
       if (!balance) return false
+      // 如果是全部持有者解锁，则判断余额是否大于0
+      const isAllValueUnlock = (!this.preview.lockValue || this.preview.lockValue === '0') && this.preview.lockContract
+      const balanceBig = new BigNumber(balance).div(this.contract.divisibility)
+      if (isAllValueUnlock && balanceBig.isGreaterThan(new BigNumber(0))) return true
       // 判断余额是否足够解锁
       const lockValue = new BigNumber(this.preview.lockValue)
-      return Boolean(new BigNumber(balance).isGreaterThanOrEqualTo(lockValue))
+      return Boolean(balanceBig.isGreaterThanOrEqualTo(lockValue))
     },
     unlockPstValue () {
-      let returnValue = this.preview.lockValue === '0' ? '1' : this.preview.lockValue
-      if (this.preview.lockValue === '0') {
-        for (let i = 0; i < this.pstItems.length; i++) {
-          const item = this.pstItems[i]
-          const value = new BigNumber(item.value)
-          if (value.isGreaterThanOrEqualTo(this.preview.lockValue)) {
-            returnValue = item.value
-            break
-          }
-        }
+      const isAllValueUnlock = (!this.preview.lockValue || this.preview.lockValue === '0') && this.preview.lockContract
+      let returnValue = isAllValueUnlock ? '1' : this.preview.lockValue
+      if (!isAllValueUnlock) {
+        if (!this.contract) return returnValue
+        if (!this.contract.balances) return returnValue
+        const balance = this.contract.balances[this.myAddress]
+        if (!balance) return returnValue
+        const balanceBig = new BigNumber(balance).div(this.contract.divisibility)
+        const requiredValue = new BigNumber(this.preview.lockValue)
+        returnValue = requiredValue.minus(balanceBig).toString()
       }
-      return this.convertPstToWinston(returnValue, this.pstRatio)
+      return returnValue
     },
     creator () {
       return this.creators ? this.creators[this.preview.creator] : null
@@ -170,8 +175,9 @@ export default {
       return this.creator.items
     },
     contract () {
-      if (!this.creator) return null
+      if (!this.creator || !this.creatorPst) return null
       const contract = this.creatorPst[this.creator.ticker.contract]
+      if (!contract) return null
       return contract.ticker ? contract : null
     }
   },
@@ -181,29 +187,31 @@ export default {
     }
   },
   async mounted () {
+    this.pstLoading = true
     this.getPostStatus()
     if (!this.owner) await this.getCreatorInfo(this.preview.creator)
+    if (!this.contract) await this.getPstContract(this.creator.ticker.contract)
+    this.pstLoading = false
   },
   methods: {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
     buyPst () {
-      let matchedItem = {
+      const matchedItem = {
         title: 'Custom',
         value: '1',
         number: '1'
       }
-      for (let i = 0; i < this.pstItems.length; i++) {
-        const item = this.pstItems[i]
-        const value = new BigNumber(item.value)
-        if (value.isGreaterThanOrEqualTo(this.preview.lockValue)) {
-          matchedItem = item
-          break
-        }
+      if (this.contract.balances[this.myAddress]) {
+        const balance = this.contract.balances[this.myAddress]
+        BigNumber.set({ EXPONENTIAL_AT: 26 })
+        const balanceBig = new BigNumber(balance).div(this.contract.divisibility)
+        const requiredValue = new BigNumber(this.preview.lockValue)
+        matchedItem.value = requiredValue.minus(balanceBig).toString()
       }
       this.$emit('locked-payment', {
         status: this.preview,
         unlock: matchedItem,
-        contract: this.contract
+        contract: this.creator.ticker.contract
       })
     },
     loadMore () {
@@ -237,6 +245,8 @@ a {
     margin: 0 0 5px;
     padding: 0;
     max-width: 100%;
+    word-break: break-all;
+    word-wrap: break-word;
   }
 
   &-boxbg {
@@ -277,11 +287,25 @@ a {
         font-size: 20px;
         color: @dark;
         margin: 0 0 5px;
+        word-break: break-all;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-align: center;
       }
 
       P {
         margin: 0 0 10px;
         font-size: 15px;
+        word-break: break-all;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        text-align: center;
       }
 
       &-btn {
@@ -331,13 +355,19 @@ a {
         flex-direction: row;
         right: 0;
         padding: 5px 5px 0;
-        column-gap: 10px;
+
         &-item {
-        font-size: 12px;
-        span {
-          font-size: 15px;
+          font-size: 12px;
+          margin-right: 10px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+
+          span {
+            font-size: 15px;
+          }
         }
-      }
       }
     }
   }

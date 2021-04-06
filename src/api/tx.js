@@ -1,7 +1,7 @@
 import Arweave from 'arweave'
 
 const TEST_MODE = false
-console.log('Is it TX test mode? :', TEST_MODE)
+if (TEST_MODE) console.warn('Is the TX test mode')
 
 const arweave = Arweave.init({
   host: process.env.VUE_APP_ARWEAVE_NODE,
@@ -24,7 +24,6 @@ export default {
    * @param {*} callback  - 监听交易状态的回调参数
    */
   async createNewStatus (status, extra, key, callback) {
-    console.log('进入 createNewStatus 方法，入参：', status, extra, key, callback)
     const obj = this.createStatusData(status, extra)
 
     let tx = null
@@ -36,8 +35,8 @@ export default {
 
     // Add tag 添加标签
     tx.addTag('Content-Type', 'application/json')
-    tx.addTag('App-Name', 'likey-app-dev')
-    tx.addTag('Schema-Version', '0.1.0')
+    tx.addTag('App-Name', process.env.VUE_APP_APP_NAME)
+    tx.addTag('Schema-Version', process.env.VUE_APP_SCHEMA_VERSION)
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', 'status')
     tx.addTag('Title', String(status.title))
@@ -88,7 +87,6 @@ export default {
    * @returns               - 返回一个对象，包含 id 和 status 字段，id 字段是交易 id，status 字段是交易上传状态
    */
   async createNewFile (file, fileType, key, tags = [], callback) {
-    console.log('进入 createNewFile 方法，入参：', file, fileType, key, tags, callback)
     const types = {
       image: 'Likey-Images',
       audio: 'Likey-Audio',
@@ -106,8 +104,8 @@ export default {
 
     // Add tag 添加标签
     tx.addTag('Content-Type', file.type)
-    tx.addTag('App-Name', 'likey-app-dev')
-    tx.addTag('Schema-Version', '0.1.0')
+    tx.addTag('App-Name', process.env.VUE_APP_APP_NAME)
+    tx.addTag('Schema-Version', process.env.VUE_APP_SCHEMA_VERSION)
     tx.addTag('Unix-Time', Date.now())
     tx.addTag('Type', type)
 
