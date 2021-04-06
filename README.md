@@ -4,7 +4,7 @@
 
 
 <h1 align="center">Likey</h1>
-<p align="center">A community works for anyone, any creation</p>
+<p align="center">A community that works for anyone, any creation</p>
 
 <p align="center">
   <a href="https://t.me/ArclightMusic">
