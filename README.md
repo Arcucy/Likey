@@ -5,6 +5,7 @@
 
 <h1 align="center">Likey</h1>
 <p align="center">A community that works for anyone, any creation</p>
+<p align="center"><a href="https://arweave.net/em_WoGkHA2z60PcKmHNx1o7dqIBtPfCECB6hLbnZVuo">Access through Arweave Permaweb</a></p>
 
 <p align="center">
   <a href="https://t.me/ArclightMusic">
@@ -56,5 +57,3 @@ Likey provides powerful tools from blockchain technologies to help integrate you
 [SmartWeave](https://github.com/ArweaveTeam/Smartweave)     
 [Arweave.js](https://github.com/ArweaveTeam/arweave-js): A library for interacting with the Arweave network from web applications and node.js programs.    
 [Arweave Deploy](https://github.com/ArweaveTeam/arweave-deploy): A simple command line tool for deploying web apps, pages, and other files to the permaweb.    
-
-
