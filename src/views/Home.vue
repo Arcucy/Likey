@@ -337,6 +337,7 @@ export default {
     transition: all 200ms;
     font-weight: bold;
     color: @primary;
+    cursor: pointer;
 
     &:hover {
       color: @secondary;
