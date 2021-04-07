@@ -155,7 +155,8 @@ export default {
       try {
         const info = {
           address: '',
-          username: ''
+          username: '',
+          type: 'Guest'
         }
         // 获取钱包地址
         info.address = await this.$api.gql.getAddress(key)
@@ -167,6 +168,7 @@ export default {
         try {
           const res = await this.$api.gql.getIdByAddress(info.address)
           info.username = res.data
+          info.type = res.type
         } catch (err) {
           // 错误处理
           if (err.message.startsWith('timeout')) {
