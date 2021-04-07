@@ -315,6 +315,11 @@ export default {
         margin: 20px 0 0;
         padding: 0;
         text-align: center;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
+        word-break: break-all;
       }
       p {
         font-size: 18px;
@@ -323,6 +328,15 @@ export default {
         padding: 0;
         margin: 20px 0 0;
         text-align: center;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        -ms-word-break: break-all;
+        word-break: break-word;
       }
     }
 

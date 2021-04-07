@@ -59,13 +59,16 @@ export default {
   color: @dark;
   overflow: hidden;
   width: 100%;
-  white-space: pre-line;
-  word-break: break-all;
-  word-wrap: break-word;
   font-size: 15px;
   line-height: 20px;
   font-weight: 400;
   margin: 0 0 5px;
+
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
 
   /deep/ a {
     color: @primary;
