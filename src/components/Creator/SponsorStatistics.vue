@@ -138,6 +138,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
+p {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+}
+
 .sponsor {
   overflow: hidden;
   background: @background;
@@ -167,8 +174,6 @@ export default {
       font-size: 15px;
       color: @dark;
       margin: 0 0 0;
-      word-break: break-all;
-      word-wrap: break-word;
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 3;
@@ -185,6 +190,7 @@ export default {
       font-size: 20px;
       color: @dark;
       margin: 0 0 5px;
+      word-break: break-all;
     }
 
     p {
@@ -204,6 +210,7 @@ export default {
         font-size: 20px;
         color: @dark;
         margin: 0;
+        word-break: break-all;
       }
       p {
         font-size: 15px;
