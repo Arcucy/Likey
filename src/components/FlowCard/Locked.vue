@@ -196,6 +196,10 @@ export default {
   methods: {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
     buyPst () {
+      if (!this.contract || !this.contract.ticker) {
+        this.$message.info(this.$t('payment.dataLoadingPleaseTryLater'))
+        return
+      }
       const matchedItem = {
         title: 'Custom',
         value: '1',

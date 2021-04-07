@@ -106,7 +106,6 @@ export default {
     async value (val) {
       if (val) {
         this.paymentData.type = this.data.type
-        this.setLoading(true)
         await this.buyPst()
       }
     }
