@@ -220,7 +220,7 @@ export default {
       overflow: hidden;
       display: flex;
       justify-content: center;
-      background-size: 35%;
+      background-size: 36%;
 
       &-setting {
         margin-top: 15px;
