@@ -560,24 +560,30 @@ export default {
     padding: 0;
     margin: 5px 0 5px;
     font-weight: 500;
-    word-break: break-all;
-    word-wrap: break-word;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
+
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
   }
 
   &-desp {
     font-size: 14px;
     padding: 0;
     margin: 0 0 5px;
-    word-break: break-all;
-    word-wrap: break-word;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 17;
     overflow: hidden;
+
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
   }
 
   &-unlock {

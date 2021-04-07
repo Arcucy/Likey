@@ -4,7 +4,7 @@
       <div class="creator-card" v-loading="loading">
         <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
         <div style="display: inline-block" class="creator-card-info">
-          <span class="creator-card-info-name">{{ id }}</span><br>
+          <span class="creator-card-info-name">{{ id }}</span>
           <span class="creator-card-info-bio">{{ creator.intro }}</span>
         </div>
       </div>
@@ -79,6 +79,13 @@ a {
     &-name {
       font-weight: bold;
       font-size: 15px;
+      color: @dark;
+      margin: 0 0 3px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      overflow: hidden;
+      word-break: break-all;
     }
 
     &-bio {
