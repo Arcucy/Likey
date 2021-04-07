@@ -360,7 +360,7 @@ export default {
     },
     // 获取分享链接
     getShareLink () {
-      return window.location.origin + '/#/status/' + this.preview.id
+      return window.location.origin + window.location.pathname + '#/status/' + this.preview.id
     },
     /** 拷贝 */
     copyCode (code) {
