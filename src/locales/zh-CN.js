@@ -106,7 +106,7 @@ export default {
     team: '团队',
     missingAvatar: '缺少头像',
     pleaseFillInTheProfileAddress: '请填写主页地址',
-    profileAddressFormatError: '主页地址格式错误',
+    profileAddressFormatError: '主页地址应为 5 到 41 位英文字符',
     pleaseSelectACreationCategory: '请选择一个创作分类',
     pleaseSelectACreationScale: '请选择一个创作规模',
     pleaseFillInTheIntroduction: '请填写简介',
@@ -139,7 +139,8 @@ export default {
     solutionEditingHasNotCompletedYet: '解锁方案尚未完成编辑',
     pleaseReturnToThePreviousStepToFillInTheCreatorForm: '请返回上一步以填写创作者表格',
     createSuccessfulAlertContent: '恭喜你成为创作者，你的信息将在下个区块合并时生效，这大概需要几分钟的时间。',
-    submittingPleaseDoNotCloseThePage: '正在提交中，请不要关闭页面'
+    submittingPleaseDoNotCloseThePage: '正在提交中，请不要关闭页面',
+    usernameCanNotBeEmpty: '请设置你的用户名'
   },
   creationCategoryOptions: {
     painting: '绘画',

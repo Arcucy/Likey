@@ -245,6 +245,12 @@ export default {
         return 2
       }
 
+      // 没有用户名
+      if (!this.myInfo.type || this.myInfo.type === 'Guest' || !this.myInfo.username.trim()) {
+        this.$message.warning(this.$t('setting.usernameCanNotBeEmpty'))
+        return 8
+      }
+
       // 没有填写主页地址
       if (!this.profileAddress.trim()) {
         this.$message.warning(this.$t('setting.pleaseFillInTheProfileAddress'))

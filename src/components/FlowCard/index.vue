@@ -62,7 +62,6 @@
         <!-- 正文 -->
         <mainText
           v-if="content"
-          class="cardunit-r-content"
           :text="content"
         />
         <!-- 图片 -->
@@ -558,15 +557,11 @@ span {
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;
-      word-break: break-all;
-    }
 
-    &-content {
-      color: @dark;
-      font-size: 15px;
-      font-weight: 400;
-      line-height: 20px;
-      white-space: pre-line;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      -ms-word-break: break-all;
+      word-break: break-word;
     }
 
     .cardbtm10 {
