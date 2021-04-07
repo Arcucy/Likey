@@ -8,7 +8,8 @@ export default {
     myInfo: {
       address: '',
       username: '',
-      avatar: ''
+      avatar: '',
+      type: ''
     },
     myJwk: '',
     isWalletLoaded: false,
@@ -30,11 +31,12 @@ export default {
     }
   },
   mutations: {
-    mSetMyInfo (state, { address, username, avatar }) {
+    mSetMyInfo (state, { address, username, avatar, type }) {
       state.myInfo = {
         address: address || '',
         username: username || '',
-        avatar: avatar || ''
+        avatar: avatar || '',
+        type: type || 'Guest'
       }
     },
     mSetMyJwk (state, jwk) {
