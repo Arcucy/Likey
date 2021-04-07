@@ -106,7 +106,7 @@ export default {
     team: 'Team',
     missingAvatar: 'Missing avatar',
     pleaseFillInTheProfileAddress: 'Please fill in the profile address',
-    profileAddressFormatError: 'Profile address format error',
+    profileAddressFormatError: 'Profile address length should be within 4 to 41 alphabet characters',
     pleaseSelectACreationCategory: 'Please select a creation category',
     pleaseSelectACreationScale: 'Please select a creation scale',
     pleaseFillInTheIntroduction: 'Please fill in the introduction',
@@ -139,7 +139,8 @@ export default {
     solutionEditingHasNotCompletedYet: 'solution editing hasn\'t completed yet',
     pleaseReturnToThePreviousStepToFillInTheCreatorForm: 'Please return to the previous step to fill in the creator form',
     createSuccessfulAlertContent: 'Congratulations! You just became a creator! Your information will be available after the block been mined, this usually takes minutes to complete.',
-    submittingPleaseDoNotCloseThePage: 'Submitting, please do not close the page'
+    submittingPleaseDoNotCloseThePage: 'Submitting, please do not close the page',
+    usernameCanNotBeEmpty: 'Please set your username'
   },
   creationCategoryOptions: {
     painting: 'Painting',
