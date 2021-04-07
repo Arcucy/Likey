@@ -583,14 +583,6 @@ span {
       word-break: break-all;
     }
 
-    &-content {
-      color: @dark;
-      font-size: 15px;
-      font-weight: 400;
-      line-height: 20px;
-      white-space: pre-line;
-    }
-
     .cardbtm10 {
       margin: 10px 0;
       overflow: hidden;
