@@ -256,7 +256,7 @@ export default {
   home: {
     // 部分翻译存疑
     tabFlow: 'Flow',
-    tabAppreciated: 'Sponsored',
+    tabSponsored: 'Sponsored',
     flowLoading: 'Flow loading...',
     creatorsLoading: 'Creators loading...',
     showMoreCreators: 'Show more',
