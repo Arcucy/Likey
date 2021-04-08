@@ -16,8 +16,9 @@ export default {
   },
 
   urlAddATag (text) {
-    var regexp = new RegExp('(http:\\/\\/|https:\\/\\/)((\\w|=|\\?|\\.|\\/|&|%|@|-)+)', 'g')
+    var regexp = new RegExp('(https?):\\/\\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]', 'g')
     return text.replace(regexp, function (url) {
+      if (text.toLowerCase().includes('javascript:')) return text
       return `<router-link :to="{}" onclick="window.open('${url}', '_blank')" >${url}</router-link>&nbsp;`
     })
   }
