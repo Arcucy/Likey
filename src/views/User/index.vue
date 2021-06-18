@@ -9,7 +9,7 @@
         <FlowCard
           v-for="(data, index) of flow"
           class="flow-card"
-          :key="index"
+          :key="data.cursor || index"
           :brief="data"
           :user="user"
           @locked-payment="startPayment"
