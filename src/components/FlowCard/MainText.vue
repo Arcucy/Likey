@@ -34,7 +34,21 @@ export default {
   },
   computed: {
     content () {
-      return xssUtil.urlAddATag(xssUtil.escapeHtml(this.text.trim()))
+      return xssUtil.urlAddATag(xssUtil.escapeHtml(this.filterBlanks(this.text.trim())))
+    }
+  },
+  methods: {
+    filterBlanks (test) {
+      // 开头不能有空白
+      const regexp = new RegExp('(^\\s+.*?)', 'g')
+      let newVal = test.replace(regexp, '')
+      // 空格不能超过两个
+      const regexp2 = new RegExp('( {3,})', 'g')
+      newVal = newVal.replace(regexp2, '  ')
+      // 换行不能超过两个
+      const regexp3 = new RegExp('[\\n\\r]{3,}', 'g')
+      newVal = newVal.replace(regexp3, '\n\n')
+      return newVal
     }
   }
 }
@@ -42,14 +56,20 @@ export default {
 
 <style lang="less" scoped>
 .dynamic-text {
-  color: #333;
+  color: @dark;
   overflow: hidden;
   width: 100%;
-  white-space: pre-line;
-  word-break: break-all;
-  word-wrap: break-word;
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
   margin: 0 0 5px;
+
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+
   /deep/ a {
     color: @primary;
     text-decoration: none;

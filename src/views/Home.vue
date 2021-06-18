@@ -23,7 +23,7 @@
           <FlowCard
             v-for="(data, index) in sponsoredStatus"
             :brief="data"
-            :key="index"
+            :key="data.cursor || index"
             @locked-payment="startPayment"
             @status-donation="startDonationPayment"
             class="flow-card"
@@ -43,7 +43,7 @@
           <FlowCard
             v-for="(data, index) in flow"
             :brief="data"
-            :key="index"
+            :key="data.cursor || index"
             @locked-payment="startPayment"
             @status-donation="startDonationPayment"
             class="flow-card"
@@ -60,26 +60,12 @@
         </div>
       </div>
       <div class="col-3">
-        <div class="home-title">
-          {{ $t('home.findMoreCreators') }}
-        </div>
-        <div class="card flow-card" v-if="shownCreators.length === 0">
-          <div v-loading="true">
-            {{ $t('home.creatorsLoading') }}
+        <div class="col-3-stickybox">
+          <div class="home-title">
+            {{ $t('home.findMoreCreators') }}
+            <span class="mdi mdi-refresh-circle creator-list-refresh" @click="refreshCreatorList" />
           </div>
-        </div>
-        <CreatorCard
-          v-for="(address, index) in shownCreators"
-          :address="address"
-          :key="index"
-          class="flow-card"
-        />
-        <div class="show-more-btn">
-          <span
-            @click="showMore ++"
-            v-if="creatorsAddress.length !== shownCreators.length"
-            class="show-more-btn-text"
-          >{{ $t('home.showMoreCreators') }}</span>
+          <RandomCreatorList :refresh="creatorListRefresh" />
         </div>
       </div>
     </div>
@@ -97,22 +83,24 @@
 </template>
 
 <script>
-import CreatorCard from '@/components/CreatorCard'
+// import CreatorCard from '@/components/CreatorCard'
 import FlowCard from '@/components/FlowCard'
 import InfiniteScroll from '@/components/InfiniteScroll'
 import Payment from '@/components/Common/Payment'
 import DonationPurchase from '@/components/Common/DonationPurchase'
+import RandomCreatorList from '@/components/Creator/RandomCreatorList'
 
 import { mapActions, mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
   components: {
-    CreatorCard,
+    // CreatorCard,
     FlowCard,
     InfiniteScroll,
     Payment,
-    DonationPurchase
+    DonationPurchase,
+    RandomCreatorList
   },
   inject: ['updateQuery'],
   data () {
@@ -142,20 +130,17 @@ export default {
       paymentData: {
         type: '0',
         data: {}
-      }
+      },
+      creatorListRefresh: 0
     }
   },
   computed: {
     ...mapState({
-      creatorsAddress: state => Object.keys(state.contract.creators),
       creators: state => state.contract.creators,
       creatorPst: state => state.contract.creatorPst,
       userAddress: state => state.user.myInfo.address
     }),
     ...mapGetters(['isLoggedIn']),
-    shownCreators () {
-      return this.creatorsAddress.slice(0, this.showMore * 5)
-    },
     flowCursor () {
       if (!this.flow || !this.flow.length) return ''
       return this.flow[this.flow.length - 1].cursor
@@ -268,6 +253,9 @@ export default {
         }
       }
       this.showingSponsored = showingSponsored
+    },
+    refreshCreatorList () {
+      this.creatorListRefresh = Date.now()
     }
   }
 }
@@ -292,6 +280,11 @@ export default {
       width: 33.3%;
       padding: 0 10px;
       box-sizing: border-box;
+      &-stickybox {
+        position: sticky;
+        top: 80px;
+        padding-bottom: 20px;
+      }
     }
   }
 }
@@ -312,6 +305,7 @@ export default {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
+  position: relative;
 
   &-sponsored {
     margin-left: 30px;
@@ -337,6 +331,7 @@ export default {
     transition: all 200ms;
     font-weight: bold;
     color: @primary;
+    cursor: pointer;
 
     &:hover {
       color: @secondary;
@@ -348,6 +343,35 @@ export default {
   margin-bottom: 20px;
 }
 
+.creator-list-refresh {
+  font-size: 20px;
+  color: @primary;
+  position: relative;
+  top: 1px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+
+  &::before {
+    animation: turn 1s linear 1;
+  }
+
+  &:hover {
+    color: @secondary;
+  }
+
+  &:active {
+    &::before {
+      animation: none;
+    }
+  }
+}
+
+@keyframes turn{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
 @media screen and (max-width: 799px) {
   .container {
     width: 100%;
@@ -356,6 +380,13 @@ export default {
       flex-direction: column-reverse;
       .col-6, .col-3 {
         width: 100%;
+        margin-bottom: 20px;
+
+        &-stickybox {
+          position: static;
+          top: 80px;
+          padding-bottom: 0;
+        }
       }
     }
   }

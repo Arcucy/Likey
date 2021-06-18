@@ -196,6 +196,10 @@ export default {
   methods: {
     ...mapActions(['getPstContract', 'getCreatorInfo']),
     buyPst () {
+      if (!this.contract || !this.contract.ticker) {
+        this.$message.info(this.$t('payment.dataLoadingPleaseTryLater'))
+        return
+      }
       const matchedItem = {
         title: 'Custom',
         value: '1',
@@ -245,8 +249,12 @@ a {
     margin: 0 0 5px;
     padding: 0;
     max-width: 100%;
-    word-break: break-all;
+    overflow: hidden;
+
+    overflow-wrap: break-word;
     word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
   }
 
   &-boxbg {

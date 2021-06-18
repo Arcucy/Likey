@@ -560,24 +560,30 @@ export default {
     padding: 0;
     margin: 5px 0 5px;
     font-weight: 500;
-    word-break: break-all;
-    word-wrap: break-word;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     overflow: hidden;
+
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
   }
 
   &-desp {
     font-size: 14px;
     padding: 0;
     margin: 0 0 5px;
-    word-break: break-all;
-    word-wrap: break-word;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 17;
     overflow: hidden;
+
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
   }
 
   &-unlock {
@@ -618,7 +624,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 799px) {
   .solutions {
     display: flex;
     overflow-x: auto;
@@ -626,20 +632,34 @@ export default {
     box-sizing: border-box;
     flex-wrap: nowrap;
     flex-direction: row;
+
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .solution {
     border-radius: 6px;
     padding: 20px 16px;
     width: 100%;
-    min-width: 87%;
+    min-width: 45%;
     display: flex;
     flex-direction: column;
     margin: 0 5px;
+
+    scroll-snap-align: center;
     &-desp {
       flex: 1;
       -webkit-line-clamp: 10;
     }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .solution {
+    min-width: 87%;
   }
 }
 </style>

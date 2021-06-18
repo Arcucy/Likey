@@ -9,7 +9,7 @@
         <FlowCard
           v-for="(data, index) of flow"
           class="flow-card"
-          :key="index"
+          :key="data.cursor || index"
           :brief="data"
           :user="user"
           @locked-payment="startPayment"
@@ -314,6 +314,7 @@ export default {
     flex-direction: column-reverse;
     .col-6, .col-3 {
       width: 100%;
+      margin-bottom: 20px;
     }
   }
 }

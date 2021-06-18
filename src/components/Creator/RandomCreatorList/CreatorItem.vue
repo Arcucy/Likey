@@ -1,15 +1,11 @@
 <template>
-  <div>
-    <router-link :to="creatorUrl" :class="loading && 'card-loading'">
-      <div class="creator-card" v-loading="loading">
-        <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
-        <div style="display: inline-block" class="creator-card-info">
-          <span class="creator-card-info-name">{{ id }}</span>
-          <span class="creator-card-info-bio">{{ creator.intro }}</span>
-        </div>
-      </div>
-    </router-link>
-  </div>
+  <router-link class="creator-card" v-loading="loading" :to="creatorUrl">
+    <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
+    <div style="display: inline-block" class="creator-card-info">
+      <span class="creator-card-info-name">{{ id }}</span>
+      <span class="creator-card-info-bio">{{ creator.intro }}</span>
+    </div>
+  </router-link>
 </template>
 <script>
 import Avatar from '@/components/User/Avatar'
@@ -57,21 +53,22 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-@import "../themes/variables";
 a {
   text-decoration: none;
   color: #000;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .creator-card {
-  background: @background;
-  color: @dark;
-  box-shadow: 0 0 2px 0 #0000001a;
-  box-sizing: border-box;
-  border-radius: 10px;
-  padding: 20px;
   display: flex;
   align-items: center;
+  padding: 0 0 20px;
+
+  &:last-child {
+    padding: 0;
+  }
+
   &-avatar {
     margin-right: 10px;
   }
@@ -86,6 +83,11 @@ a {
       -webkit-line-clamp: 1;
       overflow: hidden;
       word-break: break-all;
+
+      &:hover {
+        color: var(--primary);
+        text-decoration: underline;
+      }
     }
 
     &-bio {
@@ -109,10 +111,46 @@ a {
   border-radius: 10px;
 }
 
+@media screen and (max-width: 799px) {
+  .creator-card {
+    flex-direction: column;
+    width: 20%;
+    margin: 0;
+    padding: 0 5px;
+
+    &-avatar {
+      padding: 0;
+      margin: 0 0 5px;
+    }
+
+    &-info {
+      &-name {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+        -webkit-line-clamp: 2;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        -ms-word-break: break-all;
+        word-break: break-word;
+      }
+
+      &-bio {
+        display: none;
+      }
+    }
+  }
+}
+
 @media screen and (max-width: 640px) {
   .creator-card {
-    border-radius: 0;
-    padding: 20px 16px;
+    &-info {
+      &-name {
+        font-size: 12px;
+      }
+    }
   }
 }
 </style>
