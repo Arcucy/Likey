@@ -624,7 +624,7 @@ export default {
   }
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 799px) {
   .solutions {
     display: flex;
     overflow-x: auto;
@@ -644,7 +644,7 @@ export default {
     border-radius: 6px;
     padding: 20px 16px;
     width: 100%;
-    min-width: 87%;
+    min-width: 45%;
     display: flex;
     flex-direction: column;
     margin: 0 5px;
@@ -654,6 +654,12 @@ export default {
       flex: 1;
       -webkit-line-clamp: 10;
     }
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .solution {
+    min-width: 87%;
   }
 }
 </style>
