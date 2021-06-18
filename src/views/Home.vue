@@ -23,7 +23,7 @@
           <FlowCard
             v-for="(data, index) in sponsoredStatus"
             :brief="data"
-            :key="index"
+            :key="data.cursor || index"
             @locked-payment="startPayment"
             @status-donation="startDonationPayment"
             class="flow-card"
@@ -43,7 +43,7 @@
           <FlowCard
             v-for="(data, index) in flow"
             :brief="data"
-            :key="index"
+            :key="data.cursor || index"
             @locked-payment="startPayment"
             @status-donation="startDonationPayment"
             class="flow-card"
