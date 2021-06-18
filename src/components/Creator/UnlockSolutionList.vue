@@ -632,6 +632,12 @@ export default {
     box-sizing: border-box;
     flex-wrap: nowrap;
     flex-direction: row;
+
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .solution {
@@ -642,6 +648,8 @@ export default {
     display: flex;
     flex-direction: column;
     margin: 0 5px;
+
+    scroll-snap-align: center;
     &-desp {
       flex: 1;
       -webkit-line-clamp: 10;
