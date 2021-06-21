@@ -1,11 +1,13 @@
 <template>
-  <router-link class="creator-card" v-loading="loading" :to="creatorUrl">
-    <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
-    <div style="display: inline-block" class="creator-card-info">
-      <span class="creator-card-info-name">{{ id }}</span>
-      <span class="creator-card-info-bio">{{ creator.intro }}</span>
-    </div>
-  </router-link>
+  <div v-loading="loading" class="creator-card-container">
+    <router-link class="creator-card" :to="creatorUrl">
+      <Avatar class="creator-card-avatar" size="48px" :src="avatar" />
+      <div style="display: inline-block" class="creator-card-info">
+        <span class="creator-card-info-name">{{ id }}</span>
+        <span class="creator-card-info-bio">{{ creator.intro }}</span>
+      </div>
+    </router-link>
+  </div>
 </template>
 <script>
 import Avatar from '@/components/User/Avatar'
@@ -65,8 +67,10 @@ a {
   align-items: center;
   padding: 0 0 20px;
 
-  &:last-child {
-    padding: 0;
+  &-container:last-child {
+    .creator-card {
+      padding: 0;
+    }
   }
 
   &-avatar {
