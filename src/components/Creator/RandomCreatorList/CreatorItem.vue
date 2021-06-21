@@ -62,16 +62,16 @@ a {
   touch-action: manipulation;
 }
 
+.creator-card-container {
+  margin: 0 0 20px;
+  &:last-child {
+    margin: 0;
+  }
+}
+
 .creator-card {
   display: flex;
   align-items: center;
-  padding: 0 0 20px;
-
-  &-container:last-child {
-    .creator-card {
-      padding: 0;
-    }
-  }
 
   &-avatar {
     margin-right: 10px;
@@ -107,20 +107,15 @@ a {
   }
 }
 
-.card-loading {
-  cursor: not-allowed;
-}
-
-/deep/.el-loading-mask {
-  border-radius: 10px;
-}
-
 @media screen and (max-width: 799px) {
-  .creator-card {
-    flex-direction: column;
+  .creator-card-container {
     width: 20%;
     margin: 0;
     padding: 0 5px;
+  }
+
+  .creator-card {
+    flex-direction: column;
 
     &-avatar {
       padding: 0;
