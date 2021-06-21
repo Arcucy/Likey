@@ -76,6 +76,7 @@ export default {
   box-sizing: border-box;
   border-radius: 10px;
   padding: 20px;
+  overflow: hidden;
 
   min-height: 108px;
 }
