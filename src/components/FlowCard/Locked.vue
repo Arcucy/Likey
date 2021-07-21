@@ -249,6 +249,7 @@ a {
     margin: 0 0 5px;
     padding: 0;
     max-width: 100%;
+    overflow: hidden;
 
     overflow-wrap: break-word;
     word-wrap: break-word;
