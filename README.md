@@ -7,8 +7,8 @@
 <p align="center">A community that works for anyone, any creation</p>
 <p align="center">
   <a href="https://likey.arcucy.io/#/">Access through Our Server</a><br>
-  <a href="https://arweave.net/qQAxLDBzIU1G7i9nTAxJn1WSEzM5ykSaIWuYHBPE6DI/#/">Access through Arweave Permaweb</a><br>
-  <a href="https://arweave.arcucy.io/qQAxLDBzIU1G7i9nTAxJn1WSEzM5ykSaIWuYHBPE6DI/#/">Access through Proxy (Optimized for China Mainland)</a><br>
+  <a href="https://arweave.net/i_6RZspGNhKSstQMDK6nc9A8QPNP6Jpz0WQYRzITAHI/#/">Access through Arweave Permaweb</a><br>
+  <a href="https://arweave.arcucy.io/i_6RZspGNhKSstQMDK6nc9A8QPNP6Jpz0WQYRzITAHI/#/">Access through Proxy (Optimized for China Mainland)</a><br>
 </p>
 
 <p align="center">
