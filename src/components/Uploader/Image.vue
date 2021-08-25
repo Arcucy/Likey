@@ -106,10 +106,12 @@ export default {
     /** 图片压缩 */
     compressorFunc (file, cropSize, mimeType = 'auto') {
       return new Promise((resolve) => {
-        const thumbnailConfig = cropSize ? {
-          maxHeight: cropSize,
-          maxWidth: cropSize
-        } : {}
+        const thumbnailConfig = cropSize
+          ? {
+              maxHeight: cropSize,
+              maxWidth: cropSize
+            }
+          : {}
         // eslint-disable-next-line no-new
         new Compressor(file, {
           ...thumbnailConfig,

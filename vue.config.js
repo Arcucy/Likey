@@ -1,6 +1,10 @@
 const path = require('path')
+const webpack = require('webpack')
 
 module.exports = {
+  devServer: {
+
+  },
   publicPath: process.env.NODE_ENV === 'production'
     ? '././'
     : './',
@@ -16,6 +20,21 @@ module.exports = {
         return assetFilename.endsWith('.js')
       }
     },
+    resolve: {
+      fallback: {
+        crypto: require.resolve('crypto-browserify'),
+        util: require.resolve('./node_modules/arweave/web/lib/utils.js'),
+        stream: require.resolve('stream-browserify')
+      }
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: [require.resolve('buffer/'), 'Buffer']
+      }),
+      new webpack.ProvidePlugin({
+        process: 'process/browser'
+      })
+    ],
     module: {
       rules: [
         {
