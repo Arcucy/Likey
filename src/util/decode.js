@@ -6,17 +6,17 @@ const Decode = {
    * @param {Uint8Array} array 需要转换的数组
    */
   uint8ArrayToString: (function () {
-    var charCache = new Array(128) // Preallocate the cache for the common single byte chars
-    var charFromCodePt = String.fromCodePoint || String.fromCharCode
-    var result = []
+    const charCache = new Array(128) // Preallocate the cache for the common single byte chars
+    const charFromCodePt = String.fromCodePoint || String.fromCharCode
+    const result = []
 
     return function (array) {
-      var codePt, byte1
-      var buffLen = array.length
+      let codePt, byte1
+      const buffLen = array.length
 
       result.length = 0
 
-      for (var i = 0; i < buffLen;) {
+      for (let i = 0; i < buffLen;) {
         byte1 = array[i++]
 
         if (byte1 <= 0x7F) {

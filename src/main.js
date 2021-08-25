@@ -67,7 +67,7 @@ moment.locale('en-US')
 Vue.prototype.$moment = moment
 
 Vue.use(VueClipboards)
-Vue.component('aplayer', Aplayer)
+Vue.component('Aplayer', Aplayer)
 new Vue({
   router,
   store,
